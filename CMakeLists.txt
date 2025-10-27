@@ -9,7 +9,7 @@ set(SOURCES
     src/main.cpp
 )
 
-add_executable(fullerene_generator ${SOURCES})
+add_executable(fullerene_generator ${SOURCES} "include/expansions.h" "src/expansions.cpp")
 
 target_include_directories(${PROJECT_NAME}
     PRIVATE
