@@ -12,8 +12,9 @@ class base_node {
 protected:
     std::vector<std::weak_ptr<base_node>> neighbors_;
     unsigned int id_ = 0;
+    node_type type_;
 
-    explicit base_node(const unsigned int id) : id_(id) {}
+    explicit base_node(const unsigned int id, const node_type type) : id_(id), type_(type) {}
 public:
     virtual ~base_node() = default;
 
@@ -21,13 +22,15 @@ public:
 
     [[nodiscard]] unsigned int id() const { return id_; }
 
+    [[nodiscard]] node_type type() const { return type_; }
+
     void add_neighbor(const std::shared_ptr<base_node>& n);
 
-    [[nodiscard]] std::size_t neighbor_count() const;
+    [[nodiscard]] std::size_t degree() const;
 };
 
 class node_5 final : public base_node {
-    explicit node_5(const unsigned int id) : base_node(id) {}
+    explicit node_5(const unsigned int id) : base_node(id, node_type::NODE_5) {}
 public:
     static std::shared_ptr<node_5> create(const unsigned int id) {
         return std::shared_ptr<node_5>(new node_5(id));
@@ -37,7 +40,7 @@ public:
 };
 
 class node_6 final : public base_node {
-    explicit node_6(const unsigned int id) : base_node(id) {}
+    explicit node_6(const unsigned int id) : base_node(id, node_type::NODE_6) {}
 public:
     static std::shared_ptr<node_6> create(const unsigned int id) {
         return std::shared_ptr<node_6>(new node_6(id));

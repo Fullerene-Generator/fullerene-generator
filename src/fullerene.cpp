@@ -6,7 +6,7 @@ void base_node::add_neighbor(const std::shared_ptr<base_node>& n) {
     neighbors_.push_back(std::weak_ptr(n));
 }
 
-std::size_t base_node::neighbor_count() const {
+std::size_t base_node::degree() const {
     return neighbors_.size();
 }
 
