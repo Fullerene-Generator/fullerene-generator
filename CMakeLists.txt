@@ -3,9 +3,7 @@ project(fullerene_generator)
 
 set(CMAKE_CXX_STANDARD 20)
 
-set(SOURCES
-    src/construct.cpp
-    src/fullerene.cpp
+set(SOURCES src/fullerene.cpp
     src/main.cpp
 )
 
