@@ -1,73 +1,5 @@
-﻿#include "fullerene.h"
-
-// ---- base_node implementation ----
-
-void base_node::add_neighbor(const std::shared_ptr<base_node>& n) {
-    neighbors_.push_back(std::weak_ptr(n));
-}
-
-std::size_t base_node::degree() const {
-    return neighbors_.size();
-}
-
-std::shared_ptr<base_node> base_node::neighbor_at(const std::size_t index) const {
-    return neighbors_.at(index).lock();
-}
-
-const std::vector<std::weak_ptr<base_node>>& base_node::neighbors() const {
-    return neighbors_;
-}
-
-std::optional<directed_edge> base_node::get_edge(const std::size_t index = 0) {
-    if (index < degree()) {
-        return directed_edge(shared_from_this(), index);
-    }
-    return std::nullopt;
-}
-
-std::optional<directed_edge> base_node::get_edge(const std::shared_ptr<const base_node>& neighbor) {
-    for (std::size_t i = 0; i < neighbors_.size(); ++i) {
-        if (neighbors_.at(i).lock() == neighbor) {
-            return directed_edge(shared_from_this(), i);
-        }
-    }
-    return std::nullopt;
-}
-
-// ---- directed_edge implementation ----
-
-std::shared_ptr<base_node> directed_edge::to() const {
-    return from->neighbor_at(index);
-}
-
-directed_edge directed_edge::inverse() const {
-    auto edge = to()->get_edge(from);
-
-    if (edge) {
-        return edge.value();
-    }
-
-    throw std::runtime_error("No reciprocal edge found");
-}
-
-directed_edge directed_edge::next_around(const unsigned int times) const {
-    return { from, (index + times) % from->degree() };
-}
-
-directed_edge directed_edge::prev_around(const unsigned int times) const {
-    const std::size_t d = from->degree();
-    return { from, (index - times + d) % d };
-}
-
-directed_edge directed_edge::left_turn(const unsigned int which) const {
-    return inverse().next_around(which);
-}
-
-directed_edge directed_edge::right_turn(const unsigned int which) const {
-    return inverse().prev_around(which);
-}
-
-// ---- dual_fullerene implementation ----
+﻿#include <fullerene/base_node.h>
+#include <fullerene/dual_fullerene.h>
 
 dual_fullerene::dual_fullerene(const std::vector<std::vector<unsigned int>>& adjacency) {
     const std::size_t n = adjacency.size();
@@ -123,5 +55,3 @@ dual_fullerene::dual_fullerene(const std::vector<std::vector<unsigned int>>& adj
         }
     }
 }
-
-

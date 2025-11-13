@@ -1,5 +1,5 @@
 #include <iostream>
-#include "construct.h"
+#include <fullerene/construct.h>
 
 
 int main() {

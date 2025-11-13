@@ -3,8 +3,10 @@ project(fullerene_generator)
 
 set(CMAKE_CXX_STANDARD 20)
 
-set(SOURCES src/fullerene.cpp
-    src/main.cpp
+set(SOURCES src/base_node.cpp
+        src/directed_edge.cpp
+        src/dual_fullerene.cpp
+        src/main.cpp
 )
 
 add_executable(fullerene_generator ${SOURCES})

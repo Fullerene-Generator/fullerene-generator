@@ -1,5 +1,6 @@
-﻿#ifndef FULLERENE_H
-#define FULLERENE_H
+﻿#ifndef BASE_NODE_H
+#define BASE_NODE_H
+#include <fullerene/directed_edge.h>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -8,22 +9,6 @@ enum class node_type {
     NODE_5,
     NODE_6,
   };
-
-class base_node;
-
-struct directed_edge {
-    std::shared_ptr<base_node> from;
-    std::size_t index;
-
-    directed_edge(std::shared_ptr<base_node> from, const std::size_t index) : from(std::move(from)), index(index) {}
-
-    [[nodiscard]] std::shared_ptr<base_node> to() const;
-    [[nodiscard]] directed_edge inverse() const;
-    [[nodiscard]] directed_edge next_around(unsigned int times = 1) const;
-    [[nodiscard]] directed_edge prev_around(unsigned int times = 1) const;
-    [[nodiscard]] directed_edge left_turn(unsigned int which = 1) const;
-    [[nodiscard]] directed_edge right_turn(unsigned int which = 1) const;
-};
 
 class base_node : public std::enable_shared_from_this<base_node> {
 protected:
@@ -65,16 +50,4 @@ public:
     [[nodiscard]] std::size_t expected_degree() const override { return 6; }
 };
 
-class dual_fullerene {
-    std::vector<std::shared_ptr<node_5>> nodes_5;
-    std::vector<std::shared_ptr<node_6>> nodes_6;
-
-public:
-    explicit dual_fullerene(const std::vector<std::vector<unsigned int>>& adjacency);
-
-    [[nodiscard]] const std::vector<std::shared_ptr<node_5>>& get_nodes_5() const noexcept;
-    [[nodiscard]] const std::vector<std::shared_ptr<node_6>>& get_nodes_6() const noexcept;
-    [[nodiscard]] std::size_t total_nodes() const noexcept { return nodes_5.size() + nodes_6.size(); }
-};
-
-#endif //FULLERENE_H
+#endif //BASE_NODE_H

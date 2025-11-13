@@ -1,7 +1,6 @@
 ﻿#ifndef CONSTRUCT_H
 #define CONSTRUCT_H
-
-#include <fullerene.h>
+#include <fullerene/dual_fullerene.h>
 #include <vector>
 
 const std::vector<std::vector<unsigned int>> c20_adjacency = {
