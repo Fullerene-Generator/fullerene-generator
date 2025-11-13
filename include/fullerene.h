@@ -1,6 +1,7 @@
 ﻿#ifndef FULLERENE_H
 #define FULLERENE_H
 #include <memory>
+#include <optional>
 #include <vector>
 
 enum class node_type {
@@ -8,7 +9,21 @@ enum class node_type {
     NODE_6,
   };
 
-class base_node {
+class base_node;
+
+struct directed_edge {
+    std::shared_ptr<const base_node> from;
+    std::size_t index;
+
+    directed_edge(std::shared_ptr<const base_node> from, const std::size_t index) : from(std::move(from)), index(index) {}
+
+    [[nodiscard]] std::shared_ptr<base_node> to() const;
+    [[nodiscard]] directed_edge inverse() const;
+    [[nodiscard]] directed_edge next_around() const;
+    [[nodiscard]] directed_edge prev_around() const;
+};
+
+class base_node : public std::enable_shared_from_this<base_node> {
 protected:
     std::vector<std::weak_ptr<base_node>> neighbors_;
     unsigned int id_ = 0;
@@ -17,16 +32,15 @@ protected:
     explicit base_node(const unsigned int id, const node_type type) : id_(id), type_(type) {}
 public:
     virtual ~base_node() = default;
-
     [[nodiscard]] virtual std::size_t expected_degree() const = 0;
-
     [[nodiscard]] unsigned int id() const { return id_; }
-
     [[nodiscard]] node_type type() const { return type_; }
-
-    void add_neighbor(const std::shared_ptr<base_node>& n);
-
     [[nodiscard]] std::size_t degree() const;
+    [[nodiscard]] std::shared_ptr<base_node> neighbor_at(std::size_t index) const;
+    [[nodiscard]] const std::vector<std::weak_ptr<base_node>>& neighbors() const;
+    [[nodiscard]] std::optional<directed_edge> get_edge(std::size_t index) const;
+    [[nodiscard]] std::optional<directed_edge> get_edge(const std::shared_ptr<const base_node>& neighbor) const;
+    void add_neighbor(const std::shared_ptr<base_node>& n);
 };
 
 class node_5 final : public base_node {
@@ -58,7 +72,6 @@ public:
 
     [[nodiscard]] const std::vector<std::shared_ptr<node_5>>& get_nodes_5() const noexcept;
     [[nodiscard]] const std::vector<std::shared_ptr<node_6>>& get_nodes_6() const noexcept;
-
     [[nodiscard]] std::size_t total_nodes() const noexcept { return nodes_5.size() + nodes_6.size(); }
 };
 

@@ -10,6 +10,55 @@ std::size_t base_node::degree() const {
     return neighbors_.size();
 }
 
+std::shared_ptr<base_node> base_node::neighbor_at(const std::size_t index) const {
+    return neighbors_.at(index).lock();
+}
+
+const std::vector<std::weak_ptr<base_node>>& base_node::neighbors() const {
+    return neighbors_;
+}
+
+std::optional<directed_edge> base_node::get_edge(const std::size_t index = 0) const {
+    if (index < degree()) {
+        return directed_edge(shared_from_this(), index);
+    }
+    return std::nullopt;
+}
+
+std::optional<directed_edge> base_node::get_edge(const std::shared_ptr<const base_node>& neighbor) const {
+    for (std::size_t i = 0; i < neighbors_.size(); ++i) {
+        if (neighbors_.at(i).lock() == neighbor) {
+            return directed_edge(shared_from_this(), i);
+        }
+    }
+    return std::nullopt;
+}
+
+// ---- directed_edge implementation ----
+
+std::shared_ptr<base_node> directed_edge::to() const {
+    return from->neighbor_at(index);
+}
+
+directed_edge directed_edge::inverse() const {
+    auto edge = to()->get_edge(from);
+
+    if (edge) {
+        return edge.value();
+    }
+
+    throw std::runtime_error("No reciprocal edge found");
+}
+
+directed_edge directed_edge::next_around() const {
+    return { from, (index + 1) % from->degree() };
+}
+
+directed_edge directed_edge::prev_around() const {
+    const std::size_t d = from->degree();
+    return { from, (index - 1 + d) % d };
+}
+
 // ---- dual_fullerene implementation ----
 
 dual_fullerene::dual_fullerene(const std::vector<std::vector<unsigned int>>& adjacency) {
@@ -41,10 +90,10 @@ dual_fullerene::dual_fullerene(const std::vector<std::vector<unsigned int>>& adj
 
         const std::size_t deg = neighs.size();
         if (i < 12 && deg != 5)
-            throw std::invalid_argument("Pentagon node " + std::to_string(i) + " has degree " +
+            throw std::invalid_argument("5-node " + std::to_string(i) + " has degree " +
                 std::to_string(deg) + ", expected 5");
         if (i >= 12 && deg != 6)
-            throw std::invalid_argument("Hexagon node " + std::to_string(i) + " has degree " +
+            throw std::invalid_argument("6-node " + std::to_string(i) + " has degree " +
                 std::to_string(deg) + ", expected 6");
     }
 
