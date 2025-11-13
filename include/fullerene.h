@@ -12,10 +12,10 @@ enum class node_type {
 class base_node;
 
 struct directed_edge {
-    std::shared_ptr<const base_node> from;
+    std::shared_ptr<base_node> from;
     std::size_t index;
 
-    directed_edge(std::shared_ptr<const base_node> from, const std::size_t index) : from(std::move(from)), index(index) {}
+    directed_edge(std::shared_ptr<base_node> from, const std::size_t index) : from(std::move(from)), index(index) {}
 
     [[nodiscard]] std::shared_ptr<base_node> to() const;
     [[nodiscard]] directed_edge inverse() const;
@@ -38,8 +38,8 @@ public:
     [[nodiscard]] std::size_t degree() const;
     [[nodiscard]] std::shared_ptr<base_node> neighbor_at(std::size_t index) const;
     [[nodiscard]] const std::vector<std::weak_ptr<base_node>>& neighbors() const;
-    [[nodiscard]] std::optional<directed_edge> get_edge(std::size_t index) const;
-    [[nodiscard]] std::optional<directed_edge> get_edge(const std::shared_ptr<const base_node>& neighbor) const;
+    [[nodiscard]] std::optional<directed_edge> get_edge(std::size_t index);
+    [[nodiscard]] std::optional<directed_edge> get_edge(const std::shared_ptr<const base_node>& neighbor);
     void add_neighbor(const std::shared_ptr<base_node>& n);
 };
 

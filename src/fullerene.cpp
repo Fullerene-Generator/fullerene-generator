@@ -18,14 +18,14 @@ const std::vector<std::weak_ptr<base_node>>& base_node::neighbors() const {
     return neighbors_;
 }
 
-std::optional<directed_edge> base_node::get_edge(const std::size_t index = 0) const {
+std::optional<directed_edge> base_node::get_edge(const std::size_t index = 0) {
     if (index < degree()) {
         return directed_edge(shared_from_this(), index);
     }
     return std::nullopt;
 }
 
-std::optional<directed_edge> base_node::get_edge(const std::shared_ptr<const base_node>& neighbor) const {
+std::optional<directed_edge> base_node::get_edge(const std::shared_ptr<const base_node>& neighbor) {
     for (std::size_t i = 0; i < neighbors_.size(); ++i) {
         if (neighbors_.at(i).lock() == neighbor) {
             return directed_edge(shared_from_this(), i);
