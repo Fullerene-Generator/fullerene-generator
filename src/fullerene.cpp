@@ -50,13 +50,21 @@ directed_edge directed_edge::inverse() const {
     throw std::runtime_error("No reciprocal edge found");
 }
 
-directed_edge directed_edge::next_around() const {
-    return { from, (index + 1) % from->degree() };
+directed_edge directed_edge::next_around(const unsigned int times) const {
+    return { from, (index + times) % from->degree() };
 }
 
-directed_edge directed_edge::prev_around() const {
+directed_edge directed_edge::prev_around(const unsigned int times) const {
     const std::size_t d = from->degree();
-    return { from, (index - 1 + d) % d };
+    return { from, (index - times + d) % d };
+}
+
+directed_edge directed_edge::left_turn(const unsigned int which) const {
+    return inverse().next_around(which);
+}
+
+directed_edge directed_edge::right_turn(const unsigned int which) const {
+    return inverse().prev_around(which);
 }
 
 // ---- dual_fullerene implementation ----

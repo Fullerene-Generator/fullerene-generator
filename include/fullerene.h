@@ -19,8 +19,10 @@ struct directed_edge {
 
     [[nodiscard]] std::shared_ptr<base_node> to() const;
     [[nodiscard]] directed_edge inverse() const;
-    [[nodiscard]] directed_edge next_around() const;
-    [[nodiscard]] directed_edge prev_around() const;
+    [[nodiscard]] directed_edge next_around(unsigned int times = 1) const;
+    [[nodiscard]] directed_edge prev_around(unsigned int times = 1) const;
+    [[nodiscard]] directed_edge left_turn(unsigned int which = 1) const;
+    [[nodiscard]] directed_edge right_turn(unsigned int which = 1) const;
 };
 
 class base_node : public std::enable_shared_from_this<base_node> {
