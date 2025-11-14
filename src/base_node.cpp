@@ -2,6 +2,7 @@
 
 void base_node::add_neighbor(const std::shared_ptr<base_node>& n) {
     neighbors_.push_back(std::weak_ptr(n));
+    edges_.push_back({});
 }
 
 std::size_t base_node::degree() const {
@@ -16,7 +17,7 @@ const std::vector<std::weak_ptr<base_node>>& base_node::neighbors() const {
     return neighbors_;
 }
 
-std::optional<directed_edge> base_node::get_edge(const std::size_t index = 0) {
+std::optional<directed_edge> base_node::get_edge(const std::size_t index) {
     if (index < degree()) {
         return directed_edge(shared_from_this(), index);
     }
@@ -30,4 +31,14 @@ std::optional<directed_edge> base_node::get_edge(const std::shared_ptr<const bas
         }
     }
     return std::nullopt;
+}
+
+edge_data& base_node::get_edge_data(const std::size_t index) {
+    return edges_.at(index);
+}
+
+void base_node::clear_all_edge_data() {
+    for (int i = 0; i < degree(); i++) {
+        edges_[i] = {};
+    }
 }

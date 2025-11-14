@@ -1,6 +1,7 @@
 ﻿#ifndef DUAL_FULLERENE_H
 #define DUAL_FULLERENE_H
 #include <fullerene/base_node.h>
+#include <fullerene/fullerene.h>
 #include <memory>
 #include <vector>
 
@@ -14,6 +15,9 @@ public:
     [[nodiscard]] const std::vector<std::shared_ptr<node_5>>& get_nodes_5() const noexcept;
     [[nodiscard]] const std::vector<std::shared_ptr<node_6>>& get_nodes_6() const noexcept;
     [[nodiscard]] std::size_t total_nodes() const noexcept { return nodes_5.size() + nodes_6.size(); }
+    [[nodiscard]] fullerene to_primal() const;
+    template<typename F> void for_each_node(F&& f) const;
+    void clear_all_edge_data() const;
 };
 
 #endif //DUAL_FULLERENE_H
