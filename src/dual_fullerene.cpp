@@ -1,13 +1,5 @@
 ﻿#include <fullerene/dual_fullerene.h>
 
-const std::vector<std::shared_ptr<node_5>>& dual_fullerene::get_nodes_5() const noexcept {
-    return nodes_5;
-}
-
-const std::vector<std::shared_ptr<node_6>>& dual_fullerene::get_nodes_6() const noexcept {
-    return nodes_6;
-}
-
 template<typename F>
 void dual_fullerene::for_each_node(F &&f) const {
     for (const auto& node : nodes_5) f(node);
@@ -80,7 +72,7 @@ fullerene dual_fullerene::to_primal() const {
 
     for_each_node([&](const std::shared_ptr<base_node>& node) {
         for (int i = 0; i < node->degree(); i++) {
-            auto edge = node->get_edge(i).value();
+            auto edge = node->get_edge(i);
             if (edge.data().marked) continue;
 
             const auto start_node = edge.from;
@@ -97,7 +89,7 @@ fullerene dual_fullerene::to_primal() const {
 
     for_each_node([&](const std::shared_ptr<base_node>& node) {
         for (int i = 0; i < node->degree(); i++) {
-            auto edge = node->get_edge(i).value();
+            auto edge = node->get_edge(i);
 
             const auto u = edge.data().rhs_face_index;
             const auto v = edge.inverse().data().rhs_face_index;
