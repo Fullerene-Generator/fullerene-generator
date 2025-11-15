@@ -98,11 +98,11 @@ fullerene dual_fullerene::to_primal() const {
         }
     });
 
-    auto outer_face = nodes_5[0];
+    const auto outer_face = nodes_5[0];
     auto outer_face_nodes = std::array<unsigned int, 5>();
 
     for (int i = 0; i < outer_face->degree(); i++) {
-        auto edge = outer_face->get_edge(i).value();
+        auto edge = outer_face->get_edge(i);
         outer_face_nodes[i] = edge.data().rhs_face_index;
     }
 
