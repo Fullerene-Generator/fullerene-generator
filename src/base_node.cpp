@@ -2,6 +2,7 @@
 
 void base_node::add_neighbor(const std::shared_ptr<base_node>& n) {
     neighbors_.push_back(std::weak_ptr(n));
+    edges_.push_back({});
 }
 
 std::size_t base_node::degree() const {
@@ -42,4 +43,14 @@ bool base_node::is_neighbor_of(const std::shared_ptr<base_node> &other) const {
     }
 
     return false;
+}
+
+edge_data& base_node::get_edge_data(const std::size_t index) {
+    return edges_.at(index);
+}
+
+void base_node::clear_all_edge_data() {
+    for (int i = 0; i < degree(); i++) {
+        edges_[i] = {};
+    }
 }

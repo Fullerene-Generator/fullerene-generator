@@ -25,3 +25,7 @@ directed_edge directed_edge::left_turn(const unsigned int which) const {
 directed_edge directed_edge::right_turn(const unsigned int which) const {
     return inverse().prev_around(which);
 }
+
+edge_data &directed_edge::data() const {
+    return from->get_edge_data(index);
+}
