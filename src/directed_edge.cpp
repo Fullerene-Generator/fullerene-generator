@@ -6,13 +6,7 @@ std::shared_ptr<base_node> directed_edge::to() const {
 }
 
 directed_edge directed_edge::inverse() const {
-    auto edge = to()->get_edge(from);
-
-    if (edge) {
-        return edge.value();
-    }
-
-    throw std::runtime_error("No reciprocal edge found");
+    return  to()->get_edge(from);
 }
 
 directed_edge directed_edge::next_around(const unsigned int times) const {

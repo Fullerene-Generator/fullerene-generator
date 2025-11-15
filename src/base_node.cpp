@@ -16,18 +16,30 @@ const std::vector<std::weak_ptr<base_node>>& base_node::neighbors() const {
     return neighbors_;
 }
 
-std::optional<directed_edge> base_node::get_edge(const std::size_t index = 0) {
+directed_edge base_node::get_edge(const std::size_t index = 0) {
     if (index < degree()) {
-        return directed_edge(shared_from_this(), index);
+        return { shared_from_this(), index };
     }
-    return std::nullopt;
+
+    throw std::out_of_range("Node " + std::to_string(id_) + " doesn't have a neighbor with index " + std::to_string(index) );
 }
 
-std::optional<directed_edge> base_node::get_edge(const std::shared_ptr<const base_node>& neighbor) {
+directed_edge base_node::get_edge(const std::shared_ptr<const base_node>& other) {
     for (std::size_t i = 0; i < neighbors_.size(); ++i) {
-        if (neighbors_.at(i).lock() == neighbor) {
-            return directed_edge(shared_from_this(), i);
+        if (neighbors_.at(i).lock() == other) {
+            return { shared_from_this(), i };
         }
     }
-    return std::nullopt;
+
+    throw std::invalid_argument("Node " + std::to_string(other->id()) + " is not a neighbor of node " + std::to_string(id_) );
+}
+
+bool base_node::is_neighbor_of(const std::shared_ptr<base_node> &other) const {
+    for (std::size_t i = 0; i < neighbors_.size(); ++i) {
+        if (neighbors_.at(i).lock() == other) {
+            return true;
+        }
+    }
+
+    return false;
 }
