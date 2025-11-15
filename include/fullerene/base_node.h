@@ -2,7 +2,6 @@
 #define BASE_NODE_H
 #include <fullerene/directed_edge.h>
 #include <memory>
-#include <optional>
 #include <vector>
 
 enum class node_type {
@@ -27,8 +26,9 @@ public:
     [[nodiscard]] std::size_t degree() const;
     [[nodiscard]] std::shared_ptr<base_node> neighbor_at(std::size_t index) const;
     [[nodiscard]] const std::vector<std::weak_ptr<base_node>>& neighbors() const;
-    [[nodiscard]] std::optional<directed_edge> get_edge(std::size_t index = 0);
-    [[nodiscard]] std::optional<directed_edge> get_edge(const std::shared_ptr<const base_node>& neighbor);
+    [[nodiscard]] directed_edge get_edge(std::size_t index);
+    [[nodiscard]] directed_edge get_edge(const std::shared_ptr<const base_node>& other);
+    [[nodiscard]] bool is_neighbor_of(const std::shared_ptr<base_node> &other) const;
     void add_neighbor(const std::shared_ptr<base_node>& n);
     [[nodiscard]] edge_data& get_edge_data(std::size_t index);
     void clear_all_edge_data();

@@ -12,8 +12,8 @@ class dual_fullerene {
 public:
     explicit dual_fullerene(const std::vector<std::vector<unsigned int>>& adjacency);
 
-    [[nodiscard]] const std::vector<std::shared_ptr<node_5>>& get_nodes_5() const noexcept;
-    [[nodiscard]] const std::vector<std::shared_ptr<node_6>>& get_nodes_6() const noexcept;
+    [[nodiscard]] const std::vector<std::shared_ptr<node_5>>& get_nodes_5() const noexcept { return nodes_5; }
+    [[nodiscard]] const std::vector<std::shared_ptr<node_6>>& get_nodes_6() const noexcept { return nodes_6; }
     [[nodiscard]] std::size_t total_nodes() const noexcept { return nodes_5.size() + nodes_6.size(); }
     [[nodiscard]] fullerene to_primal() const;
     template<typename F> void for_each_node(F&& f) const;
