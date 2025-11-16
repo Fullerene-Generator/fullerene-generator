@@ -1,5 +1,10 @@
-﻿#include <fullerene/base_node.h>
-#include <fullerene/dual_fullerene.h>
+﻿#include <fullerene/dual_fullerene.h>
+
+template<typename F>
+void dual_fullerene::for_each_node(F &&f) const {
+    for (const auto& node : nodes_5) f(node);
+    for (const auto& node : nodes_6) f(node);
+}
 
 dual_fullerene::dual_fullerene(const std::vector<std::vector<unsigned int>>& adjacency) {
     const std::size_t n = adjacency.size();
@@ -54,4 +59,60 @@ dual_fullerene::dual_fullerene(const std::vector<std::vector<unsigned int>>& adj
             a->add_neighbor(b);
         }
     }
+}
+
+fullerene dual_fullerene::to_primal() const {
+    const std::size_t V = total_nodes();
+    const std::size_t E = (5 * 12 + 6 * (V - 12)) / 2;
+    const std::size_t F = E - V + 2;
+
+    std::vector<std::array<unsigned int, 3>> adjacency(F);
+    std::vector<unsigned int> counts(F, 0);
+    unsigned int face = 0;
+
+    for_each_node([&](const std::shared_ptr<base_node>& node) {
+        for (int i = 0; i < node->degree(); i++) {
+            auto edge = node->get_edge(i);
+            if (edge.data().marked) continue;
+
+            const auto start_node = edge.from;
+
+            do {
+                edge.data().marked = true;
+                edge.data().rhs_face_index = face;
+                edge = edge.right_turn();
+            } while (edge.from != start_node);
+
+            face++;
+        }
+    });
+
+    for_each_node([&](const std::shared_ptr<base_node>& node) {
+        for (int i = 0; i < node->degree(); i++) {
+            auto edge = node->get_edge(i);
+
+            const auto u = edge.data().rhs_face_index;
+            const auto v = edge.inverse().data().rhs_face_index;
+
+            adjacency[u][counts[u]++] = v;
+        }
+    });
+
+    const auto outer_face = nodes_5[0];
+    auto outer_face_nodes = std::array<unsigned int, 5>();
+
+    for (int i = 0; i < outer_face->degree(); i++) {
+        auto edge = outer_face->get_edge(i);
+        outer_face_nodes[i] = edge.data().rhs_face_index;
+    }
+
+    clear_all_edge_data();
+
+    return std::move(fullerene(adjacency, outer_face_nodes));
+}
+
+void dual_fullerene::clear_all_edge_data() const {
+    for_each_node([](const std::shared_ptr<base_node>& node) {
+        node->clear_all_edge_data();
+    });
 }

@@ -12,10 +12,12 @@ enum class node_type {
 class base_node : public std::enable_shared_from_this<base_node> {
 protected:
     std::vector<std::weak_ptr<base_node>> neighbors_;
+    std::vector<edge_data> edges_;
     unsigned int id_ = 0;
     node_type type_;
 
     explicit base_node(const unsigned int id, const node_type type) : id_(id), type_(type) {}
+
 public:
     virtual ~base_node() = default;
     [[nodiscard]] virtual std::size_t expected_degree() const = 0;
@@ -28,6 +30,8 @@ public:
     [[nodiscard]] directed_edge get_edge(const std::shared_ptr<const base_node>& other);
     [[nodiscard]] bool is_neighbor_of(const std::shared_ptr<base_node> &other) const;
     void add_neighbor(const std::shared_ptr<base_node>& n);
+    [[nodiscard]] edge_data& get_edge_data(std::size_t index);
+    void clear_all_edge_data();
 };
 
 class node_5 final : public base_node {
