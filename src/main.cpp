@@ -1,25 +1,25 @@
 #include <iostream>
+#include <fullerene/construct.h>
 
-// TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+
 int main() {
-    // TIP Press <shortcut actionId="RenameElement"/> when your caret is at the
-    // <b>lang</b> variable name to see how CLion can help you rename it.
-    auto lang = "C++";
-    std::cout << "Hello and welcome to " << lang << "!\n";
+    auto C20 = create_c20_fullerene();
+    std::cout << "Successfully created C20 fullerene" << std::endl;
 
-    for (int i = 1; i <= 5; i++) {
-        // TIP Press <shortcut actionId="Debug"/> to start debugging your code.
-        // We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/>
-        // breakpoint for you, but you can always add more by pressing
-        // <shortcut actionId="ToggleLineBreakpoint"/>.
-        std::cout << "i = " << i << std::endl;
-    }
+    auto C28 = create_c28_fullerene();
+    std::cout << "Successfully created C28 fullerene" << std::endl;
+
+    auto C30 = create_c30_fullerene();
+    std::cout << "Successfully created C30 fullerene" << std::endl;
+
+    auto C20_primal = C20.to_primal();
+    std::cout << "Successfully converted C20 dual to primal" << std::endl;
+
+    auto C28_primal = C28.to_primal();
+    std::cout << "Successfully converted C28 dual to primal" << std::endl;
+
+    auto C30_primal = C30.to_primal();
+    std::cout << "Successfully converted C30 dual to primal" << std::endl;
 
     return 0;
 }
-
-// TIP See CLion help at <a
-// href="https://www.jetbrains.com/help/clion/">jetbrains.com/help/clion/</a>.
-//  Also, you can try interactive lessons for CLion by selecting
-//  'Help | Learn IDE Features' from the main menu.
