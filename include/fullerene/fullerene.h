@@ -3,6 +3,13 @@
 #include <array>
 #include <vector>
 
+#include <cmath>
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
+
 class fullerene {
     std::vector<std::array<unsigned int, 3>> adjacency_;
     std::array<unsigned int, 5> outer_face_nodes_;

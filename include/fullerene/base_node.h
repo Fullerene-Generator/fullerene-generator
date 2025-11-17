@@ -7,7 +7,7 @@
 enum class node_type {
     NODE_5,
     NODE_6,
-  };
+};
 
 class base_node : public std::enable_shared_from_this<base_node> {
 protected:
@@ -28,11 +28,20 @@ public:
     [[nodiscard]] const std::vector<std::weak_ptr<base_node>>& neighbors() const;
     [[nodiscard]] directed_edge get_edge(std::size_t index);
     [[nodiscard]] directed_edge get_edge(const std::shared_ptr<const base_node>& other);
-    [[nodiscard]] bool is_neighbor_of(const std::shared_ptr<base_node> &other) const;
+    [[nodiscard]] bool is_neighbor_of(const std::shared_ptr<base_node>& other) const;
     void add_neighbor(const std::shared_ptr<base_node>& n);
+    void add_neighbour_after(const std::shared_ptr<base_node>& after,
+        const std::shared_ptr<base_node>& new_n);
+    void add_neighbour_before(const std::shared_ptr<base_node>& before,
+        const std::shared_ptr<base_node>& new_n);
+    void remove_neighbor(const std::shared_ptr<base_node>& n);
+    void replace_neighbor(const std::shared_ptr<base_node>& old_n,
+        const std::shared_ptr<base_node>& new_n);
+    void move_neighborhood_from(const std::shared_ptr<base_node>& other);
     [[nodiscard]] edge_data& get_edge_data(std::size_t index);
     void clear_all_edge_data();
 };
+
 
 class node_5 final : public base_node {
     explicit node_5(const unsigned int id) : base_node(id, node_type::NODE_5) {}
