@@ -1,4 +1,5 @@
-﻿#include <fullerene/dual_fullerene.h>
+﻿#include <ranges>
+#include <fullerene/dual_fullerene.h>
 
 template<typename F>
 void dual_fullerene::for_each_node(F &&f) const {
@@ -53,10 +54,10 @@ dual_fullerene::dual_fullerene(const std::vector<std::vector<unsigned int>>& adj
     }
 
     for (std::size_t i = 0; i < n; ++i) {
-        for (const auto j : adjacency[i]) {
+        for (const auto [index, j] : std::ranges::views::enumerate(adjacency[i])) {
             const auto& a = index_to_node[i];
             const auto& b = index_to_node[j];
-            a->add_neighbor(b);
+            a->set_neighbor_at(index, b);
         }
     }
 }

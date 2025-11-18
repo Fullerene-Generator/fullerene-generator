@@ -1,8 +1,12 @@
 ﻿#include <fullerene/base_node.h>
 
-void base_node::add_neighbor(const std::shared_ptr<base_node>& n) {
-    neighbors_.push_back(std::weak_ptr(n));
-    edges_.push_back({});
+void base_node::resize_(const std::size_t neighbors) {
+    neighbors_.resize(neighbors);
+    edges_.resize(neighbors);
+}
+
+void base_node::set_neighbor_at(const std::size_t index, const std::shared_ptr<base_node>& n) {
+    neighbors_[index] = std::weak_ptr(n);
 }
 
 std::size_t base_node::degree() const {
