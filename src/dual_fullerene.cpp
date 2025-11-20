@@ -99,7 +99,7 @@ fullerene dual_fullerene::to_primal() const {
         }
     });
 
-    const auto outer_face = nodes_5[0];
+    const auto outer_face = nodes_5[11];
     auto outer_face_nodes = std::array<unsigned int, 5>();
 
     for (int i = 0; i < outer_face->degree(); i++) {
@@ -116,4 +116,8 @@ void dual_fullerene::clear_all_edge_data() const {
     for_each_node([](const std::shared_ptr<base_node>& node) {
         node->clear_all_edge_data();
     });
+}
+
+void dual_fullerene::add_node(const std::shared_ptr<node_6>& new_node) {
+    nodes_6.push_back(new_node);
 }

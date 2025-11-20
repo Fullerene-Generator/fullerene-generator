@@ -18,6 +18,7 @@ public:
     [[nodiscard]] fullerene to_primal() const;
     template<typename F> void for_each_node(F&& f) const;
     void clear_all_edge_data() const;
+    void add_node(const std::shared_ptr<node_6>& new_node);
 };
 
 #endif //DUAL_FULLERENE_H

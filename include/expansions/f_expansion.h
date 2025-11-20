@@ -5,14 +5,13 @@
 #include <expansions/base_expansion.h>
 #include <fullerene/base_node.h>
 
-class f_expansion : base_expansion {
+class f_expansion final : public base_expansion {
     std::shared_ptr<node_5> v_;
 
 public:
-    explicit f_expansion(std::shared_ptr<node_5> v): v_(std::move(v)) {}
+    explicit f_expansion(dual_fullerene &G,  std::shared_ptr<node_5> v): base_expansion(G), v_(std::move(v)) {}
 
     [[nodiscard]] bool validate() const override;
-
     void apply() const override;
 };
 
