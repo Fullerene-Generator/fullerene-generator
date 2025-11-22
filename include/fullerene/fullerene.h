@@ -19,6 +19,8 @@ public:
     void compute_tutte_embedding();
 
     [[nodiscard]] bool has_2d_embedding() const noexcept { return !embedding_2d_.empty(); }
+    [[nodiscard]] std::string write_data() const noexcept;
+    friend std::ostream &operator<<(std::ostream &os, const fullerene &f);
 };
 
 #endif //FULLERENE_H
