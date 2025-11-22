@@ -1,4 +1,4 @@
-﻿#include <ranges>
+#include <ranges>
 #include <string>
 #include <stdexcept>
 #include <algorithm>
