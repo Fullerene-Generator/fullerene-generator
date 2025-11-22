@@ -4,15 +4,17 @@
 #include <vector>
 
 class fullerene {
+    std::size_t n_;
     std::vector<std::array<unsigned int, 3>> adjacency_;
     std::array<unsigned int, 5> outer_face_nodes_;
     std::vector<std::array<double, 2>> embedding_2d_;
 
 public:
-    explicit fullerene(const std::vector<std::array<unsigned int, 3>>& adjacency,
+    explicit fullerene(const std::size_t n, const std::vector<std::array<unsigned int, 3>>& adjacency,
                         const std::array<unsigned int, 5> &outer_face):
+                        n_(n),
                         adjacency_(adjacency),
-                        outer_face_nodes_(outer_face) {}
+                        outer_face_nodes_(outer_face) { adjacency_.reserve(n_); }
 
     void compute_tutte_embedding();
 
