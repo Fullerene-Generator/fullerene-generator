@@ -1,7 +1,10 @@
-﻿#include <fullerene/dual_fullerene.h>
+﻿#include <ranges>
 #include <string>
 #include <stdexcept>
 #include <algorithm>
+
+#include <fullerene/dual_fullerene.h>
+
 
 template<typename F>
 void dual_fullerene::for_each_node(F&& f) const {
@@ -41,6 +44,7 @@ dual_fullerene::dual_fullerene(const std::vector<std::vector<unsigned int>>& adj
         if (i < 12 && deg != 5)
             throw std::invalid_argument("5-node " + std::to_string(i) + " has degree " +
                 std::to_string(deg) + ", expected 5");
+
         if (i >= 12 && deg != 6)
             throw std::invalid_argument("6-node " + std::to_string(i) + " has degree " +
                 std::to_string(deg) + ", expected 6");
@@ -57,10 +61,10 @@ dual_fullerene::dual_fullerene(const std::vector<std::vector<unsigned int>>& adj
     }
 
     for (std::size_t i = 0; i < n; ++i) {
-        for (const auto j : adjacency[i]) {
+        for (const auto [index, j] : std::ranges::views::enumerate(adjacency[i])) {
             const auto& a = index_to_node[i];
             const auto& b = index_to_node[j];
-            a->add_neighbor(b);
+            a->set_neighbor_at(index, b);
         }
     }
 }
@@ -102,7 +106,7 @@ fullerene dual_fullerene::to_primal() const {
         }
         });
 
-    const auto outer_face = nodes_5[0];
+    const auto outer_face = nodes_5[11];
     auto outer_face_nodes = std::array<unsigned int, 5>();
 
     for (int i = 0; i < static_cast<int>(outer_face->degree()); i++) {
@@ -193,4 +197,8 @@ void dual_fullerene::move_neighbourhood(int from, int to) {
             n->replace_neighbor(from_node, to_node);
         }
     }
+}
+
+void dual_fullerene::add_node(const std::shared_ptr<node_6>& new_node) {
+    nodes_6.push_back(new_node);
 }

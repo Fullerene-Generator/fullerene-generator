@@ -19,13 +19,13 @@ public:
     [[nodiscard]] std::shared_ptr<base_node> get_node(unsigned int id) const;
     template<typename F> void for_each_node(F&& f) const;
     void clear_all_edge_data() const;
-
     int add_vertex(node_type type);
     void add_neighbour_after(int v, int after, int v2);
     void add_neighbour_before(int v, int before, int v2);
     void remove_edge(int v1, int v2);
     void replace_neighbour(int v, int old_n, int new_n);
     void move_neighbourhood(int from, int to);
+    void add_node(const std::shared_ptr<node_6>& new_node);
 };
 
 #endif //DUAL_FULLERENE_H

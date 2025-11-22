@@ -16,7 +16,9 @@ protected:
     unsigned int id_ = 0;
     node_type type_;
 
-    explicit base_node(const unsigned int id, const node_type type) : id_(id), type_(type) {}
+    explicit base_node(const unsigned int id, const node_type type, const std::size_t neighbors) : id_(id), type_(type) { resize_(neighbors); }
+
+    void resize_(std::size_t neighbors);
 
 public:
     virtual ~base_node() = default;
@@ -38,13 +40,14 @@ public:
     void replace_neighbor(const std::shared_ptr<base_node>& old_n,
         const std::shared_ptr<base_node>& new_n);
     void move_neighborhood_from(const std::shared_ptr<base_node>& other);
+    void set_neighbor_at(std::size_t index, const std::shared_ptr<base_node>& n);
     [[nodiscard]] edge_data& get_edge_data(std::size_t index);
     void clear_all_edge_data();
 };
 
 
 class node_5 final : public base_node {
-    explicit node_5(const unsigned int id) : base_node(id, node_type::NODE_5) {}
+    explicit node_5(const unsigned int id) : base_node(id, node_type::NODE_5, 5) {}
 public:
     static std::shared_ptr<node_5> create(const unsigned int id) {
         return std::shared_ptr<node_5>(new node_5(id));
@@ -54,7 +57,7 @@ public:
 };
 
 class node_6 final : public base_node {
-    explicit node_6(const unsigned int id) : base_node(id, node_type::NODE_6) {}
+    explicit node_6(const unsigned int id) : base_node(id, node_type::NODE_6, 6) {}
 public:
     static std::shared_ptr<node_6> create(const unsigned int id) {
         return std::shared_ptr<node_6>(new node_6(id));

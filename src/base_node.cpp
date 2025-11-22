@@ -3,13 +3,24 @@
 #include <string>
 #include <algorithm>
 
+
 void base_node::add_neighbor(const std::shared_ptr<base_node>& n) {
     neighbors_.push_back(std::weak_ptr<base_node>(n));
     edges_.push_back({});
 }
 
+void base_node::resize_(const std::size_t neighbors) {
+    neighbors_.resize(neighbors);
+    edges_.resize(neighbors);
+}
+
+void base_node::set_neighbor_at(const std::size_t index, const std::shared_ptr<base_node>& n) {
+    neighbors_[index] = std::weak_ptr(n);
+}
+
 void base_node::add_neighbour_after(const std::shared_ptr<base_node>& after,
-    const std::shared_ptr<base_node>& new_n) {
+    const std::shared_ptr<base_node>& new_n) 
+{
     auto it = std::find_if(neighbors_.begin(), neighbors_.end(),
         [&](const std::weak_ptr<base_node>& w) {
             auto sp = w.lock();
