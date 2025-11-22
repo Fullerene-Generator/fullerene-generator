@@ -6,7 +6,7 @@ std::shared_ptr<base_node> directed_edge::to() const {
 }
 
 directed_edge directed_edge::inverse() const {
-    return  to()->get_edge(from);
+    return to()->get_edge(from);
 }
 
 directed_edge directed_edge::next_around(const unsigned int times) const {
@@ -29,3 +29,8 @@ directed_edge directed_edge::right_turn(const unsigned int which) const {
 edge_data &directed_edge::data() const {
     return from->get_edge_data(index);
 }
+
+void directed_edge::change_destination(const std::shared_ptr<base_node> &destination) const {
+    from->set_neighbor_at(index, destination);
+}
+

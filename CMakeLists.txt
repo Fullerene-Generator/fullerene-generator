@@ -10,6 +10,7 @@ set(SOURCES src/base_node.cpp
         src/dual_fullerene.cpp
         src/main.cpp
         src/fullerene.cpp
+        src/f_expansion.cpp
 )
 
 add_executable(fullerene_generator ${SOURCES})

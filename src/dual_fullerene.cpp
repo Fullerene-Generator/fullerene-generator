@@ -1,4 +1,5 @@
-﻿#include <fullerene/dual_fullerene.h>
+﻿#include <ranges>
+#include <fullerene/dual_fullerene.h>
 
 template<typename F>
 void dual_fullerene::for_each_node(F &&f) const {
@@ -53,10 +54,10 @@ dual_fullerene::dual_fullerene(const std::vector<std::vector<unsigned int>>& adj
     }
 
     for (std::size_t i = 0; i < n; ++i) {
-        for (const auto j : adjacency[i]) {
+        for (const auto [index, j] : std::ranges::views::enumerate(adjacency[i])) {
             const auto& a = index_to_node[i];
             const auto& b = index_to_node[j];
-            a->add_neighbor(b);
+            a->set_neighbor_at(index, b);
         }
     }
 }
@@ -98,7 +99,7 @@ fullerene dual_fullerene::to_primal() const {
         }
     });
 
-    const auto outer_face = nodes_5[0];
+    const auto outer_face = nodes_5[11];
     auto outer_face_nodes = std::array<unsigned int, 5>();
 
     for (int i = 0; i < outer_face->degree(); i++) {
@@ -115,4 +116,8 @@ void dual_fullerene::clear_all_edge_data() const {
     for_each_node([](const std::shared_ptr<base_node>& node) {
         node->clear_all_edge_data();
     });
+}
+
+void dual_fullerene::add_node(const std::shared_ptr<node_6>& new_node) {
+    nodes_6.push_back(new_node);
 }
