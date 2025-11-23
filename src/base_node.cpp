@@ -33,7 +33,7 @@ void base_node::add_neighbour_after(const std::shared_ptr<base_node>& after,
 
     const auto idx = static_cast<std::size_t>(std::distance(neighbors_.begin(), it));
     neighbors_.insert(it + 1, std::weak_ptr<base_node>(new_n));
-    edges_.insert(edges_.begin() + static_cast<std::ptrdiff_t>(idx + 1), {});
+    edges_.push_back({});
 }
 
 void base_node::add_neighbour_before(const std::shared_ptr<base_node>& before,
@@ -50,7 +50,7 @@ void base_node::add_neighbour_before(const std::shared_ptr<base_node>& before,
 
     const auto idx = static_cast<std::size_t>(std::distance(neighbors_.begin(), it));
     neighbors_.insert(it, std::weak_ptr<base_node>(new_n));
-    edges_.insert(edges_.begin() + static_cast<std::ptrdiff_t>(idx), {});
+    edges_.push_back({});
 }
 
 void base_node::remove_neighbor(const std::shared_ptr<base_node>& n) {
@@ -85,10 +85,8 @@ void base_node::replace_neighbor(const std::shared_ptr<base_node>& old_n,
 }
 
 void base_node::move_neighborhood_from(const std::shared_ptr<base_node>& other) {
-    neighbors_ = other->neighbors_;
-    edges_ = other->edges_;
-    other->neighbors_.clear();
-    other->edges_.clear();
+    neighbors_ = std::move(other->neighbors_);
+    edges_ = std::move(other->edges_);
 }
 
 std::size_t base_node::degree() const {
