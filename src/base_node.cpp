@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <string>
 #include <algorithm>
+#include <iostream>
 
 
 void base_node::add_neighbor(const std::shared_ptr<base_node>& n) {
@@ -21,17 +22,29 @@ void base_node::set_neighbor_at(const std::size_t index, const std::shared_ptr<b
 void base_node::add_neighbour_after(const std::shared_ptr<base_node>& after,
     const std::shared_ptr<base_node>& new_n) 
 {
+    if (id() == 12) {
+        std::cout << "addin for new fucking node\n";
+    }
     auto it = std::find_if(neighbors_.begin(), neighbors_.end(),
         [&](const std::weak_ptr<base_node>& w) {
             auto sp = w.lock();
             return sp && sp == after;
         });
+    
+    if (id() == 12) {
+        std::cout << "found after neighbor at "<< std::distance(neighbors_.begin(), it) <<'\n';
+    }
 
     if (it == neighbors_.end())
         throw std::invalid_argument("Node " + std::to_string(after->id()) +
             " is not a neighbor of node " + std::to_string(id_));
 
     const auto idx = static_cast<std::size_t>(std::distance(neighbors_.begin(), it));
+    if (id() == 12) {
+        std::cout << "idx: " << idx << '\n';
+        std::cout << "degree: " << degree() << '\n';
+
+    }
     neighbors_.insert(it + 1, std::weak_ptr<base_node>(new_n));
     edges_.insert(edges_.begin() + static_cast<std::ptrdiff_t>(idx + 1), {});
 }
@@ -134,6 +147,7 @@ bool base_node::is_neighbor_of(const std::shared_ptr<base_node>& other) const {
 }
 
 edge_data& base_node::get_edge_data(const std::size_t index) {
+    std::cout << "node: " << id() << " len of edges: " << edges_.size() << "degree: "<<degree()<< '\n';
     return edges_.at(index);
 }
 

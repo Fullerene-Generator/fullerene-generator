@@ -2,7 +2,7 @@
 #define FULLERENE_H
 #include <array>
 #include <vector>
-
+#include <string>
 #include <cmath>
 
 #ifndef M_PI
@@ -22,6 +22,8 @@ public:
                         outer_face_nodes_(outer_face) {}
 
     void compute_tutte_embedding();
+
+    void write_graphviz(const std::string& filename, bool use_embedding) const;
 
     [[nodiscard]] bool has_2d_embedding() const noexcept { return !embedding_2d_.empty(); }
 };

@@ -1,5 +1,5 @@
 #include "expansions/l_expansion.h"
-
+#include <iostream>
 
 void build_L0_rails(const dual_fullerene& G,
     const directed_edge& e0,
@@ -70,8 +70,11 @@ void L0_expansion::apply() const
     auto h1_node = G_.get_node(h1);
     auto h2_node = G_.get_node(h2);
 
+    auto chuj = h1_node->get_edge_data(1);
+
     if (c.use_next) {
         G_.add_neighbour_after(h1, u1, u0);
+        auto chuj = h1_node->get_edge_data(1);
         G_.add_neighbour_after(h2, w1, w2);
 
         u0_node->add_neighbor(u1_node);
@@ -88,6 +91,7 @@ void L0_expansion::apply() const
     }
     else {
         G_.add_neighbour_before(h1, u1, u0);
+        auto chuj = h1_node->get_edge_data(1);
         G_.add_neighbour_before(h2, w1, w2);
 
         u0_node->add_neighbor(h1_node);

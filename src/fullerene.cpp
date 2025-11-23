@@ -3,7 +3,7 @@
 
 #include <utility>
 #include <algorithm>
-
+#include <fstream>
 
 void fullerene::compute_tutte_embedding() {
     const auto n = static_cast<long long>(adjacency_.size());
@@ -51,3 +51,32 @@ void fullerene::compute_tutte_embedding() {
     }
 }
 
+
+void fullerene::write_graphviz(const std::string& filename, bool use_embedding) const {
+    std::ofstream out(filename);
+    out << "graph fullerene {\n";
+    out << "  node [shape=point, width=0.001];\n";
+    out << "  edge [penwidth=0.1]\n";
+
+    // If coordinates exist, embed them into the DOT as pos="x,y!"
+    if (use_embedding) {
+        for (unsigned int v = 0; v < embedding_2d_.size(); v++) {
+            out << "  " << v
+                << " [pos=\"" << embedding_2d_[v][0] << "," << embedding_2d_[v][1] << "!\"];\n";
+        }
+    }
+
+    // Undirected edges (triangulated fullerene)
+    for (unsigned int v = 0; v < adjacency_.size(); v++) {
+        for (auto u : adjacency_[v]) {
+            if (u > v)  // avoid duplicates
+                out << "  " << v << " -- " << u << ";\n";
+        }
+    }
+
+    // Tell graphviz we provided exact positions
+    if (use_embedding)
+        out << "  graph [layout=neato];\n";
+
+    out << "}\n";
+}

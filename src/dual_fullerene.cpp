@@ -2,7 +2,7 @@
 #include <string>
 #include <stdexcept>
 #include <algorithm>
-
+#include <iostream>
 #include <fullerene/dual_fullerene.h>
 
 
@@ -79,16 +79,22 @@ fullerene dual_fullerene::to_primal() const {
     unsigned int face = 0;
 
     for_each_node([&](const std::shared_ptr<base_node>& node) {
+        std::cout << "node: " << node->id() << " degree: " << node->degree() << '\n';
         for (int i = 0; i < static_cast<int>(node->degree()); i++) {
             auto edge = node->get_edge(static_cast<std::size_t>(i));
+            std::cout<<"here, edge from: "<< edge.from->id() << " to: " << edge.to()->id()<< " index: " << edge.index << '\n';
             if (edge.data().marked) continue;
-
+            std::cout << "here1\n";
             const auto start_node = edge.from;
 
             do {
+                std::cout << "here3\n";
                 edge.data().marked = true;
+                std::cout << "here2\n";
                 edge.data().rhs_face_index = face;
+                std::cout << "here2\n";
                 edge = edge.right_turn();
+                std::cout << "here2, edge: "<< edge.from->id()<<" toL "<<edge.to()->id() << " index: "<<edge.index<< '\n';
             } while (edge.from != start_node);
 
             face++;
@@ -185,6 +191,8 @@ void dual_fullerene::replace_neighbour(int v, int old_n, int new_n) {
     auto new_node = get_node(static_cast<unsigned int>(new_n));
     v_node->replace_neighbor(old_node, new_node);
 }
+
+
 
 void dual_fullerene::move_neighbourhood(int from, int to) {
     auto from_node = get_node(static_cast<unsigned int>(from));
