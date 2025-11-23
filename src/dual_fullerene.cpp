@@ -109,7 +109,7 @@ fullerene dual_fullerene::to_primal() const {
 
     clear_all_edge_data();
 
-    return std::move(fullerene(total_nodes(), adjacency, outer_face_nodes));
+    return std::move(fullerene(F, adjacency, outer_face_nodes));
 }
 
 void dual_fullerene::clear_all_edge_data() const {
