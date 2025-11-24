@@ -1,4 +1,6 @@
-﻿#include <fullerene/fullerene.h>
+﻿#include <fstream>
+#include <ranges>
+#include <fullerene/fullerene.h>
 #include <Eigen/Dense>
 
 void fullerene::compute_tutte_embedding() {
@@ -45,4 +47,31 @@ void fullerene::compute_tutte_embedding() {
         embedding_2d_[v][0] = x(v);
         embedding_2d_[v][1] = y(v);
     }
+}
+
+std::string fullerene::write_data() const noexcept {
+    std::stringstream ss;
+
+    ss << n_ << '\n'; // number of nodes
+
+    for (auto [u, neighbors] : std::views::enumerate(adjacency_)) { // edges between nodes
+        for (const auto v : neighbors) {
+            if (u < v) {
+                ss << u << ' ' << v << '\n';
+            }
+        }
+    }
+
+    if (has_2d_embedding()) {
+        for (auto v : embedding_2d_) { // node coordinates
+            ss << v[0] << ' ' << v[1] << '\n';
+        }
+    }
+
+    return ss.str();
+}
+
+std::ostream & operator<<(std::ostream &os, const fullerene &f) {
+    os << f.write_data();
+    return os;
 }
