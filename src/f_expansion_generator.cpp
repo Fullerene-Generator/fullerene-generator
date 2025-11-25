@@ -3,7 +3,7 @@
 #include <fullerene/construct.h>
 #include <generator/f_expansion_generator.h>
 
-constexpr size_t C30_SIZE = 20;
+constexpr size_t C30_SIZE = 30;
 constexpr size_t F_EXPANSION_SIZE_INCREMENT = 10;
 
 void f_expansion_generator::generate(std::size_t up_to) {
