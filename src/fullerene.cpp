@@ -1,8 +1,6 @@
 ﻿#include <fullerene/fullerene.h>
 #include <Eigen/Dense>
 
-#include <utility>
-#include <algorithm>
 
 
 void fullerene::compute_tutte_embedding() {
