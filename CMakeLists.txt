@@ -10,6 +10,7 @@ set(SOURCES src/base_node.cpp
         src/dual_fullerene.cpp
         src/main.cpp
         src/fullerene.cpp
+        src/l_expansion.cpp
         src/f_expansion.cpp
         src/f_expansion_generator.cpp
 )

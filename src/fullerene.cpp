@@ -3,6 +3,8 @@
 #include <fullerene/fullerene.h>
 #include <Eigen/Dense>
 
+
+
 void fullerene::compute_tutte_embedding() {
     const auto n = static_cast<long long>(adjacency_.size());
     embedding_2d_.resize(n, { std::numeric_limits<double>::max(), std::numeric_limits<double>::max() });
