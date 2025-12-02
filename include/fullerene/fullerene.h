@@ -16,6 +16,8 @@ class fullerene {
     std::array<unsigned int, 5> outer_face_nodes_;
     std::vector<std::array<double, 2>> embedding_2d_;
 
+    void scale_embedding(double f);
+
 public:
     explicit fullerene(const std::size_t n, const std::vector<std::array<unsigned int, 3>>& adjacency,
                         const std::array<unsigned int, 5> &outer_face):
