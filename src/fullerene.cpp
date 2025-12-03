@@ -3,7 +3,21 @@
 #include <fullerene/fullerene.h>
 #include <Eigen/Dense>
 
+constexpr double SCALING_EXPONENT = 0.3;
 
+void fullerene::scale_embedding(double f) {
+    if (!has_2d_embedding()) throw std::runtime_error("Fullerene does not have a 2D embedding");
+
+    for (std::size_t i = 0; i < embedding_2d_.size(); ++i) {
+        const double x = embedding_2d_[i][0];
+        const double y = embedding_2d_[i][1];
+        const double r = std::hypot(x, y);
+
+        const double scale = std::pow(r, f - 1.0);
+        embedding_2d_[i][0] = x * scale;
+        embedding_2d_[i][1] = y * scale;
+    }
+}
 
 void fullerene::compute_tutte_embedding() {
     const auto n = static_cast<long long>(adjacency_.size());
@@ -49,6 +63,8 @@ void fullerene::compute_tutte_embedding() {
         embedding_2d_[v][0] = x(v);
         embedding_2d_[v][1] = y(v);
     }
+
+    scale_embedding(SCALING_EXPONENT);
 }
 
 std::string fullerene::write_data() const noexcept {
