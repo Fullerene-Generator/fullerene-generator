@@ -1,28 +1,35 @@
 cmake_minimum_required(VERSION 3.30)
-project(fullerene_generator)
+project(fullerene_generator CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 
 add_subdirectory(vendor/eigen)
 
-set(SOURCES src/base_node.cpp
+set(FULLERENE_SOURCES
+        src/base_node.cpp
         src/directed_edge.cpp
         src/dual_fullerene.cpp
-        src/main.cpp
         src/fullerene.cpp
         src/l_expansion.cpp
         src/f_expansion.cpp
         src/f_expansion_generator.cpp
 )
 
-add_executable(fullerene_generator ${SOURCES})
+add_library(fullerene_lib STATIC ${FULLERENE_SOURCES})
 
-target_include_directories(${PROJECT_NAME}
-    PRIVATE
+target_include_directories(fullerene_lib
+        PUBLIC
         ${PROJECT_SOURCE_DIR}/include
 )
 
+target_link_libraries(fullerene_lib
+        PUBLIC
+        Eigen3::Eigen
+)
+
+add_executable(fullerene_generator src/main.cpp)
+
 target_link_libraries(fullerene_generator
         PRIVATE
-        Eigen3::Eigen
+        fullerene_lib
 )
