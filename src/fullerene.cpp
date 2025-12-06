@@ -54,7 +54,7 @@ void fullerene::compute_tutte_embedding() {
 std::string fullerene::write_data() const noexcept {
     std::stringstream ss;
 
-    ss << n_ << '\n'; // number of nodes
+    ss << adjacency_.size() << '\n'; // number of nodes
 
     for (auto [u, neighbors] : std::views::enumerate(adjacency_)) { // edges between nodes
         for (const auto v : neighbors) {
