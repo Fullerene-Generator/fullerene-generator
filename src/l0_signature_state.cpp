@@ -17,7 +17,6 @@ L0SignatureState::L0SignatureState(const dual_fullerene& G, const L0Candidate& c
     bfs_order_.reserve(n);
     base_edges_.reserve(3*n);
 
-    signature_.push_back(c.use_next ? 1 : 0);
 
     unsigned int from_id = c.start.from->id();
     unsigned int to_id = c.start.to()->id();
