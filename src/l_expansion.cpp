@@ -1,5 +1,5 @@
 #include "expansions/l_expansion.h"
-#include <expansions/l0_signature_state.h>
+#include <expansions/l_signature_state.h>
 #include <queue>
 
 void build_L_rails(const dual_fullerene& G,
@@ -28,7 +28,7 @@ std::vector<LCandidate> find_L_candidates(const dual_fullerene& G, int x)
 
     for (auto node : G.get_nodes_5()) {
         for (int i = 0; i < node->degree(); ++i) {
-            directed_edge e{ node, i };
+            directed_edge e{ node, static_cast<std::size_t>(i) };
 
             for (bool use_next : { true, false }) {
                 std::vector<int> P, Q;
@@ -169,17 +169,17 @@ void L_expansion::apply() const
 }
 
 std::vector<std::unique_ptr<base_expansion>>
-find_L0_expansions(dual_fullerene& G)
+find_L_expansions(dual_fullerene& G, int i)
 {
     std::vector<std::unique_ptr<base_expansion>> out;
 
-    const auto candidates = find_L_candidates(G,0);
+    const auto candidates = find_L_candidates(G,i);
     std::size_t n = candidates.size();
     if (n == 0) {
         return out;
     }
 
-    std::vector<L0SignatureState> states;
+    std::vector<LSignatureState> states;
     states.reserve(n);
     for (const auto& c : candidates) {
         states.emplace_back(G, c);

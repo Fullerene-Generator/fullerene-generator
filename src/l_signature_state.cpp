@@ -1,6 +1,6 @@
-#include <expansions/l0_signature_state.h>
+#include <expansions/l_signature_state.h>
 
-L0SignatureState::L0SignatureState(const dual_fullerene& G, const L0Candidate& c)
+LSignatureState::LSignatureState(const dual_fullerene& G, const LCandidate& c)
     : graph_(&G),
     candidate_(&c),
     bfs_front_(0),
@@ -33,7 +33,7 @@ L0SignatureState::L0SignatureState(const dual_fullerene& G, const L0Candidate& c
     signature_.push_back(1);
 }
 
-void L0SignatureState::extend_step() {
+void LSignatureState::extend_step() {
     if (finished_) {
         return;
     }
@@ -76,10 +76,10 @@ void L0SignatureState::extend_step() {
     }
 }
 
-bool L0SignatureState::finished() const {
+bool LSignatureState::finished() const {
     return finished_;
 }
 
-const std::vector<int>& L0SignatureState::signature() const {
+const std::vector<int>& LSignatureState::signature() const {
     return signature_;
 }
