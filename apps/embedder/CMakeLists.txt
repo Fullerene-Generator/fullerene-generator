@@ -1,2 +1,2 @@
-add_executable(tutte_embedder main.cpp)
-target_link_libraries(tutte_embedder PRIVATE embedding_lib)
+add_executable(embedder main.cpp)
+target_link_libraries(embedder PRIVATE embedding_lib)
