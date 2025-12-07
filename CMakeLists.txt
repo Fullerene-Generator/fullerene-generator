@@ -6,13 +6,13 @@ set(CMAKE_CXX_STANDARD 23)
 add_subdirectory(vendor/eigen)
 
 set(FULLERENE_SOURCES
-        src/base_node.cpp
-        src/directed_edge.cpp
-        src/dual_fullerene.cpp
-        src/fullerene.cpp
-        src/l_expansion.cpp
-        src/f_expansion.cpp
-        src/f_expansion_generator.cpp
+        src/fullerene/base_node.cpp
+        src/fullerene/directed_edge.cpp
+        src/fullerene/dual_fullerene.cpp
+        src/fullerene/fullerene.cpp
+        src/expansions/l_expansion.cpp
+        src/expansions/f_expansion.cpp
+        src/generators/f_expansion_generator.cpp
 )
 
 add_library(fullerene_lib STATIC ${FULLERENE_SOURCES})

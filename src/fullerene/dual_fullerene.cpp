@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <algorithm>
 
-#include <fullerene/dual_fullerene.h>
+#include "fullerene/dual_fullerene.h"
 
 
 template<typename F>

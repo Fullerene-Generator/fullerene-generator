@@ -1,4 +1,4 @@
-﻿#include<expansions/f_expansion.h>
+﻿#include"expansions/f_expansion.h"
 
 bool f_expansion::validate() const {
     for (const auto& u : v_->neighbors()) {

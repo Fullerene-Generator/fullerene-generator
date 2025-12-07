@@ -1,7 +1,7 @@
 ﻿#include <iostream>
-#include <expansions/f_expansion.h>
-#include <fullerene/construct.h>
-#include <generator/f_expansion_generator.h>
+#include "expansions/f_expansion.h"
+#include "fullerene/construct.h"
+#include "generators/f_expansion_generator.h"
 
 constexpr size_t C30_SIZE = 30;
 constexpr size_t F_EXPANSION_SIZE_INCREMENT = 10;
