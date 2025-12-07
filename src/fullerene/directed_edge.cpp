@@ -1,5 +1,5 @@
-﻿#include <fullerene/base_node.h>
-#include <fullerene/directed_edge.h>
+﻿#include "fullerene/base_node.h"
+#include "fullerene/directed_edge.h"
 
 std::shared_ptr<base_node> directed_edge::to() const {
     return from->neighbor_at(index);

@@ -1,6 +1,6 @@
 ﻿#ifndef F_EXPANSION_GENERATOR_H
 #define F_EXPANSION_GENERATOR_H
-#include <generator/base_generator.h>
+#include <generators/base_generator.h>
 
 class f_expansion_generator final : base_generator {
 public:

@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <algorithm>
 
-#include <fullerene/dual_fullerene.h>
+#include "fullerene/dual_fullerene.h"
 
 
 template<typename F>
@@ -116,7 +116,7 @@ fullerene dual_fullerene::to_primal() const {
 
     clear_all_edge_data();
 
-    return std::move(fullerene(F, adjacency, outer_face_nodes));
+    return std::move(fullerene(adjacency, outer_face_nodes));
 }
 
 std::shared_ptr<base_node> dual_fullerene::get_node(unsigned int id) const {
