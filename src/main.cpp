@@ -1,4 +1,3 @@
-#include <cstdlib>
 #include <generators/f_expansion_generator.h>
 #include <iostream>
 
@@ -12,5 +11,5 @@ int main(int argc, char** argv) {
     size_t max_size = std::stoul(argv[1]);
 
     auto generator = f_expansion_generator();
-   generator.generate(max_size);
+    generator.generate(max_size);
 }
