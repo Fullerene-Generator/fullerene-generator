@@ -2,7 +2,7 @@
 #define FULLERENE_H
 #include <array>
 #include <vector>
-
+#include <string>
 #include <cmath>
 
 #ifndef M_PI
