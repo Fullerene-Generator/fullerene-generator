@@ -51,29 +51,64 @@ void fullerene::compute_tutte_embedding() {
     }
 }
 
-std::string fullerene::write_data() const noexcept {
-    std::stringstream ss;
+std::string fullerene::write_graph() const noexcept {
+    std::ostringstream ss;
 
-    ss << adjacency_.size() << '\n'; // number of nodes
+    // fullerene size
+    ss << adjacency_.size() << "\n";
 
-    for (auto [u, neighbors] : std::views::enumerate(adjacency_)) { // edges between nodes
-        for (const auto v : neighbors) {
-            if (u < v) {
-                ss << u << ' ' << v << '\n';
-            }
-        }
+    // nodes of the outer face
+    for (unsigned v : outer_face_nodes_) {
+        ss << v << ' ';
     }
+    ss << "\n";
 
-    if (has_2d_embedding()) {
-        for (auto v : embedding_2d_) { // node coordinates
-            ss << v[0] << ' ' << v[1] << '\n';
-        }
+    // adjacency of vertices
+    for (auto const& adj : adjacency_) {
+        ss << adj[0] << " " << adj[1] << " " << adj[2] << "\n";
     }
 
     return ss.str();
 }
 
+std::string fullerene::write_embedding() const noexcept {
+    std::stringstream ss;
+
+    // vertex coordinates
+    for (const auto& coords : embedding_2d_) {
+        ss << coords[0] << ' ' << coords[1] << '\n';
+    }
+
+    return ss.str();
+}
+
+std::string fullerene::write_all() const noexcept {
+    std::stringstream ss;
+
+    ss << write_graph();
+    if (has_2d_embedding()) ss << write_embedding();
+
+    return ss.str();
+}
+
+fullerene fullerene::read_graph(std::istream& is) {
+    std::size_t n;
+    is >> n;
+
+    std::array<unsigned,5> outer{};
+    for (int i = 0; i < 5; i++) {
+        is >> outer[i];
+    }
+
+    std::vector<std::array<unsigned,3>> adj(n);
+    for (std::size_t i = 0; i < n; i++) {
+        is >> adj[i][0] >> adj[i][1] >> adj[i][2];
+    }
+
+    return fullerene(adj, outer);
+}
+
 std::ostream & operator<<(std::ostream &os, const fullerene &f) {
-    os << f.write_data();
+    os << f.write_all();
     return os;
 }

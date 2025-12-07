@@ -24,7 +24,10 @@ public:
     void compute_tutte_embedding();
 
     [[nodiscard]] bool has_2d_embedding() const noexcept { return !embedding_2d_.empty(); }
-    [[nodiscard]] std::string write_data() const noexcept;
+    [[nodiscard]] std::string write_graph() const noexcept;
+    [[nodiscard]] std::string write_embedding() const noexcept;
+    [[nodiscard]] std::string write_all() const noexcept;
+    static fullerene read_graph(std::istream& is);
     friend std::ostream &operator<<(std::ostream &os, const fullerene &f);
 };
 
