@@ -22,14 +22,28 @@ target_include_directories(fullerene_lib
         ${PROJECT_SOURCE_DIR}/include
 )
 
-target_link_libraries(fullerene_lib
-        PUBLIC
-        Eigen3::Eigen
-)
-
-add_executable(fullerene_generator src/main.cpp)
+add_executable(fullerene_generator apps/generator/main.cpp)
 
 target_link_libraries(fullerene_generator
         PRIVATE
         fullerene_lib
+)
+
+set(EMBEDDER_SOURCES
+        src/embeddings/embedder.cpp
+)
+
+add_executable(tutte_embedder
+        apps/embedder/main.cpp
+        ${EMBEDDER_SOURCES}
+)
+
+target_include_directories(tutte_embedder
+        PRIVATE
+        ${PROJECT_SOURCE_DIR}/include
+)
+
+target_link_libraries(tutte_embedder
+        PRIVATE
+        Eigen3::Eigen
 )
