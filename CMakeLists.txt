@@ -30,7 +30,7 @@ target_link_libraries(fullerene_generator
 
 
 
-add_executable(test_l0
+add_executable(test_l
     src/base_node.cpp
     src/directed_edge.cpp
     src/dual_fullerene.cpp
@@ -39,13 +39,13 @@ add_executable(test_l0
     src/f_expansion.cpp
     src/f_expansion_generator.cpp
     src/l_signature_state.cpp
-    tests/test_l0.cpp
+    tests/test_l.cpp
 )
 
-target_include_directories(test_l0 PRIVATE
+target_include_directories(test_l PRIVATE
     ${PROJECT_SOURCE_DIR}/include
 )
 
-target_link_libraries(test_l0 PRIVATE
+target_link_libraries(test_l PRIVATE
     Eigen3::Eigen
 )

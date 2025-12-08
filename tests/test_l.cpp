@@ -26,6 +26,8 @@ struct SignatureLess {
 static bool is_valid_dual_fullerene(const dual_fullerene& G) {
     bool ok = true;
 
+    assert(G.get_nodes_5().size()==12);
+
     G.for_each_node([&](const std::shared_ptr<base_node>& node) {
         // degree must match expected 5 or 6
         if (node->degree() != node->expected_degree()) {
