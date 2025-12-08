@@ -13,7 +13,7 @@ set(SOURCES src/base_node.cpp
         src/l_expansion.cpp
         src/f_expansion.cpp
         src/f_expansion_generator.cpp
-        "src/l_signature_state.cpp"
+        src/l_signature_state.cpp
 )
 
 add_executable(fullerene_generator ${SOURCES})
@@ -38,7 +38,7 @@ add_executable(test_l0
     src/l_expansion.cpp
     src/f_expansion.cpp
     src/f_expansion_generator.cpp
-    "src/l_signature_state.cpp"
+    src/l_signature_state.cpp
     tests/test_l0.cpp
 )
 

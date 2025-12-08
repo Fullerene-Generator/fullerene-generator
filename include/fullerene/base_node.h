@@ -43,6 +43,8 @@ public:
     void set_neighbor_at(std::size_t index, const std::shared_ptr<base_node>& n);
     [[nodiscard]] edge_data& get_edge_data(std::size_t index);
     void clear_all_edge_data();
+    void clear_neighbors();
+    void print_neighbors();
 };
 
 

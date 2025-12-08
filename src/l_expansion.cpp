@@ -1,6 +1,7 @@
 #include "expansions/l_expansion.h"
 #include <expansions/l_signature_state.h>
 #include <queue>
+#include <iostream>
 
 void build_L_rails(const dual_fullerene& G,
     const directed_edge& e0,
@@ -57,16 +58,28 @@ void L_expansion::apply() const
     const int w0 = c.para[0];
     const int w1 = c.para[1];
 
+    std::cout << "printing path\n";
+    for (int g = 0; g < i + 3; g++) {
+        std::cout << c.path[g] << '\n';
+    }
+
+    std::cout << "printing para\n";
+    for (int g = 0; g < i + 3; g++) {
+        std::cout << c.para[g] << '\n';
+    }
+
     //first hexagon outside
     const int h1 = G_.add_vertex(node_type::NODE_6);
-
+    auto h1_node = G_.get_node(h1);
+    std::cout << "h1 degree: " << h1_node->degree() << '\n';
+    
     G_.move_neighbourhood(u0, h1);
 
     auto u0_node = G_.get_node(u0);;
     auto u1_node = G_.get_node(u1);
     auto w0_node = G_.get_node(w0);
     auto w1_node = G_.get_node(w1);
-    auto h1_node = G_.get_node(h1);
+    
 
     if (c.use_next) {
         G_.add_neighbour_after(h1, u1, u0);
@@ -102,7 +115,12 @@ void L_expansion::apply() const
         auto w_second_node = G_.get_node(w_second);
         auto corridor_node = G_.get_node(corridor_v);
         auto h_node = G_.get_node(h);
+        h_node->clear_neighbors();
 
+        std::cout << "corridor v: " << corridor_node->id() << " degree: " << corridor_node->degree();
+        std::cout << "\nhex: " << h_node->id() << " degree: " << h_node->degree() << '\n';
+        corridor_node->print_neighbors();
+        h_node->print_neighbors();
         if (c.use_next) {
             G_.add_neighbour_after(corridor_v, u_first, h);
             h_node->add_neighbor(w_first_node);
@@ -119,11 +137,19 @@ void L_expansion::apply() const
             h_node->add_neighbor(corridor_node);
             h_node->add_neighbor(w_first_node);
         }
+        
+        std::cout << "corridor v: " << corridor_node->id() << " degree: " << corridor_node->degree();
+        corridor_node->print_neighbors();
+        std::cout << "\nhex: " << h_node->id() << " degree: " << h_node->degree() << '\n';
+        h_node->print_neighbors();
         G_.replace_neighbour(u_first, w_first, h);
         G_.replace_neighbour(w_first, u_second, h);
         G_.replace_neighbour(u_second, w_first, h);
         G_.replace_neighbour(w_second, u_second, h);
-
+        std::cout << "\ncorridor v: " << corridor_node->id() << " degree: " << corridor_node->degree();
+        std::cout << "\nhex: " << h_node->id() << " degree: " << h_node->degree() << '\n';
+        corridor_node->print_neighbors();
+        h_node->print_neighbors();
         corridor_v = h;
 
     }
@@ -141,9 +167,14 @@ void L_expansion::apply() const
     auto corridor_node = G_.get_node(corridor_v);
 
     G_.move_neighbourhood(w_second, h2);
+    std::cout << "chuj\n";
+    std::cout << "w second: " << w_second_node->id() << " degree: " << w_second_node->degree();
+    std::cout << "\n h2: " << h2_node->id() <<" degree: " << h2_node->degree() << '\n';
+    w_second_node->print_neighbors();
+    h2_node->print_neighbors();
 
     if (c.use_next) {
-        G_.add_neighbour_after(corridor_v, u_first, h2);
+        G_.add_neighbour_after(corridor_v, u_first, w_second);
         G_.add_neighbour_after(h2, w_first, w_second);
         w_second_node->add_neighbor(w_first_node);
         w_second_node->add_neighbor(corridor_node);
@@ -152,7 +183,7 @@ void L_expansion::apply() const
         w_second_node->add_neighbor(h2_node);
     }
     else {
-        G_.add_neighbour_before(corridor_v, u_first, h2);
+        G_.add_neighbour_before(corridor_v, u_first, w_second);
         G_.add_neighbour_before(h2, w_first, w_second);
         w_second_node->add_neighbor(h2_node);
         w_second_node->add_neighbor(u_second_node);
@@ -160,11 +191,17 @@ void L_expansion::apply() const
         w_second_node->add_neighbor(corridor_node);
         w_second_node->add_neighbor(w_first_node);
     }
+    std::cout << "chuj2\n";
+    std::cout << "\n h2: " << h2_node->id() << " degree: " << h2_node->degree() << '\n';
 
     G_.replace_neighbour(u_first, w_first, w_second);
     G_.replace_neighbour(u_second, w_first, w_second);
     G_.replace_neighbour(w_first, u_second, w_second);
-
+    std::cout << "chuj3\n";
+    corridor_node->print_neighbors();
+    std::cout << "\n h2: " << h2_node->id() << " degree: " << h2_node->degree() << '\n';
+    w_second_node->print_neighbors();
+    h2_node->print_neighbors();
 
 }
 

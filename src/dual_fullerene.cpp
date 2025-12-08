@@ -6,11 +6,6 @@
 #include <fullerene/dual_fullerene.h>
 
 
-template<typename F>
-void dual_fullerene::for_each_node(F&& f) const {
-    for (const auto& node : nodes_5) f(node);
-    for (const auto& node : nodes_6) f(node);
-}
 
 dual_fullerene::dual_fullerene(const std::vector<std::vector<unsigned int>>& adjacency) {
     const std::size_t n = adjacency.size();
