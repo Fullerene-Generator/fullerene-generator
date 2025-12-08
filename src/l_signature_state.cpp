@@ -68,7 +68,7 @@ void LSignatureState::extend_step() {
             signature_.push_back(idx);
         }
 
-        e = e.next_around();
+        e = candidate_->use_next ? e.next_around() : e.prev_around();
     }
 
     if (bfs_front_ >= bfs_order_.size()) {
