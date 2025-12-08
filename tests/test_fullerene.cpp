@@ -15,19 +15,11 @@ bool validate_dual_fullerene(const dual_fullerene& f) {
 
         for (auto& weak_v : u->neighbors()) {
             auto v = weak_v.lock();
-            if (!v)
-                return false;
-            bool found = false;
-            for (auto& weak_u2 : v->neighbors()) {
-                if (auto u2 = weak_u2.lock()) {
-                    if (u2.get() == u.get()) {
-                        found = true;
-                        break;
-                    }
-                }
-            }
-            if (!found)
-                return false;
+            REQUIRE(v);
+            size_t count = 0;
+            for (auto& weak_v2 : u->neighbors())
+                if (weak_v2.lock() == v) count++;
+            if (count != 1) return false;
         }
     }
 
@@ -37,19 +29,11 @@ bool validate_dual_fullerene(const dual_fullerene& f) {
 
         for (auto& weak_v : u->neighbors()) {
             auto v = weak_v.lock();
-            if (!v)
-                return false;
-            bool found = false;
-            for (auto& weak_u2 : v->neighbors()) {
-                if (auto u2 = weak_u2.lock()) {
-                    if (u2.get() == u.get()) {
-                        found = true;
-                        break;
-                    }
-                }
-            }
-            if (!found)
-                return false;
+            REQUIRE(v);
+            size_t count = 0;
+            for (auto& weak_v2 : u->neighbors())
+                if (weak_v2.lock() == v) count++;
+            if (count != 1) return false;
         }
     }
 
@@ -66,4 +50,13 @@ TEST_CASE("Base dual fullerenes are structurally valid", "[dual_fullerene]") {
     REQUIRE(validate_dual_fullerene(d3));
 }
 
-TEST_CASE()
+TEST_CASE("base_node basic functionality") {
+    const auto n5 = node_5::create(1);
+    const auto n6 = node_6::create(2);
+
+    REQUIRE(n5->expected_degree() == 5);
+    REQUIRE(n6->expected_degree() == 6);
+
+    REQUIRE(n5->degree() == 0);
+    REQUIRE(n6->degree() == 0);
+}
