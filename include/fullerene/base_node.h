@@ -16,11 +16,10 @@ protected:
     unsigned int id_ = 0;
     node_type type_;
 
-    explicit base_node(const unsigned int id, const node_type type, const std::size_t neighbors) : id_(id), type_(type) { resize_(neighbors); }
-
-    void resize_(std::size_t neighbors);
+    explicit base_node(const unsigned int id, const node_type type, const std::size_t neighbors) : id_(id), type_(type) {}
 
 public:
+    void resize(std::size_t neighbors);
     virtual ~base_node() = default;
     [[nodiscard]] virtual std::size_t expected_degree() const = 0;
     [[nodiscard]] unsigned int id() const { return id_; }
@@ -52,6 +51,11 @@ public:
     static std::shared_ptr<node_5> create(const unsigned int id) {
         return std::shared_ptr<node_5>(new node_5(id));
     }
+    static std::shared_ptr<node_5> create_sized(const unsigned int id) {
+        auto p = std::shared_ptr<node_5>(new node_5(id));
+        p->resize(5);
+        return p;
+    }
 
     [[nodiscard]] std::size_t expected_degree() const override { return 5; }
 };
@@ -61,6 +65,11 @@ class node_6 final : public base_node {
 public:
     static std::shared_ptr<node_6> create(const unsigned int id) {
         return std::shared_ptr<node_6>(new node_6(id));
+    }
+    static std::shared_ptr<node_6> create_sized(const unsigned int id) {
+        auto p = std::shared_ptr<node_6>(new node_6(id));
+        p->resize(6);
+        return p;
     }
 
     [[nodiscard]] std::size_t expected_degree() const override { return 6; }

@@ -9,7 +9,7 @@ void base_node::add_neighbor(const std::shared_ptr<base_node>& n) {
     edges_.push_back({});
 }
 
-void base_node::resize_(const std::size_t neighbors) {
+void base_node::resize(const std::size_t neighbors) {
     neighbors_.resize(neighbors);
     edges_.resize(neighbors);
 }
