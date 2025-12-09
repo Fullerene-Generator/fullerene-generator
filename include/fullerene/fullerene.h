@@ -14,6 +14,8 @@ public:
                         adjacency_(adjacency),
                         outer_face_nodes_(outer_face) {};
 
+    [[nodiscard]] std::vector<std::array<unsigned int, 3>> get_adjacency() const { return adjacency_; }
+    [[nodiscard]] std::array<unsigned int, 5> get_outer_face_nodes() const { return outer_face_nodes_; }
     [[nodiscard]] std::string write_all() const noexcept;
     friend std::ostream &operator<<(std::ostream &os, const fullerene &f);
 };
