@@ -16,7 +16,7 @@ set(SOURCES src/base_node.cpp
         src/l_signature_state.cpp
 )
 
-add_executable(fullerene_generator ${SOURCES})
+add_executable(fullerene_generator ${SOURCES} "include/expansions/l_reduction.h" "src/l_reduction.cpp")
 
 target_include_directories(${PROJECT_NAME}
     PRIVATE
@@ -40,7 +40,7 @@ add_executable(test_l
     src/f_expansion_generator.cpp
     src/l_signature_state.cpp
     tests/test_l.cpp
-)
+ "include/expansions/l_reduction.h" "src/l_reduction.cpp")
 
 target_include_directories(test_l PRIVATE
     ${PROJECT_SOURCE_DIR}/include
