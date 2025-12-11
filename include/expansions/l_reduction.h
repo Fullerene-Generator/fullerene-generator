@@ -1,15 +1,18 @@
 #ifndef L_REDUCTION_H
 #define L_REDUCTION_H
 
+#include <vector>
+
 #include <fullerene/dual_fullerene.h>
 #include <fullerene/directed_edge.h>
-#include <vector>
 
 struct LReduction {
     directed_edge first_edge;
     directed_edge second_edge;
     bool use_next;
     int size;
+
+    bool is_canonical(const dual_fullerene& G, int min_size) const;
 };
 
 std::vector<LReduction>

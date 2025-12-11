@@ -3,7 +3,7 @@
 #include <set>
 #include <vector>
 #include <algorithm>
-#include <iostream>
+
 #include "fullerene/dual_fullerene.h"
 #include "fullerene/construct.h"
 #include "expansions/l_expansion.h"
@@ -201,7 +201,9 @@ static void print_L0_representatives(const dual_fullerene& G) {
     }
 }
 
-static void test_c20_L0_reductions() {
+// One specific C20 L0 expansion -> list reductions, check canonicity, and try to
+// identify the reduction corresponding to that expansion.
+static void test_c20_L0_reductions_single() {
     std::cout << "\nC20: L0 reductions after one L0 expansion\n";
 
     dual_fullerene G = create_c20_fullerene();
@@ -210,8 +212,12 @@ static void test_c20_L0_reductions() {
     assert(!expansions.empty());
 
     auto* e = static_cast<L_expansion*>(expansions[0].get());
-    std::cout << "expansion with first edge: " << e->candidate().start.from->id() << " to: " << e->candidate().start.to()->id() << '\n';
-    std::cout << "use next: " << e->candidate().use_next << '\n';
+    const auto& cand = e->candidate();
+
+    std::cout << "Chosen expansion with first edge: "
+        << cand.start.from->id() << " -> " << cand.start.to()->id() << '\n';
+    std::cout << "use_next: " << cand.use_next << '\n';
+
     e->apply();
     assert(is_valid_dual_fullerene(G));
 
@@ -222,6 +228,8 @@ static void test_c20_L0_reductions() {
 
     for (std::size_t i = 0; i < reductions.size(); ++i) {
         const auto& r = reductions[i];
+        bool canonical = r.is_canonical(G, red_size);
+
         std::cout << "  [" << i << "] "
             << "first_edge " << r.first_edge.from->id()
             << " -> " << r.first_edge.to()->id()
@@ -229,8 +237,118 @@ static void test_c20_L0_reductions() {
             << " -> " << r.second_edge.to()->id()
             << ", use_next=" << r.use_next
             << ", size=" << r.size
+            << ", canonical=" << canonical
             << "\n";
     }
+
+    LReduction const* matching = nullptr;
+    for (const auto& r : reductions) {
+        if (r.size != red_size) {
+            continue;
+        }
+        if (r.use_next != cand.use_next) {
+            continue;
+        }
+        std::cout << r.first_edge.from->id() << ' ' << cand.start.from->id() << '\n';
+        std::cout << r.second_edge.from->id() << ' ' << cand.para[r.size + 1] << '\n';
+        if (r.first_edge.from == cand.start.from &&
+            r.second_edge.from->id() == cand.para[r.size + 1]) {
+            matching = &r;
+            break;
+        }
+    }
+
+    if (matching) {
+        bool canonical = matching->is_canonical(G, red_size);
+        std::cout << "Matching reduction for applied expansion: canonical="
+            << canonical << "\n";
+    }
+    else {
+        std::cout << "No matching reduction found for applied expansion\n";
+    }
+}
+
+// Generic helper: for a given fullerene factory and L_i, apply every expansion,
+// find the matching reduction in the child, and test canonicity.
+template<typename Factory>
+static void test_Li_reductions_for_graph(const char* name,
+    Factory make_graph,
+    int i) {
+    std::cout << "\n" << name << ": testing L" << i << " reduction canonicity for all expansions\n";
+
+    dual_fullerene G0 = make_graph();
+    auto expansions = find_L_expansions(G0, i);
+    std::cout << name << ": L" << i << " expansions = " << expansions.size() << "\n";
+    assert(!expansions.empty());
+
+    int red_size = i + 1;
+
+    for (std::size_t idx = 0; idx < expansions.size(); ++idx) {
+        const auto* base_e = static_cast<L_expansion*>(expansions[idx].get());
+        const auto& cand = base_e->candidate();
+
+        dual_fullerene G = make_graph();
+        L_expansion exp(G, cand);
+        if (!exp.validate()) {
+            std::cout << "  expansion[" << idx << "] invalid, skipping\n";
+            continue;
+        }
+        exp.apply();
+        assert(is_valid_dual_fullerene(G));
+
+        auto reductions = find_L_reductions(G, red_size);
+
+        bool match_found = false;
+        bool canonical = false;
+
+        for (const auto& r : reductions) {
+            if (r.size != red_size) {
+                continue;
+            }
+            if (r.use_next != cand.use_next) {
+                continue;
+            }
+            if (r.first_edge.from->id() != cand.start.from->id()) {
+                continue;
+            }
+            if (static_cast<int>(cand.para.size()) <= red_size + 1) {
+                continue;
+            }
+            if (r.second_edge.from->id() != static_cast<unsigned int>(cand.para[red_size + 1])) {
+                continue;
+            }
+
+            match_found = true;
+            canonical = r.is_canonical(G, 1);
+            break;
+        }
+
+        std::cout << "  expansion[" << idx << "]: "
+            << "start " << cand.start.from->id()
+            << " -> " << cand.start.to()->id()
+            << " use_next=" << cand.use_next
+            << " match_found=" << match_found
+            << " canonical_inverse=" << canonical
+            << "\n";
+
+        assert(match_found);
+    }
+}
+
+static void test_c20_L0_reductions_all_expansions() {
+    test_Li_reductions_for_graph("C20", create_c20_fullerene, 0);
+}
+
+static void test_c30_L1_reductions_all_expansions() {
+    test_Li_reductions_for_graph("C30", create_c30_fullerene, 1);
+}
+
+static void test_c30_L3_reductions_all_expansions() {
+    test_Li_reductions_for_graph("C30", create_c30_fullerene, 3);
+}
+
+static void test_c30_L0_reductions_all_expansions() {
+    test_Li_reductions_for_graph("C30", create_c30_fullerene, 0);
 }
 
 int main() {
@@ -258,7 +376,11 @@ int main() {
         }
 
         if (run_reduction_tests) {
-            test_c20_L0_reductions();
+            test_c20_L0_reductions_single();
+            test_c20_L0_reductions_all_expansions();
+            test_c30_L1_reductions_all_expansions();
+            test_c30_L3_reductions_all_expansions();
+            test_c30_L0_reductions_all_expansions();
         }
     }
     catch (const std::exception& ex) {
