@@ -19,12 +19,12 @@ dual_fullerene::dual_fullerene(const std::vector<std::vector<unsigned int>>& adj
 
     for (std::size_t i = 0; i < n; i++) {
         if (i < 12) {
-            auto p = node_5::create(static_cast<unsigned int>(i));
+            auto p = node_5::create_sized(static_cast<unsigned int>(i));
             index_to_node[i] = p;
             nodes_5.push_back(p);
         }
         else {
-            auto p = node_6::create(static_cast<unsigned int>(i));
+            auto p = node_6::create_sized(static_cast<unsigned int>(i));
             index_to_node[i] = p;
             nodes_6.push_back(p);
         }

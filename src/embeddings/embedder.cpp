@@ -1,8 +1,8 @@
 #include <embeddings/embedder.h>
 
-std::vector<std::array<double, 2>> embedder::compute_tutte(graph& g) {
-    auto& adjacency = g.adjacency;
-    auto& outer = g.outer;
+std::vector<std::array<double, 2>> embedder::compute_tutte(const graph& f) {
+    auto& adjacency = f.adjacency;
+    auto& outer = f.outer;
             
     const auto n = static_cast<long long>(adjacency.size());
     auto embedding = std::vector<std::array<double, 2>>(n, {std::numeric_limits<double>::max(), std::numeric_limits<double>::max()});
