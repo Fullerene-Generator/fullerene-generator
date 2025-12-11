@@ -22,6 +22,7 @@ TEST_CASE("Test dual fullerene correctness after performing f_expansion") {
 
         REQUIRE(expansion.validate());
 
+        expansion.apply();
         validate_dual_fullerene(d);
     }
 }
@@ -35,6 +36,7 @@ TEST_CASE("Test (primal) fullerene correctness after performing f_expansion") {
 
         REQUIRE(expansion.validate());
 
+        expansion.apply();
         validate_fullerene(d.to_primal(), d);
     }
 }
