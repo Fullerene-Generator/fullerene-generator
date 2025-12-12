@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
             const auto coords = embedder::compute_tutte(g);
             write_embedding_2d(coords);
         } else {
-            const auto coords = embedder::compute_spectral_realization(g);
+            const auto coords = embedder::compute_tutte_sphere_mapping(g);
             write_embedding_3d(coords);
         }
     } catch (const std::exception& ex) {
