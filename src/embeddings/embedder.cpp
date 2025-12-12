@@ -80,5 +80,22 @@ std::vector<std::array<double,3>> embedder::compute_spectral_realization(graph& 
         };
     }
 
+    double max_len = 0;
+
+    for (unsigned int v = 0; v < n; v++) {
+        max_len = std::max(max_len,
+            sqrt(embedding[v][0] * embedding[v][0]
+            + embedding[v][1] * embedding[v][1]
+            + embedding[v][2] * embedding[v][2]));
+    }
+
+    if (max_len > 0) {
+        for (unsigned int v = 0; v < n; v++) {
+            for (int i = 0; i < 3; i++) {
+                embedding[v][i] /= max_len;
+            }
+        }
+    }
+
     return embedding;
 }
