@@ -51,7 +51,7 @@ std::vector<std::array<double, 2>> embedder::compute_tutte(const graph& f) {
     return embedding;
 }
 
-std::vector<std::array<double,3>> embedder::compute_spectral_realization(graph& g) {
+std::vector<std::array<double,3>> embedder::compute_spectral_realization(const graph& g) {
     const auto n = static_cast<long long>(g.adjacency.size());
 
     Eigen::MatrixXd A = Eigen::MatrixXd::Zero(n, n);
