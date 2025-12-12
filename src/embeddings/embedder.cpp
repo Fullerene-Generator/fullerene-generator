@@ -50,3 +50,35 @@ std::vector<std::array<double, 2>> embedder::compute_tutte(graph& g) {
 
     return embedding;
 }
+
+std::vector<std::array<double,3>> embedder::compute_spectral_realization(graph& g) {
+    const auto n = static_cast<long long>(g.adjacency.size());
+
+    Eigen::MatrixXd A = Eigen::MatrixXd::Zero(n, n);
+
+    for (long long v = 0; v < n; ++v) {
+        for (const unsigned u : g.adjacency[v]) {
+            A(v, u) = 1.0;
+        }
+    }
+
+    const Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> es(A);
+
+    if (es.info() != Eigen::Success) {
+        throw std::runtime_error("Self adjoint solver returned with an error");
+    }
+
+    const auto& V = es.eigenvectors().reverse();
+
+    std::vector<std::array<double, 3>> embedding(n);
+
+    for (int v = 0; v < n; ++v) {
+        embedding[v] = {
+            V(v, 1),
+            V(v, 2),
+            V(v, 3)
+        };
+    }
+
+    return embedding;
+}
