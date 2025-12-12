@@ -50,3 +50,52 @@ std::vector<std::array<double, 2>> embedder::compute_tutte(const graph& f) {
 
     return embedding;
 }
+
+std::vector<std::array<double,3>> embedder::compute_spectral_realization(const graph& g) {
+    const auto n = static_cast<long long>(g.adjacency.size());
+
+    Eigen::MatrixXd A = Eigen::MatrixXd::Zero(n, n);
+
+    for (long long v = 0; v < n; ++v) {
+        for (const unsigned u : g.adjacency[v]) {
+            A(v, u) = 1.0;
+        }
+    }
+
+    const Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> es(A);
+
+    if (es.info() != Eigen::Success) {
+        throw std::runtime_error("Self adjoint solver returned with an error");
+    }
+
+    const auto& V = es.eigenvectors().reverse();
+
+    std::vector<std::array<double, 3>> embedding(n);
+
+    for (int v = 0; v < n; ++v) {
+        embedding[v] = {
+            V(v, 1),
+            V(v, 2),
+            V(v, 3)
+        };
+    }
+
+    double max_len = 0;
+
+    for (unsigned int v = 0; v < n; v++) {
+        max_len = std::max(max_len,
+            sqrt(embedding[v][0] * embedding[v][0]
+            + embedding[v][1] * embedding[v][1]
+            + embedding[v][2] * embedding[v][2]));
+    }
+
+    if (max_len > 0) {
+        for (unsigned int v = 0; v < n; v++) {
+            for (int i = 0; i < 3; i++) {
+                embedding[v][i] /= max_len;
+            }
+        }
+    }
+
+    return embedding;
+}

@@ -10,6 +10,7 @@ struct graph {
 class embedder {
 public:
     static std::vector<std::array<double, 2>> compute_tutte(const graph& f);
+    static std::vector<std::array<double, 3>> compute_spectral_realization(const graph& f);
 };
 
 
