@@ -143,9 +143,9 @@ std::vector<std::array<double, 3>> embedder::compute_tutte_sphere_mapping(const 
         const auto phi = (depth[v] + 0.5) * M_PI / (max_depth + 1);
         const auto theta = atan2(tutte_embedding[v][1], tutte_embedding[v][0]);
 
-        embedding[v][0] = sin(theta) * cos(phi);
-        embedding[v][1] = sin(theta) * sin(phi);
-        embedding[v][2] = cos(theta);
+        embedding[v][0] = std::sin(phi) * std::cos(theta);
+        embedding[v][1] = std::sin(phi) * std::sin(theta);
+        embedding[v][2] = std::cos(phi);
     }
 
     return embedding;
