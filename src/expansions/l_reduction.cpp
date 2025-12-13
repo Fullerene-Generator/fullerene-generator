@@ -5,7 +5,7 @@
 #include <vector>
 
 std::vector<l_reduction>
-find_L_reductions(const dual_fullerene& G,
+find_l_reductions(const dual_fullerene& G,
     int size,
     int skip_pent_1,
     int skip_pent_2)
@@ -271,15 +271,15 @@ bool l_reduction::is_canonical(const dual_fullerene& G, int min_size) const
         return true;
     }
 
-    LCandidate ref_cand;
+    l_candidate ref_cand;
     ref_cand.start = first_edge;
     ref_cand.use_next = use_next;
     ref_cand.i = ref_size;
 
-    LSignatureState ref_state(G, ref_cand);
+    l_signature_state ref_state(G, ref_cand);
 
-    std::vector<LCandidate> cand_data(stage.size());
-    std::vector<LSignatureState> states;
+    std::vector<l_candidate> cand_data(stage.size());
+    std::vector<l_signature_state> states;
     states.reserve(stage.size());
     for (std::size_t i = 0; i < stage.size(); ++i) {
         cand_data[i].start = stage[i].first_edge;
