@@ -1,17 +1,16 @@
 #include <expansions/l_reduction.h>
 #include <expansions/l_signature_state.h>
-#include <expansions/l_expansion.h>
 #include <iostream>
 #include <cstdint>
 #include <vector>
 
-std::vector<LReduction>
+std::vector<l_reduction>
 find_L_reductions(const dual_fullerene& G,
     int size,
     int skip_pent_1,
     int skip_pent_2)
 {
-    std::vector<LReduction> out;
+    std::vector<l_reduction> out;
     if (size < 1) {
         return out;
     }
@@ -93,7 +92,7 @@ find_L_reductions(const dual_fullerene& G,
                 auto prev_node = G.get_node(static_cast<unsigned int>(path[path.size() - 2]));
                 directed_edge second_edge = last_node->get_edge(prev_node);
 
-                LReduction r;
+                l_reduction r;
                 r.first_edge = e0;
                 r.second_edge = second_edge;
                 r.use_next = use_next;
@@ -127,7 +126,7 @@ static std::uint32_t edge_neighborhood_code(const directed_edge& e, bool use_nex
 }
 
 
-static std::uint32_t path_neighborhood_code(const LReduction& r,
+static std::uint32_t path_neighborhood_code(const l_reduction& r,
     int edges_len = 7)
 {
     std::uint32_t code = 0;
@@ -185,7 +184,7 @@ static std::string to_binary(std::uint32_t x) {
     return s;
 }
 
-bool LReduction::is_canonical(const dual_fullerene& G, int min_size) const
+bool l_reduction::is_canonical(const dual_fullerene& G, int min_size) const
 {
     int ref_size = size;
     if (ref_size <= 0) {
@@ -210,10 +209,10 @@ bool LReduction::is_canonical(const dual_fullerene& G, int min_size) const
     }
 
     std::uint32_t ref_x2 = edge_neighborhood_code(first_edge, use_next);
-    std::vector<LReduction> stage = candidates;
+    std::vector<l_reduction> stage = candidates;
 
     {
-        std::vector<LReduction> next;
+        std::vector<l_reduction> next;
         next.reserve(stage.size());
         for (const auto& r : stage) {
             std::uint32_t v = edge_neighborhood_code(r.first_edge, r.use_next);
@@ -233,7 +232,7 @@ bool LReduction::is_canonical(const dual_fullerene& G, int min_size) const
 
     std::uint32_t ref_x3 = edge_neighborhood_code(second_edge, use_next);
     {
-        std::vector<LReduction> next;
+        std::vector<l_reduction> next;
         next.reserve(stage.size());
         for (const auto& r : stage) {
             std::uint32_t v = edge_neighborhood_code(r.second_edge, r.use_next);
@@ -254,7 +253,7 @@ bool LReduction::is_canonical(const dual_fullerene& G, int min_size) const
 
     std::uint32_t ref_x4 = path_neighborhood_code(*this, 7);
     {
-        std::vector<LReduction> next;
+        std::vector<l_reduction> next;
         next.reserve(stage.size());
         for (const auto& r : stage) {
             std::uint32_t v = path_neighborhood_code(r, 7);

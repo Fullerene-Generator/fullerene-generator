@@ -4,10 +4,11 @@
 #include <fullerene/dual_fullerene.h>
 #include <fullerene/directed_edge.h>
 #include <expansions/base_expansion.h>
+#include <utility>
 #include <vector>
 
 
-struct LCandidate {
+struct l_candidate {
     directed_edge start;
     bool use_next;
     int i;
@@ -15,31 +16,31 @@ struct LCandidate {
     std::vector<int> para;
 };
 
-void build_L_rails(const dual_fullerene& G,
+void build_l_rails(const dual_fullerene& G,
     const directed_edge& e0,
     bool use_next,
     int i,
     std::vector<int>& path,
     std::vector<int>& para);
 
-std::vector<LCandidate> find_L_candidates(const dual_fullerene& G, int i);
+std::vector<l_candidate> find_l_candidates(const dual_fullerene& G, int i);
 
 
-class L_expansion final : public base_expansion {
-    LCandidate cand_;
+class l_expansion final : public base_expansion {
+    l_candidate cand_;
 
 public:
-    explicit L_expansion(dual_fullerene& G, const LCandidate& c)
-        : base_expansion(G), cand_(c) {
+    explicit l_expansion(dual_fullerene& G, l_candidate  c)
+        : base_expansion(G), cand_(std::move(c)) {
     }
 
     [[nodiscard]] bool validate() const override;
     void apply() const override;
 
-    const LCandidate& candidate() const { return cand_; }
+    [[nodiscard]] const l_candidate& candidate() const { return cand_; }
 };
 
 std::vector<std::unique_ptr<base_expansion>>
-find_L_expansions(dual_fullerene& G, int i);
+find_l_expansions(dual_fullerene& G, int i);
 
 #endif

@@ -3,7 +3,7 @@
 #include <queue>
 #include <iostream>
 
-void build_L_rails(const dual_fullerene& G,
+void build_l_rails(const dual_fullerene& G,
     const directed_edge& e0,
     bool use_next,
     int i,
@@ -23,9 +23,9 @@ void build_L_rails(const dual_fullerene& G,
     }
 }
 
-std::vector<LCandidate> find_L_candidates(const dual_fullerene& G, int x)
+std::vector<l_candidate> find_l_candidates(const dual_fullerene& G, int x)
 {
-    std::vector<LCandidate> out;
+    std::vector<l_candidate> out;
 
     for (auto node : G.get_nodes_5()) {
         for (int i = 0; i < node->degree(); ++i) {
@@ -33,7 +33,7 @@ std::vector<LCandidate> find_L_candidates(const dual_fullerene& G, int x)
 
             for (bool use_next : { true, false }) {
                 std::vector<int> P, Q;
-                build_L_rails(G, e, use_next, x, P, Q);
+                build_l_rails(G, e, use_next, x, P, Q);
 
                 if (G.get_node((unsigned)Q[x+2])->degree() == 5)
                     out.push_back({ e, use_next, x, std::move(P), std::move(Q) });
@@ -44,12 +44,12 @@ std::vector<LCandidate> find_L_candidates(const dual_fullerene& G, int x)
 }
 
 
-bool L_expansion::validate() const
+bool l_expansion::validate() const
 {
     return G_.get_node((unsigned)cand_.para[cand_.i + 2])->degree() == 5;
 }
 
-void L_expansion::apply() const
+void l_expansion::apply() const
 {
     const auto& c = cand_;
     int i = cand_.i;
@@ -171,17 +171,17 @@ void L_expansion::apply() const
 }
 
 std::vector<std::unique_ptr<base_expansion>>
-find_L_expansions(dual_fullerene& G, int i)
+find_l_expansions(dual_fullerene& G, int i)
 {
     std::vector<std::unique_ptr<base_expansion>> out;
 
-    const auto candidates = find_L_candidates(G,i);
+    const auto candidates = find_l_candidates(G,i);
     std::size_t n = candidates.size();
     if (n == 0) {
         return out;
     }
 
-    std::vector<LSignatureState> states;
+    std::vector<l_signature_state> states;
     states.reserve(n);
     for (const auto& c : candidates) {
         states.emplace_back(G, c);
@@ -300,7 +300,7 @@ find_L_expansions(dual_fullerene& G, int i)
 
     for (std::size_t i = 0; i < n; ++i) {
         if (is_representative[i]) {
-            auto e = std::make_unique<L_expansion>(G, candidates[i]);
+            auto e = std::make_unique<l_expansion>(G, candidates[i]);
             if (e->validate()) {
                 out.push_back(std::move(e));
             }
