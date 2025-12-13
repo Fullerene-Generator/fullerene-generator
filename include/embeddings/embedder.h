@@ -8,9 +8,12 @@ struct graph {
 };
 
 class embedder {
+    static std::vector<unsigned> compute_bfs_depth(const graph& f);
+
 public:
     static std::vector<std::array<double, 2>> compute_tutte(const graph& f);
     static std::vector<std::array<double, 3>> compute_spectral_realization(const graph& f);
+    static std::vector<std::array<double, 3>> compute_tutte_sphere_mapping(const graph& f);
 };
 
 
