@@ -17,7 +17,11 @@ public:
     [[nodiscard]] std::size_t total_nodes() const noexcept { return nodes_5.size() + nodes_6.size(); }
     [[nodiscard]] fullerene to_primal() const;
     [[nodiscard]] std::shared_ptr<base_node> get_node(unsigned int id) const;
-    template<typename F> void for_each_node(F&& f) const;
+    template<typename F>
+    void for_each_node(F&& f) const {
+        for (const auto& node : nodes_5) f(node);
+        for (const auto& node : nodes_6) f(node);
+    }
     void clear_all_edge_data() const;
     int add_vertex(node_type type);
     void add_neighbour_after(int v, int after, int v2);

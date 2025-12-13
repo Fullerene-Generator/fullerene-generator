@@ -1,5 +1,7 @@
 add_library(fullerene_expansions
         l_expansion.cpp
+        l_reduction.cpp
+        l_signature_state.cpp
         f_expansion.cpp
 )
 

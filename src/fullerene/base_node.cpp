@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <string>
 #include <algorithm>
+#include <iostream>
 
 
 void base_node::add_neighbor(const std::shared_ptr<base_node>& n) {
@@ -138,5 +139,19 @@ edge_data& base_node::get_edge_data(const std::size_t index) {
 void base_node::clear_all_edge_data() {
     for (std::size_t i = 0; i < degree(); i++) {
         edges_[i] = {};
+    }
+}
+
+void base_node::clear_neighbors()
+{
+    neighbors_.clear();
+    edges_.clear();
+}
+
+void base_node::print_neighbors()
+{
+    std::cout << "neighbours of vertex: " << id() << '\n';
+    for (int i = 0; i < degree(); i++) {
+        std::cout << "neighbour number " << i << " id: " << neighbor_at(i)->id() << '\n';
     }
 }

@@ -4,41 +4,43 @@
 #include <fullerene/dual_fullerene.h>
 #include <fullerene/directed_edge.h>
 #include <expansions/base_expansion.h>
-#include <array>
+#include <utility>
 #include <vector>
 
 
-struct L0Candidate {
+struct l_candidate {
     directed_edge start;
     bool use_next;
-    std::array<int, 3> path;
-    std::array<int, 3> para;
+    int i;
+    std::vector<int> path;
+    std::vector<int> para;
 };
 
-void build_L0_rails(const dual_fullerene& G,
+void build_l_rails(const dual_fullerene& G,
     const directed_edge& e0,
     bool use_next,
-    std::array<int, 3>& path,
-    std::array<int, 3>& para);
+    int i,
+    std::vector<int>& path,
+    std::vector<int>& para);
 
-std::vector<L0Candidate> find_L0_candidates(const dual_fullerene& G);
+std::vector<l_candidate> find_l_candidates(const dual_fullerene& G, int i);
 
 
-class L0_expansion final : public base_expansion {
-    L0Candidate cand_;
+class l_expansion final : public base_expansion {
+    l_candidate cand_;
 
 public:
-    explicit L0_expansion(dual_fullerene& G, const L0Candidate& c)
-        : base_expansion(G), cand_(c) {
+    explicit l_expansion(dual_fullerene& G, l_candidate  c)
+        : base_expansion(G), cand_(std::move(c)) {
     }
 
     [[nodiscard]] bool validate() const override;
     void apply() const override;
 
-    const L0Candidate& candidate() const { return cand_; }
+    [[nodiscard]] const l_candidate& candidate() const { return cand_; }
 };
 
 std::vector<std::unique_ptr<base_expansion>>
-find_L0_expansions(dual_fullerene& G);
+find_l_expansions(dual_fullerene& G, int i);
 
 #endif
