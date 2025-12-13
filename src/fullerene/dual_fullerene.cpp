@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <algorithm>
 
-#include <fullerene/dual_fullerene.h>
+#include "fullerene/dual_fullerene.h"
 
 
 
@@ -14,12 +14,12 @@ dual_fullerene::dual_fullerene(const std::vector<std::vector<unsigned int>>& adj
 
     for (std::size_t i = 0; i < n; i++) {
         if (i < 12) {
-            auto p = node_5::create(static_cast<unsigned int>(i));
+            auto p = node_5::create_sized(static_cast<unsigned int>(i));
             index_to_node[i] = p;
             nodes_5.push_back(p);
         }
         else {
-            auto p = node_6::create(static_cast<unsigned int>(i));
+            auto p = node_6::create_sized(static_cast<unsigned int>(i));
             index_to_node[i] = p;
             nodes_6.push_back(p);
         }
@@ -111,7 +111,7 @@ fullerene dual_fullerene::to_primal() const {
 
     clear_all_edge_data();
 
-    return std::move(fullerene(F, adjacency, outer_face_nodes));
+    return std::move(fullerene(adjacency, outer_face_nodes));
 }
 
 std::shared_ptr<base_node> dual_fullerene::get_node(unsigned int id) const {

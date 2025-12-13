@@ -1,4 +1,4 @@
-﻿#include<expansions/f_expansion.h>
+﻿#include"expansions/f_expansion.h"
 
 bool f_expansion::validate() const {
     for (const auto& u : v_->neighbors()) {
@@ -14,7 +14,7 @@ void f_expansion::apply() const {
     std::array<std::shared_ptr<node_6>, 5> new_nodes{};
 
     for (auto & new_node : new_nodes) {
-        new_node = node_6::create(G_.total_nodes());
+        new_node = node_6::create_sized(G_.total_nodes());
         G_.add_node(new_node);
     }
 

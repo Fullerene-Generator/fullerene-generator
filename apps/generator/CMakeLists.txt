@@ -1,0 +1,2 @@
+add_executable(fullerene_generator main.cpp)
+target_link_libraries(fullerene_generator PRIVATE fullerene_core fullerene_expansions fullerene_generators)
