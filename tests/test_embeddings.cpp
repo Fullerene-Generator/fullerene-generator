@@ -38,6 +38,10 @@ TEST_CASE("Tutte embedding test for base fullerenes") {
     auto e2 = embedder::compute_tutte(g2);
     auto e3 = embedder::compute_tutte(g3);
 
+    REQUIRE(e1.size() == g1.adjacency.size());
+    REQUIRE(e2.size() == g2.adjacency.size());
+    REQUIRE(e3.size() == g3.adjacency.size());
+
     for (auto& coords: e1) {
         REQUIRE(hypot(coords[0], coords[1]) <= 1 + EPS);
     }
@@ -46,5 +50,49 @@ TEST_CASE("Tutte embedding test for base fullerenes") {
     }
     for (auto& coords: e3) {
         REQUIRE(hypot(coords[0], coords[1]) <= 1 + EPS);
+    }
+}
+
+TEST_CASE("Tutte spherical embedding test for base fullerenes") {
+    const auto d1 = create_c20_fullerene();
+    const auto d2 = create_c28_fullerene();
+    const auto d3 = create_c30_fullerene();
+
+    const auto f1 = d1.to_primal();
+    const auto f2 = d2.to_primal();
+    const auto f3 = d3.to_primal();
+
+    const auto g1 = graph {
+        f1.get_adjacency(),
+        f1.get_outer_face_nodes()
+    };
+    const auto g2 = graph {
+        f2.get_adjacency(),
+        f2.get_outer_face_nodes()
+    };
+    const auto g3 = graph {
+        f3.get_adjacency(),
+        f3.get_outer_face_nodes()
+    };
+
+    auto e1 = embedder::compute_tutte_sphere_mapping(g1);
+    auto e2 = embedder::compute_tutte_sphere_mapping(g2);
+    auto e3 = embedder::compute_tutte_sphere_mapping(g3);
+
+    REQUIRE(e1.size() == g1.adjacency.size());
+    REQUIRE(e2.size() == g2.adjacency.size());
+    REQUIRE(e3.size() == g3.adjacency.size());
+
+    for (auto& coords: e1) {
+        REQUIRE(sqrt(coords[0]*coords[0] + coords[1]*coords[1] + coords[2]*coords[2]) <= 1 + EPS);
+        REQUIRE(sqrt(coords[0]*coords[0] + coords[1]*coords[1] + coords[2]*coords[2]) >= 1 - EPS);
+    }
+    for (auto& coords: e2) {
+        REQUIRE(sqrt(coords[0]*coords[0] + coords[1]*coords[1] + coords[2]*coords[2]) <= 1 + EPS);
+        REQUIRE(sqrt(coords[0]*coords[0] + coords[1]*coords[1] + coords[2]*coords[2]) >= 1 - EPS);
+    }
+    for (auto& coords: e3) {
+        REQUIRE(sqrt(coords[0]*coords[0] + coords[1]*coords[1] + coords[2]*coords[2]) <= 1 + EPS);
+        REQUIRE(sqrt(coords[0]*coords[0] + coords[1]*coords[1] + coords[2]*coords[2]) >= 1 - EPS);
     }
 }
