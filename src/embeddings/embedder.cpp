@@ -1,4 +1,33 @@
+#include <queue>
 #include <embeddings/embedder.h>
+
+std::vector<unsigned int> embedder::compute_bfs_depth(const graph &f) {
+    auto depth = std::vector<unsigned int>(f.adjacency.size());
+    auto visited = std::vector<bool>(f.adjacency.size(), false);
+
+    std::queue<unsigned> q;
+
+    for (const auto v : f.outer) {
+        depth.at(v) = 0;
+        visited.at(v) = true;
+        q.push(v);
+    }
+
+    while (!q.empty()) {
+        auto v = q.front();
+        q.pop();
+
+        for (const auto u : f.adjacency.at(v)) {
+            if (!visited.at(u)) {
+                depth.at(u) = depth.at(v) + 1;
+                visited.at(u) = true;
+                q.push(u);
+            }
+        }
+    }
+
+    return depth;
+}
 
 std::vector<std::array<double, 2>> embedder::compute_tutte(const graph& f) {
     auto& adjacency = f.adjacency;
@@ -95,6 +124,28 @@ std::vector<std::array<double,3>> embedder::compute_spectral_realization(const g
                 embedding[v][i] /= max_len;
             }
         }
+    }
+
+    return embedding;
+}
+
+std::vector<std::array<double, 3>> embedder::compute_tutte_sphere_mapping(const graph &f) {
+    const auto n = static_cast<long long>(f.adjacency.size());
+
+    auto depth = compute_bfs_depth(f);
+    const auto max_depth = *std::ranges::max_element(depth);
+
+    const auto tutte_embedding = compute_tutte(f);
+
+    std::vector<std::array<double, 3>> embedding(n);
+
+    for (int v = 0; v < n; v++) {
+        const auto phi = (depth[v] + 0.5) * M_PI / (max_depth + 1);
+        const auto theta = atan2(tutte_embedding[v][1], tutte_embedding[v][0]);
+
+        embedding[v][0] = std::sin(phi) * std::cos(theta);
+        embedding[v][1] = std::sin(phi) * std::sin(theta);
+        embedding[v][2] = std::cos(phi);
     }
 
     return embedding;
