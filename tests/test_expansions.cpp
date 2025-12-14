@@ -11,9 +11,8 @@
 #include <expansions/f_expansion.h>
 #include <fullerene/construct.h>
 #include <expansions/l_expansion.h>
-
-#include "expansions/l_reduction.h"
-#include "expansions/l_signature_state.h"
+#include <expansions/l_reduction.h>
+#include <expansions/l_signature_state.h>
 
 
 constexpr int EXPANSION_LIMIT = 10;
@@ -55,6 +54,35 @@ TEST_CASE("Test f_expansion validation", "[f_expansion]") {
     REQUIRE(e1.validate());
     REQUIRE(!e2.validate());
 }
+
+TEST_CASE("f_expansion increases fullerene size by expected amount", "[f_expansion]") {
+    auto d = create_c30_fullerene();
+    const auto initial = d.to_primal().get_adjacency().size();
+
+    f_expansion e(d, d.get_nodes_5()[0]);
+    REQUIRE(e.validate());
+
+    e.apply();
+
+    REQUIRE(d.to_primal().get_adjacency().size() == initial + 10);
+}
+
+TEST_CASE("No dangling neighbors after multiple F expansions", "[f_expansion]") {
+    auto d = create_c30_fullerene();
+
+    for (int i = 0; i < 5; ++i) {
+        auto exp = f_expansion(d, d.get_nodes_5()[0]);
+        REQUIRE(exp.validate());
+        exp.apply();
+    }
+
+    d.for_each_node([&](const std::shared_ptr<base_node>& u) {
+        for (auto& w : u->neighbors()) {
+            REQUIRE(w.lock());
+        }
+    });
+}
+
 
 // test l_expansion
 using signature = std::vector<int>;

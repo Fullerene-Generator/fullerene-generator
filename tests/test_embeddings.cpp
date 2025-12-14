@@ -12,7 +12,7 @@
 constexpr double EPS = 1e-6;
 
 // test embedder
-TEST_CASE("Tutte embedding test for base fullerenes") {
+TEST_CASE("Tutte embedding test for base fullerenes", "[embedder]") {
     const auto d1 = create_c20_fullerene();
     const auto d2 = create_c28_fullerene();
     const auto d3 = create_c30_fullerene();
@@ -53,7 +53,7 @@ TEST_CASE("Tutte embedding test for base fullerenes") {
     }
 }
 
-TEST_CASE("Tutte spherical embedding test for base fullerenes") {
+TEST_CASE("Tutte spherical embedding test for base fullerenes", "[embedder]") {
     const auto d1 = create_c20_fullerene();
     const auto d2 = create_c28_fullerene();
     const auto d3 = create_c30_fullerene();
