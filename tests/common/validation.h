@@ -9,6 +9,7 @@
 #include <catch2/internal/catch_preprocessor_internal_stringify.hpp>
 #include <fullerene/construct.h>
 #include <fullerene/dual_fullerene.h>
+#include <algorithm>
 
 inline void validate_dual_fullerene(const dual_fullerene& f) {
     REQUIRE(f.get_nodes_5().size() == 12);

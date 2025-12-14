@@ -197,3 +197,14 @@ void dual_fullerene::move_neighbourhood(int from, int to) {
 void dual_fullerene::add_node(const std::shared_ptr<node_6>& new_node) {
     nodes_6.push_back(new_node);
 }
+
+void dual_fullerene::pop_last_node6() {
+    if (nodes_6.empty()) {
+        throw std::out_of_range("pop_last_node6 on empty nodes_6");
+    }
+
+    auto victim = nodes_6.back();
+    victim->clear_neighbors();
+    
+    nodes_6.pop_back();
+}

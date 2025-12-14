@@ -2,6 +2,9 @@
 #define FULLERENE_GENERATOR_EMBEDDER_H
 #include <Eigen/Dense>
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+
 struct graph {
     std::vector<std::array<unsigned,3>> adjacency;
     std::array<unsigned,5> outer;
@@ -18,3 +21,4 @@ public:
 
 
 #endif //FULLERENE_GENERATOR_EMBEDDER_H
+#endif //M_PI

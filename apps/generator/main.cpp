@@ -1,5 +1,6 @@
 #include "generators/f_expansion_generator.h"
 #include <iostream>
+#include <string>
 
 
 int main(int argc, char** argv) {
