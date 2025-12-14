@@ -71,6 +71,26 @@ TEST_CASE("directed_edge next/prev around are inverses", "[directed_edge]") {
     }
 }
 
+TEST_CASE("directed_edge full rotation returns to original edge", "[directed_edge]") {
+    auto u = node_5::create_sized(0);
+    std::vector<std::shared_ptr<node_5>> nbrs(5);
+
+    for (int i = 0; i < 5; ++i) {
+        nbrs[i] = node_5::create(i + 1);
+        u->set_neighbor_at(i, nbrs[i]);
+        nbrs[i]->add_neighbor(u);
+    }
+
+    auto e = u->get_edge(0);
+    auto cur = e;
+
+    for (int i = 0; i < 5; ++i) {
+        cur = cur.next_around(1);
+    }
+
+    REQUIRE(cur.to() == e.to());
+}
+
 TEST_CASE("directed_edge basic navigation", "[directed_edge]") {
     auto a = node_5::create(1);
     auto b = node_6::create(2);
