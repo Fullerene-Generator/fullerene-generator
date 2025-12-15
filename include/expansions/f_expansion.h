@@ -12,7 +12,7 @@ public:
     explicit f_expansion(dual_fullerene &G,  std::shared_ptr<node_5> v): base_expansion(G), v_(std::move(v)) {}
 
     [[nodiscard]] bool validate() const override;
-    void apply() const override;
+    void apply() override;
 };
 
 #endif //F_EXPANSION_H

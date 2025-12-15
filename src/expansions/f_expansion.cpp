@@ -10,7 +10,7 @@ bool f_expansion::validate() const {
     return true;
 }
 
-void f_expansion::apply() const {
+void f_expansion::apply(){
     std::array<std::shared_ptr<node_6>, 5> new_nodes{};
 
     for (auto & new_node : new_nodes) {

@@ -5,7 +5,7 @@
 #include <vector>
 
 std::vector<l_reduction>
-find_l_reductions(const dual_fullerene& G,
+find_L_reductions(const dual_fullerene& G,
     int size,
     int skip_pent_1,
     int skip_pent_2)
@@ -437,9 +437,12 @@ void l_reduction::apply(dual_fullerene& G, const l_candidate& c) const
     w_second_node->replace_neighbor(u_first_node, u_second_node);
     w_first_node->replace_neighbor(u_first_node, u_second_node);
     u_second_node->replace_neighbor(u_first_node, w_first_node);
+    h1_node->remove_neighbor(u_first_node);
 
     G.move_neighbourhood(h1, u_first);
+ 
 
     G.pop_last_node6();
+
 
 }

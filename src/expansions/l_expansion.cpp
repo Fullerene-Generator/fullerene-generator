@@ -49,7 +49,7 @@ bool l_expansion::validate() const
     return G_.get_node((unsigned)cand_.para[cand_.i + 2])->degree() == 5;
 }
 
-void l_expansion::apply() const
+void l_expansion::apply()
 {
     const auto& c = cand_;
     int i = cand_.i;
@@ -106,6 +106,8 @@ void l_expansion::apply() const
         auto h_node = G_.get_node(h);
         h_node->clear_neighbors();
 
+        std::fprintf(stderr, "ufirst: %d, u second: %d, w first: %d, w second: %d\n", u_first, u_second, w_first, w_second);
+
         if (c.use_next) {
             G_.add_neighbour_after(corridor_v, u_first, h);
             h_node->add_neighbor(w_first_node);
@@ -121,6 +123,10 @@ void l_expansion::apply() const
             h_node->add_neighbor(u_first_node);
             h_node->add_neighbor(corridor_node);
             h_node->add_neighbor(w_first_node);
+        }
+
+        if (j == 0) {
+            inv_first_ = corridor_node->get_edge(h_node);
         }
         
         G_.replace_neighbour(u_first, w_first, h);
@@ -164,6 +170,11 @@ void l_expansion::apply() const
         w_second_node->add_neighbor(w_first_node);
     }
 
+    if (i == 0) {
+        inv_first_ = corridor_node->get_edge(w_second_node);
+    }
+    inv_second_ = w_second_node->get_edge(corridor_node);
+    std::fprintf(stderr, "final ufirst: %d, u second: %d, w first: %d, w second: %d\n", u_first, u_second, w_first, w_second);
     G_.replace_neighbour(u_first, w_first, w_second);
     G_.replace_neighbour(u_second, w_first, w_second);
     G_.replace_neighbour(w_first, u_second, w_second);
