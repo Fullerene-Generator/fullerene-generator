@@ -26,8 +26,6 @@ private:
         int max_i,
         int min_reduction_size);
 
-    void emit_(const dual_fullerene& G);
-
     static int bound_by_vertex_count_(const dual_fullerene& G, std::size_t up_to);
 };
 

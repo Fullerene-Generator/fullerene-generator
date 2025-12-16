@@ -4,6 +4,7 @@
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
+#endif //M_PI
 
 struct graph {
     std::vector<std::array<unsigned,3>> adjacency;
@@ -21,4 +22,4 @@ public:
 
 
 #endif //FULLERENE_GENERATOR_EMBEDDER_H
-#endif //M_PI
+

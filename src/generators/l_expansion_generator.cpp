@@ -40,11 +40,6 @@ void l_expansion_generator::generate(std::size_t up_to)
 }
 
 
-void l_expansion_generator::emit_(const dual_fullerene& G)
-{
-    auto P = G.to_primal();
-    std::cout << P << std::flush;
-}
 
 int l_expansion_generator::bound_by_vertex_count_(const dual_fullerene& G, std::size_t up_to)
 {
