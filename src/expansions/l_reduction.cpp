@@ -5,7 +5,7 @@
 #include <vector>
 
 std::vector<l_reduction>
-find_l_reductions(const dual_fullerene& G,
+find_L_reductions(const dual_fullerene& G,
     int size,
     int skip_pent_1,
     int skip_pent_2)
@@ -369,4 +369,80 @@ bool l_reduction::is_canonical(const dual_fullerene& G, int min_size) const
     }
 
     return true;
+}
+
+void l_reduction::apply(dual_fullerene& G, const l_candidate& c) const
+{
+    const int i = c.i;
+    const int w_end = c.para[i + 2];
+
+    const int created = i + 2;
+    const int h1 = static_cast<int>(G.total_nodes()) - created;
+    const int h2 = static_cast<int>(G.total_nodes()) - 1;
+
+
+    auto h2_node = G.get_node(static_cast<unsigned int>(h2));
+
+    int u_first = c.path[i + 1];
+    int u_second = c.path[i + 2];
+    int w_first = c.para[i + 1];
+    int w_second = c.para[i + 2];
+    auto u_first_node = G.get_node(u_first);
+    auto u_second_node = G.get_node(u_second);
+    auto w_first_node = G.get_node(w_first);
+    auto w_second_node = G.get_node(w_second);
+
+    G.replace_neighbour(w_first, w_second, u_second);
+    G.replace_neighbour(u_second, w_second, w_first);
+    G.replace_neighbour(u_first, w_second, w_first);
+
+    h2_node->remove_neighbor(w_second_node);
+    G.move_neighbourhood(h2, w_second);
+    int h = h2 - 1;
+    G.pop_last_node6();
+
+    int corridor_node = w_second;
+    for (int j = i; j > 0; j--) {
+        auto h_node = G.get_node(h);
+        u_first = c.path[j];
+        u_second = c.path[j+1];
+        w_first = c.para[j];
+        w_second = c.para[j+1];
+        u_first_node = G.get_node(u_first);
+        u_second_node = G.get_node(u_second);
+        w_first_node = G.get_node(w_first);
+        w_second_node = G.get_node(w_second);
+        
+        w_second_node->replace_neighbor(h_node, u_second_node);
+        w_first_node->replace_neighbor(h_node, u_second_node);
+        u_second_node->replace_neighbor(h_node, w_first_node);
+        u_first_node->replace_neighbor(h_node, w_first_node);
+
+        G.pop_last_node6();
+        h--;
+        
+    }
+
+
+    auto h1_node = G.get_node(h1);
+    u_first = c.path[0];
+    u_second = c.path[1];
+    w_first = c.para[0];
+    w_second = c.para[1];
+    u_first_node = G.get_node(u_first);
+    u_second_node = G.get_node(u_second);
+    w_first_node = G.get_node(w_first);
+    w_second_node = G.get_node(w_second);
+
+    w_second_node->replace_neighbor(u_first_node, u_second_node);
+    w_first_node->replace_neighbor(u_first_node, u_second_node);
+    u_second_node->replace_neighbor(u_first_node, w_first_node);
+    h1_node->remove_neighbor(u_first_node);
+
+    G.move_neighbourhood(h1, u_first);
+ 
+
+    G.pop_last_node6();
+
+
 }

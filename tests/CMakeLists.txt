@@ -4,7 +4,7 @@
         test_embeddings.cpp
 )
 
-add_executable(fullerene_tests ${TEST_SOURCES})
+add_executable(fullerene_tests ${TEST_SOURCES} "test_reductions.cpp")
 
 target_link_libraries(fullerene_tests
         PRIVATE

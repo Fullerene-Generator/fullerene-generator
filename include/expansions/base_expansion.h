@@ -12,7 +12,7 @@ public:
     virtual ~base_expansion() = default;
 
     [[nodiscard]] virtual bool validate() const = 0;
-    virtual void apply() const = 0;
+    virtual void apply() = 0;
 };
 
 #endif //BASE_EXPANSION_H
