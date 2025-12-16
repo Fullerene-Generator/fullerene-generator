@@ -2,6 +2,7 @@
 #include <expansions/l_signature_state.h>
 #include <queue>
 #include <iostream>
+#include <unordered_set>
 
 void build_l_rails(const dual_fullerene& G,
     const directed_edge& e0,
@@ -23,6 +24,25 @@ void build_l_rails(const dual_fullerene& G,
     }
 }
 
+static bool l_patch_vertices_unique(const std::vector<int>& path,
+    const std::vector<int>& para)
+{
+    std::unordered_set<int> seen;
+    seen.reserve(path.size() + para.size());
+
+    for (int v : path) {
+        if (!seen.insert(v).second) {
+            return false;
+        }
+    }
+    for (int v : para) {
+        if (!seen.insert(v).second) {
+            return false;
+        }
+    }
+    return true;
+}
+
 std::vector<l_candidate> find_l_candidates(const dual_fullerene& G, int x)
 {
     std::vector<l_candidate> out;
@@ -35,7 +55,7 @@ std::vector<l_candidate> find_l_candidates(const dual_fullerene& G, int x)
                 std::vector<int> P, Q;
                 build_l_rails(G, e, use_next, x, P, Q);
 
-                if (G.get_node((unsigned)Q[x+2])->degree() == 5)
+                if ((G.get_node((unsigned)Q[x+2])->degree() == 5) && l_patch_vertices_unique(P, Q))
                     out.push_back({ e, use_next, x, std::move(P), std::move(Q) });
             }
         }
@@ -106,7 +126,6 @@ void l_expansion::apply()
         auto h_node = G_.get_node(h);
         h_node->clear_neighbors();
 
-        std::fprintf(stderr, "ufirst: %d, u second: %d, w first: %d, w second: %d\n", u_first, u_second, w_first, w_second);
 
         if (c.use_next) {
             G_.add_neighbour_after(corridor_v, u_first, h);
@@ -174,7 +193,6 @@ void l_expansion::apply()
         inv_first_ = corridor_node->get_edge(w_second_node);
     }
     inv_second_ = w_second_node->get_edge(corridor_node);
-    std::fprintf(stderr, "final ufirst: %d, u second: %d, w first: %d, w second: %d\n", u_first, u_second, w_first, w_second);
     G_.replace_neighbour(u_first, w_first, w_second);
     G_.replace_neighbour(u_second, w_first, w_second);
     G_.replace_neighbour(w_first, u_second, w_second);
