@@ -5,7 +5,7 @@
 #include <vector>
 
 std::vector<l_reduction>
-find_L_reductions(const dual_fullerene& G,
+find_l_reductions(const dual_fullerene& G,
     int size,
     int skip_pent_1,
     int skip_pent_2)
@@ -192,7 +192,7 @@ bool l_reduction::is_canonical(const dual_fullerene& G, int min_size) const
     }
 
     for (int s = min_size; s < ref_size; ++s) {
-        auto smaller = find_L_reductions(G, s);
+        auto smaller = find_l_reductions(G, s);
         if (!smaller.empty()) {
             return false;
         }
@@ -203,7 +203,7 @@ bool l_reduction::is_canonical(const dual_fullerene& G, int min_size) const
     int ref_last_pent = static_cast<int>(second_edge.from->id());
 
 
-    auto candidates = find_L_reductions(G, ref_size, ref_first_pent, ref_last_pent);
+    auto candidates = find_l_reductions(G, ref_size, ref_first_pent, ref_last_pent);
     if (candidates.empty()) {
         return true;
     }
