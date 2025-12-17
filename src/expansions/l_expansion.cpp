@@ -2,6 +2,7 @@
 #include <expansions/l_signature_state.h>
 #include <queue>
 #include <iostream>
+#include <unordered_set>
 
 void build_l_rails(const dual_fullerene& G,
     const directed_edge& e0,
@@ -23,6 +24,25 @@ void build_l_rails(const dual_fullerene& G,
     }
 }
 
+static bool l_patch_vertices_unique(const std::vector<int>& path,
+    const std::vector<int>& para)
+{
+    std::unordered_set<int> seen;
+    seen.reserve(path.size() + para.size());
+
+    for (int v : path) {
+        if (!seen.insert(v).second) {
+            return false;
+        }
+    }
+    for (int v : para) {
+        if (!seen.insert(v).second) {
+            return false;
+        }
+    }
+    return true;
+}
+
 std::vector<l_candidate> find_l_candidates(const dual_fullerene& G, int x)
 {
     std::vector<l_candidate> out;
@@ -35,7 +55,7 @@ std::vector<l_candidate> find_l_candidates(const dual_fullerene& G, int x)
                 std::vector<int> P, Q;
                 build_l_rails(G, e, use_next, x, P, Q);
 
-                if (G.get_node((unsigned)Q[x+2])->degree() == 5)
+                if ((G.get_node((unsigned)Q[x+2])->degree() == 5) && l_patch_vertices_unique(P, Q))
                     out.push_back({ e, use_next, x, std::move(P), std::move(Q) });
             }
         }
@@ -49,7 +69,7 @@ bool l_expansion::validate() const
     return G_.get_node((unsigned)cand_.para[cand_.i + 2])->degree() == 5;
 }
 
-void l_expansion::apply() const
+void l_expansion::apply()
 {
     const auto& c = cand_;
     int i = cand_.i;
@@ -106,6 +126,7 @@ void l_expansion::apply() const
         auto h_node = G_.get_node(h);
         h_node->clear_neighbors();
 
+
         if (c.use_next) {
             G_.add_neighbour_after(corridor_v, u_first, h);
             h_node->add_neighbor(w_first_node);
@@ -121,6 +142,10 @@ void l_expansion::apply() const
             h_node->add_neighbor(u_first_node);
             h_node->add_neighbor(corridor_node);
             h_node->add_neighbor(w_first_node);
+        }
+
+        if (j == 0) {
+            inv_first_ = corridor_node->get_edge(h_node);
         }
         
         G_.replace_neighbour(u_first, w_first, h);
@@ -164,6 +189,10 @@ void l_expansion::apply() const
         w_second_node->add_neighbor(w_first_node);
     }
 
+    if (i == 0) {
+        inv_first_ = corridor_node->get_edge(w_second_node);
+    }
+    inv_second_ = w_second_node->get_edge(corridor_node);
     G_.replace_neighbour(u_first, w_first, w_second);
     G_.replace_neighbour(u_second, w_first, w_second);
     G_.replace_neighbour(w_first, u_second, w_second);

@@ -5,6 +5,7 @@
 
 #include <fullerene/dual_fullerene.h>
 #include <fullerene/directed_edge.h>
+#include <expansions/l_expansion.h>
 
 struct l_reduction {
     directed_edge first_edge;
@@ -13,6 +14,7 @@ struct l_reduction {
     int size;
 
     bool is_canonical(const dual_fullerene& G, int min_size) const;
+    void apply(dual_fullerene& G, const l_candidate& c) const;
 };
 
 std::vector<l_reduction>

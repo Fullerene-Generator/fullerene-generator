@@ -30,6 +30,7 @@ public:
     void replace_neighbour(int v, int old_n, int new_n);
     void move_neighbourhood(int from, int to);
     void add_node(const std::shared_ptr<node_6>& new_node);
+    void pop_last_node6();
 };
 
 #endif //DUAL_FULLERENE_H
