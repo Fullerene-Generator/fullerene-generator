@@ -136,12 +136,21 @@ std::vector<std::array<double, 3>> embedder::compute_tutte_sphere_mapping(const 
     const auto max_depth = *std::ranges::max_element(depth);
 
     const auto tutte_embedding = compute_tutte(f);
+    std::array<double, 2> barycenter = {0, 0};
+
+    for (unsigned int v = 0; v < n; v++) {
+        barycenter[0] += tutte_embedding[v][0];
+        barycenter[1] += tutte_embedding[v][1];
+    }
+
+    barycenter[0] /= static_cast<double>(n);
+    barycenter[1] /= static_cast<double>(n);
 
     std::vector<std::array<double, 3>> embedding(n);
 
     for (int v = 0; v < n; v++) {
         const auto phi = (depth[v] + 0.5) * M_PI / (max_depth + 1);
-        const auto theta = atan2(tutte_embedding[v][1], tutte_embedding[v][0]);
+        const auto theta = atan2(tutte_embedding[v][1] - barycenter[1], tutte_embedding[v][0] - barycenter[0]);
 
         embedding[v][0] = std::sin(phi) * std::cos(theta);
         embedding[v][1] = std::sin(phi) * std::sin(theta);
