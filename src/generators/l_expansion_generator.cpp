@@ -23,10 +23,10 @@ void l_expansion_generator::generate(std::size_t up_to)
     {
         auto G = create_c20_fullerene();
         emit_(G);
-        dfs_(G, up_to, 1, 1);
+        dfs_(G, up_to, 3, 1);
         
     }
-
+    
     if (up_to < 28) {
         return;
     }
@@ -34,7 +34,13 @@ void l_expansion_generator::generate(std::size_t up_to)
     {
         auto G = create_c28_fullerene();
         emit_(G);
-        dfs_(G, up_to, 2, 1);
+        dfs_(G, up_to, 4, 1);
+    }
+    
+
+    for (const auto& [vertices, count] : graphCount) {
+        std::cout << vertices << " vertices: "
+            << count << " graphs\n";
     }
 
 }
@@ -84,8 +90,9 @@ void l_expansion_generator::dfs_(dual_fullerene& G,
 
         if (red.is_canonical(G, min_reduction_size)) {
             emit_(G);
+           // std::cout << "accepted G size " << 2*G.total_nodes() - 4 << " reduction size: " << red.size << '\n';
             int max_expansion_size = bound_by_vertex_count_(G, up_to);
-            int max_i = std::min(max_expansion_size, 4);
+            int max_i = std::min(max_expansion_size, 8);
             dfs_(G, up_to, max_i, min_reduction_size);
         }
 

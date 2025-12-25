@@ -203,7 +203,7 @@ bool l_reduction::is_canonical(const dual_fullerene& G, int min_size) const
     int ref_last_pent = static_cast<int>(second_edge.from->id());
 
 
-    auto candidates = find_l_reductions(G, ref_size, ref_first_pent, ref_last_pent);
+    auto candidates = find_l_reductions(G, ref_size, -1, -1);
     if (candidates.empty()) {
         return true;
     }
@@ -317,6 +317,7 @@ bool l_reduction::is_canonical(const dual_fullerene& G, int min_size) const
 
             const auto& sig = states[i].signature();
             std::size_t cand_len = sig.size();
+     
 
             std::size_t j = prefix_len;
             if (j >= ref_len && j >= cand_len) {
@@ -325,29 +326,7 @@ bool l_reduction::is_canonical(const dual_fullerene& G, int min_size) const
 
             any_progress = true;
 
-            for (; j < ref_len || j < cand_len; ++j) {
-                bool ref_has = j < ref_len;
-                bool cand_has = j < cand_len;
-
-                if (!ref_has && !cand_has) {
-                    break;
-                }
-
-                if (!ref_has && cand_has) {
-                    if (ref_state.finished()) {
-                        alive[i] = false;
-                        --alive_count;
-                    }
-                    break;
-                }
-
-                if (ref_has && !cand_has) {
-                    if (states[i].finished()) {
-                        return false;
-                    }
-                    break;
-                }
-
+            for (; j < ref_len; ++j) {
                 int vr = ref_sig[j];
                 int vc = sig[j];
                 if (vc < vr) {
