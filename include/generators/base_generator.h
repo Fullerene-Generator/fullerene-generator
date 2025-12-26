@@ -11,10 +11,8 @@ public:
     virtual void generate(std::size_t up_to) = 0;
     virtual void emit_(const dual_fullerene& G) {
         auto P = G.to_primal();
-        //std::cout << P << std::flush;
-        graphCount[P.get_adjacency().size()]++;
+        std::cout << P << std::flush;
     }
-    std::map<int, int> graphCount;
 };
 
 #endif //BASE_GENERATOR_H
