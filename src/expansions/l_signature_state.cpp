@@ -4,7 +4,8 @@ l_signature_state::l_signature_state(const dual_fullerene& G, const l_candidate&
     : graph_(&G),
     candidate_(&c),
     bfs_front_(0),
-    finished_(false)
+    finished_(false),
+    color_offset_(G.total_nodes())
 {
     std::size_t n = G.total_nodes();
     index_of_.assign(n, -1);
@@ -62,7 +63,7 @@ void l_signature_state::extend_step() {
             index_of_[nid] = new_idx;
             bfs_order_.push_back(nid);
             base_edges_.push_back(e.inverse());
-            signature_.push_back(new_idx);
+            signature_.push_back(new_idx + color_offset_ + to_node->degree());
         }
         else {
             signature_.push_back(idx);
