@@ -14,6 +14,7 @@ class l_signature_state {
     std::vector<int> index_of_;
     std::size_t bfs_front_;
     bool finished_;
+    int color_offset_;
 
 public:
     l_signature_state(const dual_fullerene& G, const l_candidate& c);
