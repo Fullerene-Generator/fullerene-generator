@@ -117,7 +117,7 @@ fullerene dual_fullerene::to_primal() const {
         parent_id = construction_path.at(construction_path.size() - 2);
     }
 
-    return std::move(fullerene(id, parent_id, adjacency, outer_face_nodes));
+    return std::move(fullerene(id, parent_id, is_ipr(), adjacency, outer_face_nodes));
 }
 
 std::shared_ptr<base_node> dual_fullerene::get_node(unsigned int id) const {
@@ -228,4 +228,16 @@ void dual_fullerene::register_id() {
 
 void dual_fullerene::reduce_id() {
     construction_path.pop_back();
+}
+
+bool dual_fullerene::is_ipr() const {
+    for(auto u: nodes_5) {
+        for(auto v: u->neighbors()) {
+            if(v.lock()->type() == node_type::NODE_5) {
+                return false;
+            }
+        }
+    }
+
+    return true;
 }

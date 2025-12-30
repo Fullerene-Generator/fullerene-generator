@@ -6,7 +6,7 @@ std::string fullerene::write_all() const noexcept {
     std::ostringstream ss;
 
     // fullerene metadata
-    ss << get_size() << " " << id_ << " " << parent_id_ << "\n";
+    ss << get_size() << " " << id_ << " " << parent_id_ << " " << is_ipr_ << "\n";
 
     // nodes of the outer face
     for (unsigned v : outer_face_nodes_) {
