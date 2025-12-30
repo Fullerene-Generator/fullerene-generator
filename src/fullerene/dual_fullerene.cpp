@@ -2,10 +2,9 @@
 #include <string>
 #include <stdexcept>
 #include <algorithm>
+#include <fullerene/dual_fullerene.h>
 
-#include "fullerene/dual_fullerene.h"
-
-
+constexpr std::string BASE_FULLERENE_STRING = "BASE";
 
 dual_fullerene::dual_fullerene(const std::vector<std::vector<unsigned int>>& adjacency) {
     const std::size_t n = adjacency.size();
@@ -111,7 +110,13 @@ fullerene dual_fullerene::to_primal() const {
 
     clear_all_edge_data();
 
-    return std::move(fullerene(adjacency, outer_face_nodes));
+    auto parent_id = BASE_FULLERENE_STRING;
+
+    if(construction_path.size() > 1) {
+        parent_id = construction_path.at(construction_path.size() - 2);
+    }
+
+    return std::move(fullerene(id, parent_id, adjacency, outer_face_nodes));
 }
 
 std::shared_ptr<base_node> dual_fullerene::get_node(unsigned int id) const {

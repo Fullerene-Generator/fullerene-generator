@@ -9,6 +9,9 @@ class dual_fullerene {
     std::vector<std::shared_ptr<node_5>> nodes_5;
     std::vector<std::shared_ptr<node_6>> nodes_6;
 
+    std::string id;
+    std::vector<std::string> construction_path = {};
+
 public:
     explicit dual_fullerene(const std::vector<std::vector<unsigned int>>& adjacency);
 
@@ -31,6 +34,7 @@ public:
     void move_neighbourhood(int from, int to);
     void add_node(const std::shared_ptr<node_6>& new_node);
     void pop_last_node6();
+    void register_id();
 };
 
 #endif //DUAL_FULLERENE_H

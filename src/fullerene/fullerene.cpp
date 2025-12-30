@@ -5,8 +5,8 @@
 std::string fullerene::write_all() const noexcept {
     std::ostringstream ss;
 
-    // fullerene size
-    ss << adjacency_.size() << "\n";
+    // fullerene metadata
+    ss << get_size() << " " << id_ << " " << parent_id_ << "\n";
 
     // nodes of the outer face
     for (unsigned v : outer_face_nodes_) {
