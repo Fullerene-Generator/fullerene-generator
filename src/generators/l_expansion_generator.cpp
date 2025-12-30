@@ -22,7 +22,7 @@ void l_expansion_generator::generate(std::size_t up_to)
 
     {
         auto G = create_c20_fullerene();
-        emit_(G);
+        register_and_emit(G);
         dfs_(G, up_to, 3, 1);
         
     }
@@ -33,7 +33,7 @@ void l_expansion_generator::generate(std::size_t up_to)
 
     {
         auto G = create_c28_fullerene();
-        emit_(G);
+        register_and_emit(G);
         dfs_(G, up_to, 4, 1);
     }
     
@@ -84,7 +84,7 @@ void l_expansion_generator::dfs_(dual_fullerene& G,
         const auto red = matching_reduction_from_expansion(*le);
 
         if (red.is_canonical(G, min_reduction_size)) {
-            emit_(G);
+            register_and_emit(G);
             int max_expansion_size = bound_by_vertex_count_(G, up_to);
             int max_i = std::min(max_expansion_size, 8);
             dfs_(G, up_to, max_i, min_reduction_size);

@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <fullerene/dual_fullerene.h>
+#include "generators/id_registry.h"
 
 constexpr std::string BASE_FULLERENE_STRING = "BASE";
 
@@ -212,4 +213,19 @@ void dual_fullerene::pop_last_node6() {
     victim->clear_neighbors();
     
     nodes_6.pop_back();
+}
+
+void dual_fullerene::register_id() {
+    while (!construction_path.empty() && construction_path.back() != id) {
+        construction_path.pop_back();
+    }
+
+    const std::size_t V = total_nodes();
+    const std::size_t E = (5 * 12 + 6 * (V - 12)) / 2;
+    const std::size_t F = E - V + 2;
+
+    auto new_id = id_registry::register_id(F);
+
+    id = new_id;
+    construction_path.push_back(new_id);
 }

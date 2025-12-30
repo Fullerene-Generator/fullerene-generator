@@ -2,6 +2,7 @@
 #define FULLERENE_GENERATOR_ID_REGISTRY_H
 #include <map>
 #include <string>
+#include <sstream>
 
 class id_registry {
     inline static std::map<unsigned, unsigned> counters;
