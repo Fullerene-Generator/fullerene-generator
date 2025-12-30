@@ -88,6 +88,7 @@ void l_expansion_generator::dfs_(dual_fullerene& G,
             int max_expansion_size = bound_by_vertex_count_(G, up_to);
             int max_i = std::min(max_expansion_size, 8);
             dfs_(G, up_to, max_i, min_reduction_size);
+            G.reduce_id();
         }
 
         red.apply(G, cand);

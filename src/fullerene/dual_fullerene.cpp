@@ -216,10 +216,6 @@ void dual_fullerene::pop_last_node6() {
 }
 
 void dual_fullerene::register_id() {
-    while (!construction_path.empty() && construction_path.back() != id) {
-        construction_path.pop_back();
-    }
-
     const std::size_t V = total_nodes();
     const std::size_t E = (5 * 12 + 6 * (V - 12)) / 2;
     const std::size_t F = E - V + 2;
@@ -228,4 +224,8 @@ void dual_fullerene::register_id() {
 
     id = new_id;
     construction_path.push_back(new_id);
+}
+
+void dual_fullerene::reduce_id() {
+    construction_path.pop_back();
 }

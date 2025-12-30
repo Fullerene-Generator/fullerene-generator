@@ -353,12 +353,10 @@ bool l_reduction::is_canonical(const dual_fullerene& G, int min_size) const
 void l_reduction::apply(dual_fullerene& G, const l_candidate& c) const
 {
     const int i = c.i;
-    const int w_end = c.para[i + 2];
 
     const int created = i + 2;
     const int h1 = static_cast<int>(G.total_nodes()) - created;
     const int h2 = static_cast<int>(G.total_nodes()) - 1;
-
 
     auto h2_node = G.get_node(static_cast<unsigned int>(h2));
 
@@ -402,7 +400,6 @@ void l_reduction::apply(dual_fullerene& G, const l_candidate& c) const
         
     }
 
-
     auto h1_node = G.get_node(h1);
     u_first = c.path[0];
     u_second = c.path[1];
@@ -419,9 +416,6 @@ void l_reduction::apply(dual_fullerene& G, const l_candidate& c) const
     h1_node->remove_neighbor(u_first_node);
 
     G.move_neighbourhood(h1, u_first);
- 
 
     G.pop_last_node6();
-
-
 }
