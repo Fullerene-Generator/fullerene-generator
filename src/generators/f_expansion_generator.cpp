@@ -15,8 +15,9 @@ void f_expansion_generator::generate(std::size_t up_to) {
     auto C30_dual = create_c30_fullerene();
 
     register_and_emit(C30_dual);
+    current_size += F_EXPANSION_SIZE_INCREMENT;
 
-    while (current_size < up_to) {
+    while (current_size <= up_to) {
         auto expansion = f_expansion(C30_dual, C30_dual.get_nodes_5()[0]);
         if (!expansion.validate()) {
             throw std::logic_error("The F expansion can't be performed");
@@ -24,7 +25,6 @@ void f_expansion_generator::generate(std::size_t up_to) {
         expansion.apply();
 
         register_and_emit(C30_dual);
-
         current_size += F_EXPANSION_SIZE_INCREMENT;
     }
 }
