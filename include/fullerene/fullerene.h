@@ -6,8 +6,6 @@
 #include <cmath>
 
 class fullerene {
-    std::string id_;
-    std::string parent_id_;
     std::vector<std::array<unsigned int, 3>> adjacency_;
     std::array<unsigned int, 5> outer_face_nodes_;
 
@@ -17,8 +15,6 @@ public:
                         adjacency_(adjacency),
                         outer_face_nodes_(outer_face) {};
 
-    [[nodiscard]] std::string register_fullerene(const std::string& parent_id);
-    [[nodiscard]] size_t get_size() const { return adjacency_.size(); }
     [[nodiscard]] std::vector<std::array<unsigned int, 3>> get_adjacency() const { return adjacency_; }
     [[nodiscard]] std::array<unsigned int, 5> get_outer_face_nodes() const { return outer_face_nodes_; }
     [[nodiscard]] std::string write_all() const noexcept;

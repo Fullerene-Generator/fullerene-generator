@@ -24,8 +24,7 @@ private:
     void dfs_(dual_fullerene& G,
         std::size_t up_to,
         int max_i,
-        int min_reduction_size,
-        std::string& parent_id);
+        int min_reduction_size);
 
     static int bound_by_vertex_count_(const dual_fullerene& G, std::size_t up_to);
 };
