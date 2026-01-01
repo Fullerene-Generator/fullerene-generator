@@ -338,4 +338,3 @@ find_l_expansions(dual_fullerene& G, int i)
 
     return out;
 }
-
