@@ -7,8 +7,6 @@
 #include <utility>
 #include <vector>
 
-
-
 struct l_candidate {
     directed_edge start;
     bool use_next;
@@ -16,7 +14,6 @@ struct l_candidate {
     std::vector<int> path;
     std::vector<int> para;
 };
-
 
 void build_l_rails(const dual_fullerene& G,
     const directed_edge& e0,
@@ -26,7 +23,6 @@ void build_l_rails(const dual_fullerene& G,
     std::vector<int>& para);
 
 std::vector<l_candidate> find_l_candidates(const dual_fullerene& G, int i);
-
 
 class l_expansion final : public base_expansion {
     l_candidate cand_;
@@ -38,15 +34,11 @@ public:
         : base_expansion(G), cand_(std::move(c)) {
     }
 
-
     [[nodiscard]] bool validate() const override;
     void apply() override;
 
-    directed_edge inverse_first_edge() const { return inv_first_; }
-    directed_edge inverse_second_edge() const { return inv_second_; }
-
-    
-
+    [[nodiscard]] directed_edge inverse_first_edge() const { return inv_first_; }
+    [[nodiscard]] directed_edge inverse_second_edge() const { return inv_second_; }
     [[nodiscard]] const l_candidate& candidate() const { return cand_; }
 };
 

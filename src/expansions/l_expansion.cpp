@@ -11,7 +11,7 @@ void build_l_rails(const dual_fullerene& G,
     std::vector<int>& path,
     std::vector<int>& para)
 {
-    int len = i + 3;
+    const int len = i + 3;
     path.resize(len);
     para.resize(len);
     auto e = e0;
@@ -47,7 +47,7 @@ std::vector<l_candidate> find_l_candidates(const dual_fullerene& G, int x)
 {
     std::vector<l_candidate> out;
 
-    for (auto node : G.get_nodes_5()) {
+    for (const auto& node : G.get_nodes_5()) {
         for (int i = 0; i < node->degree(); ++i) {
             directed_edge e{ node, static_cast<std::size_t>(i) };
 

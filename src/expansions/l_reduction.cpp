@@ -18,7 +18,7 @@ find_l_reductions(const dual_fullerene& G,
     int path_len = size + 1;
 
     for (const auto& pent : G.get_nodes_5()) {
-        auto start_node = pent;
+        const auto& start_node = pent;
         int deg = static_cast<int>(start_node->degree());
 
         for (int i = 0; i < deg; ++i) {
@@ -198,11 +198,6 @@ bool l_reduction::is_canonical(const dual_fullerene& G, int min_size) const
         }
     }
 
-    int path_len = ref_size + 1;
-    int ref_first_pent = static_cast<int>(first_edge.from->id());
-    int ref_last_pent = static_cast<int>(second_edge.from->id());
-
-
     auto candidates = find_l_reductions(G, ref_size, -1, -1);
     if (candidates.empty()) {
         return true;
@@ -249,7 +244,6 @@ bool l_reduction::is_canonical(const dual_fullerene& G, int min_size) const
     if (stage.empty()) {
         return true;
     }
-
 
     std::uint32_t ref_x4 = path_neighborhood_code(*this, 7);
     {
@@ -353,7 +347,6 @@ bool l_reduction::is_canonical(const dual_fullerene& G, int min_size) const
 void l_reduction::apply(dual_fullerene& G, const l_candidate& c) const
 {
     const int i = c.i;
-    const int w_end = c.para[i + 2];
 
     const int created = i + 2;
     const int h1 = static_cast<int>(G.total_nodes()) - created;
@@ -380,7 +373,6 @@ void l_reduction::apply(dual_fullerene& G, const l_candidate& c) const
     int h = h2 - 1;
     G.pop_last_node6();
 
-    int corridor_node = w_second;
     for (int j = i; j > 0; j--) {
         auto h_node = G.get_node(h);
         u_first = c.path[j];
@@ -399,9 +391,7 @@ void l_reduction::apply(dual_fullerene& G, const l_candidate& c) const
 
         G.pop_last_node6();
         h--;
-        
     }
-
 
     auto h1_node = G.get_node(h1);
     u_first = c.path[0];
@@ -419,9 +409,6 @@ void l_reduction::apply(dual_fullerene& G, const l_candidate& c) const
     h1_node->remove_neighbor(u_first_node);
 
     G.move_neighbourhood(h1, u_first);
- 
 
     G.pop_last_node6();
-
-
 }

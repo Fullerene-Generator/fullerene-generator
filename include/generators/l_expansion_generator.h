@@ -1,17 +1,8 @@
 #ifndef L_EXPANSION_GENERATOR_H
 #define L_EXPANSION_GENERATOR_H
 
-#include <cstddef>
 #include <iostream>
-#include <memory>
-#include <utility>
-#include <vector>
-
 #include <generators/base_generator.h>
-
-#include <expansions/l_expansion.h>
-#include <expansions/l_reduction.h>
-#include <fullerene/construct.h>
 #include <fullerene/dual_fullerene.h>
 
 class l_expansion_generator final : base_generator {
