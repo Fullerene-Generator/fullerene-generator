@@ -26,7 +26,6 @@ void l_expansion_generator::generate(std::size_t up_to)
         auto G = create_c20_fullerene();
         emit_(G);
         dfs_(G, up_to, 3, 1);
-        
     }
     
     if (up_to < 28) {
@@ -38,8 +37,6 @@ void l_expansion_generator::generate(std::size_t up_to)
         emit_(G);
         dfs_(G, up_to, 4, 1);
     }
-    
-
 }
 
 
