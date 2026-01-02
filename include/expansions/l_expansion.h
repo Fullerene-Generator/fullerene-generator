@@ -7,30 +7,30 @@
 #include <utility>
 #include <vector>
 
-struct l_candidate {
+struct l_expansion_candidate {
     directed_edge start;
     bool use_next;
-    int i;
+    int length;
     std::vector<int> path;
-    std::vector<int> para;
+    std::vector<int> parallel_path;
 };
 
 void build_l_rails(const dual_fullerene& G,
     const directed_edge& e0,
     bool use_next,
-    int i,
+    int length,
     std::vector<int>& path,
-    std::vector<int>& para);
+    std::vector<int>& parallel_path);
 
-std::vector<l_candidate> find_l_candidates(const dual_fullerene& G, int i);
+std::vector<l_expansion_candidate> find_l_candidates(const dual_fullerene& G, int i);
 
 class l_expansion final : public base_expansion {
-    l_candidate cand_;
+    l_expansion_candidate cand_;
     directed_edge inv_first_;
     directed_edge inv_second_;
 
 public:
-    explicit l_expansion(dual_fullerene& G, l_candidate  c)
+    explicit l_expansion(dual_fullerene& G, l_expansion_candidate  c)
         : base_expansion(G), cand_(std::move(c)) {
     }
 
@@ -39,7 +39,7 @@ public:
 
     [[nodiscard]] directed_edge inverse_first_edge() const { return inv_first_; }
     [[nodiscard]] directed_edge inverse_second_edge() const { return inv_second_; }
-    [[nodiscard]] const l_candidate& candidate() const { return cand_; }
+    [[nodiscard]] const l_expansion_candidate& candidate() const { return cand_; }
 };
 
 std::vector<std::unique_ptr<base_expansion>>

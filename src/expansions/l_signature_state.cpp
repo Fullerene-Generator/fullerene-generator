@@ -1,6 +1,6 @@
 #include <expansions/l_signature_state.h>
 
-l_signature_state::l_signature_state(const dual_fullerene& G, const l_candidate& c)
+l_signature_state::l_signature_state(const dual_fullerene& G, const l_expansion_candidate& c)
     : graph_(&G),
     candidate_(&c),
     bfs_front_(0),

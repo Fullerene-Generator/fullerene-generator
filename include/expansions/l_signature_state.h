@@ -7,7 +7,7 @@
 
 class l_signature_state {
     const dual_fullerene* graph_;
-    const l_candidate* candidate_;
+    const l_expansion_candidate* candidate_;
     std::vector<int> signature_;
     std::vector<unsigned int> bfs_order_;
     std::vector<directed_edge> base_edges_;
@@ -17,7 +17,7 @@ class l_signature_state {
     int color_offset_;
 
 public:
-    l_signature_state(const dual_fullerene& G, const l_candidate& c);
+    l_signature_state(const dual_fullerene& G, const l_expansion_candidate& c);
 
     void extend_step();
     [[nodiscard]] bool finished() const;

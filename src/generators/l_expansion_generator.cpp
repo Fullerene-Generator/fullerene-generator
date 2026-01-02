@@ -10,7 +10,7 @@ namespace {
         r.first_edge = e.inverse_first_edge();
         r.second_edge = e.inverse_second_edge();
         r.use_next = e.candidate().use_next;
-        r.size = e.candidate().i + 1;
+        r.size = e.candidate().length + 1;
         return r;
     }
 

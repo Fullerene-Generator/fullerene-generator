@@ -7,19 +7,19 @@
 void build_l_rails(const dual_fullerene& G,
     const directed_edge& e0,
     bool use_next,
-    int i,
+    int length,
     std::vector<int>& path,
-    std::vector<int>& para)
+    std::vector<int>& parallel_path)
 {
-    const int len = i + 3;
+    const int len = length + 3;
     path.resize(len);
-    para.resize(len);
+    parallel_path.resize(len);
     auto e = e0;
     for (int k = 0; k < len; ++k) {
         path[k] = (int)e.from->id();
         auto einv = e.inverse();
         auto side = use_next ? einv.prev_around() : einv.next_around();
-        para[k] = (int)side.to()->id();
+        parallel_path[k] = (int)side.to()->id();
         e = use_next ? e.right_turn(3) : e.left_turn(3);
     }
 }
@@ -43,9 +43,9 @@ static bool l_patch_vertices_unique(const std::vector<int>& path,
     return true;
 }
 
-std::vector<l_candidate> find_l_candidates(const dual_fullerene& G, int x)
+std::vector<l_expansion_candidate> find_l_candidates(const dual_fullerene& G, int x)
 {
-    std::vector<l_candidate> out;
+    std::vector<l_expansion_candidate> out;
 
     for (const auto& node : G.get_nodes_5()) {
         for (int i = 0; i < node->degree(); ++i) {
@@ -66,17 +66,17 @@ std::vector<l_candidate> find_l_candidates(const dual_fullerene& G, int x)
 
 bool l_expansion::validate() const
 {
-    return G_.get_node((unsigned)cand_.para[cand_.i + 2])->degree() == 5;
+    return G_.get_node((unsigned)cand_.parallel_path[cand_.length + 2])->degree() == 5;
 }
 
 void l_expansion::apply()
 {
     const auto& c = cand_;
-    int i = cand_.i;
+    int i = cand_.length;
     const int u0 = c.path[0];
     const int u1 = c.path[1];
-    const int w0 = c.para[0];
-    const int w1 = c.para[1];
+    const int w0 = c.parallel_path[0];
+    const int w1 = c.parallel_path[1];
 
     //first hexagon outside
     const int h1 = G_.add_vertex(node_type::NODE_6);
@@ -116,8 +116,8 @@ void l_expansion::apply()
         int h = G_.add_vertex(node_type::NODE_6);
         int u_first = c.path[j + 1];
         int u_second = c.path[j + 2];
-        int w_first = c.para[j + 1];
-        int w_second = c.para[j + 2];
+        int w_first = c.parallel_path[j + 1];
+        int w_second = c.parallel_path[j + 2];
         auto u_first_node = G_.get_node(u_first);
         auto u_second_node = G_.get_node(u_second);
         auto w_first_node = G_.get_node(w_first);
@@ -160,8 +160,8 @@ void l_expansion::apply()
     auto h2_node = G_.get_node(h2);
     int u_first = c.path[i + 1];
     int u_second = c.path[i + 2];
-    int w_first = c.para[i + 1];
-    int w_second = c.para[i + 2];
+    int w_first = c.parallel_path[i + 1];
+    int w_second = c.parallel_path[i + 2];
     auto u_first_node = G_.get_node(u_first);
     auto u_second_node = G_.get_node(u_second);
     auto w_first_node = G_.get_node(w_first);
