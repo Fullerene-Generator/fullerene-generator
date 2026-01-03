@@ -9,7 +9,7 @@ namespace {
         l_reduction r;
         r.first_edge = e.inverse_first_edge();
         r.second_edge = e.inverse_second_edge();
-        r.use_next = e.candidate().use_next;
+        r.use_next = e.candidate().clockwise;
         r.size = e.candidate().length + 1;
         return r;
     }

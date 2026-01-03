@@ -49,7 +49,7 @@ static l_reduction matching_reduction_from_candidate(const dual_fullerene& G, co
 {
     l_reduction r;;
     r.first_edge = expan.inverse_first_edge();
-    r.use_next = expan.candidate().use_next;
+    r.use_next = expan.candidate().clockwise;
     r.size = expan.candidate().length + 1;
     r.second_edge = expan.inverse_second_edge();
 

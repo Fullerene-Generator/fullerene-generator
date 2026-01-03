@@ -267,7 +267,7 @@ bool l_reduction::is_canonical(const dual_fullerene& G, int min_size) const
 
     l_expansion_candidate ref_cand;
     ref_cand.start = first_edge;
-    ref_cand.use_next = use_next;
+    ref_cand.clockwise = use_next;
     ref_cand.length = ref_size;
 
     l_signature_state ref_state(G, ref_cand);
@@ -277,7 +277,7 @@ bool l_reduction::is_canonical(const dual_fullerene& G, int min_size) const
     states.reserve(stage.size());
     for (std::size_t i = 0; i < stage.size(); ++i) {
         cand_data[i].start = stage[i].first_edge;
-        cand_data[i].use_next = stage[i].use_next;
+        cand_data[i].clockwise = stage[i].use_next;
         cand_data[i].length = stage[i].size;
         states.emplace_back(G, cand_data[i]);
     }

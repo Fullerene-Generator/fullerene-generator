@@ -194,7 +194,7 @@ TEST_CASE("L-expansion inverse reduction exists and is canonical", "[L_reduction
 
         for (const auto& r : reductions) {
             if (r.size != red_size) continue;
-            if (r.use_next != cand.use_next) continue;
+            if (r.use_next != cand.clockwise) continue;
             if (r.first_edge.from->id() != cand.start.from->id()) continue;
             if (r.second_edge.from->id() != static_cast<unsigned>(cand.parallel_path[red_size + 1])) continue;
 

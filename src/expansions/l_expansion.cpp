@@ -5,8 +5,8 @@
 #include <unordered_set>
 
 void build_l_rails(const dual_fullerene& G,
-    const directed_edge& e0,
-    bool use_next,
+    const directed_edge& start,
+    bool clockwise,
     int length,
     std::vector<int>& path,
     std::vector<int>& parallel_path)
@@ -14,13 +14,13 @@ void build_l_rails(const dual_fullerene& G,
     const int len = length + 3;
     path.resize(len);
     parallel_path.resize(len);
-    auto e = e0;
+    auto e = start;
     for (int k = 0; k < len; ++k) {
         path[k] = (int)e.from->id();
-        auto einv = e.inverse();
-        auto side = use_next ? einv.prev_around() : einv.next_around();
+        auto e_inverse = e.inverse();
+        auto side = clockwise ? e_inverse.prev_around() : e_inverse.next_around();
         parallel_path[k] = (int)side.to()->id();
-        e = use_next ? e.right_turn(3) : e.left_turn(3);
+        e = clockwise ? e.right_turn(3) : e.left_turn(3);
     }
 }
 
@@ -90,7 +90,7 @@ void l_expansion::apply()
     auto w1_node = G_.get_node(w1);
     
 
-    if (c.use_next) {
+    if (c.clockwise) {
         G_.add_neighbour_after(h1, u1, u0);
         u0_node->add_neighbor(u1_node);
         u0_node->add_neighbor(w1_node);
@@ -127,7 +127,7 @@ void l_expansion::apply()
         h_node->clear_neighbors();
 
 
-        if (c.use_next) {
+        if (c.clockwise) {
             G_.add_neighbour_after(corridor_v, u_first, h);
             h_node->add_neighbor(w_first_node);
             h_node->add_neighbor(corridor_node);
@@ -170,7 +170,7 @@ void l_expansion::apply()
 
     G_.move_neighbourhood(w_second, h2);
 
-    if (c.use_next) {
+    if (c.clockwise) {
         G_.add_neighbour_after(corridor_v, u_first, w_second);
         G_.add_neighbour_after(h2, w_first, w_second);
         w_second_node->add_neighbor(w_first_node);

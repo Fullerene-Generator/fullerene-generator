@@ -69,7 +69,7 @@ void l_signature_state::extend_step() {
             signature_.push_back(idx);
         }
 
-        e = candidate_->use_next ? e.next_around() : e.prev_around();
+        e = candidate_->clockwise ? e.next_around() : e.prev_around();
     }
 
     if (bfs_front_ >= bfs_order_.size()) {

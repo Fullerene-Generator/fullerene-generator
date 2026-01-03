@@ -9,20 +9,20 @@
 
 struct l_expansion_candidate {
     directed_edge start;
-    bool use_next;
+    bool clockwise;
     int length;
     std::vector<int> path;
     std::vector<int> parallel_path;
 };
 
 void build_l_rails(const dual_fullerene& G,
-    const directed_edge& e0,
-    bool use_next,
+    const directed_edge& start,
+    bool clockwise,
     int length,
     std::vector<int>& path,
     std::vector<int>& parallel_path);
 
-std::vector<l_expansion_candidate> find_l_candidates(const dual_fullerene& G, int i);
+std::vector<l_expansion_candidate> find_l_candidates(const dual_fullerene& G, int length);
 
 class l_expansion final : public base_expansion {
     l_expansion_candidate cand_;
@@ -30,7 +30,7 @@ class l_expansion final : public base_expansion {
     directed_edge inv_second_;
 
 public:
-    explicit l_expansion(dual_fullerene& G, l_expansion_candidate  c)
+    explicit l_expansion(dual_fullerene& G, l_expansion_candidate c)
         : base_expansion(G), cand_(std::move(c)) {
     }
 
