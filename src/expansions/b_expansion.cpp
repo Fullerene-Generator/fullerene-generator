@@ -59,3 +59,7 @@ std::vector<b_expansion_candidate> find_b_candidates(const dual_fullerene& G,
 
     return out;
 }
+
+bool b_expansion::validate() const {
+    return G_.get_node(static_cast<unsigned>(cand_.parallel_path[cand_.parallel_path.size() - 1]))->degree() == 5;
+}

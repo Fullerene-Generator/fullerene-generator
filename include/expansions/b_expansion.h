@@ -37,5 +37,4 @@ public:
     void apply() override;
 };
 
-
 #endif //FULLERENE_GENERATOR_B_EXPANSION_H
