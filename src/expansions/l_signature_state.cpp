@@ -18,7 +18,6 @@ l_signature_state::l_signature_state(const dual_fullerene& G, const l_expansion_
     bfs_order_.reserve(n);
     base_edges_.reserve(3*n);
 
-
     unsigned int from_id = c.start.from->id();
     unsigned int to_id = c.start.to()->id();
 

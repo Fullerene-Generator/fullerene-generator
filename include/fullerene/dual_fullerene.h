@@ -24,11 +24,11 @@ public:
     }
     void clear_all_edge_data() const;
     int add_vertex(node_type type);
-    void add_neighbour_after(int v, int after, int v2);
-    void add_neighbour_before(int v, int before, int v2);
+    void add_neighbor_after(int v, int after, int v2);
+    void add_neighbor_before(int v, int before, int v2);
     void remove_edge(int v1, int v2);
-    void replace_neighbour(int v, int old_n, int new_n);
-    void move_neighbourhood(int from, int to);
+    void replace_neighbor(int v, int old_n, int new_n);
+    void move_neighborhood(int from, int to);
     void add_node(const std::shared_ptr<node_6>& new_node);
     void pop_last_node6();
 };

@@ -24,6 +24,8 @@ void build_l_rails(const dual_fullerene& G,
 
 std::vector<l_expansion_candidate> find_l_candidates(const dual_fullerene& G, int length);
 
+std::vector<std::unique_ptr<base_expansion>> find_l_expansions(dual_fullerene& G, int i);
+
 class l_expansion final : public base_expansion {
     l_expansion_candidate cand_;
     directed_edge inv_first_;
@@ -41,8 +43,5 @@ public:
     [[nodiscard]] directed_edge inverse_second_edge() const { return inv_second_; }
     [[nodiscard]] const l_expansion_candidate& candidate() const { return cand_; }
 };
-
-std::vector<std::unique_ptr<base_expansion>>
-find_l_expansions(dual_fullerene& G, int i);
 
 #endif

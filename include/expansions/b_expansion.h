@@ -2,7 +2,6 @@
 #define FULLERENE_GENERATOR_B_EXPANSION_H
 #include <expansions/base_expansion.h>
 #include <fullerene/directed_edge.h>
-
 #include <utility>
 
 struct b_expansion_candidate {

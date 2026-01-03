@@ -364,12 +364,12 @@ void l_reduction::apply(dual_fullerene& G, const l_expansion_candidate& c) const
     auto w_first_node = G.get_node(w_first);
     auto w_second_node = G.get_node(w_second);
 
-    G.replace_neighbour(w_first, w_second, u_second);
-    G.replace_neighbour(u_second, w_second, w_first);
-    G.replace_neighbour(u_first, w_second, w_first);
+    G.replace_neighbor(w_first, w_second, u_second);
+    G.replace_neighbor(u_second, w_second, w_first);
+    G.replace_neighbor(u_first, w_second, w_first);
 
     h2_node->remove_neighbor(w_second_node);
-    G.move_neighbourhood(h2, w_second);
+    G.move_neighborhood(h2, w_second);
     int h = h2 - 1;
     G.pop_last_node6();
 
@@ -408,7 +408,7 @@ void l_reduction::apply(dual_fullerene& G, const l_expansion_candidate& c) const
     u_second_node->replace_neighbor(u_first_node, w_first_node);
     h1_node->remove_neighbor(u_first_node);
 
-    G.move_neighbourhood(h1, u_first);
+    G.move_neighborhood(h1, u_first);
 
     G.pop_last_node6();
 }
