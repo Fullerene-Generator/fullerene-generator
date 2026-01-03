@@ -36,3 +36,26 @@ void build_b_rails(const dual_fullerene& G,
 
     path[total_length + 1] = static_cast<int>(e.to()->id());
 }
+
+std::vector<b_expansion_candidate> find_b_candidates(const dual_fullerene& G,
+    int length_pre_bend,
+    int length_post_bend)
+{
+    std::vector<b_expansion_candidate> out;
+
+    for (const auto& node : G.get_nodes_5()) {
+        for (int i = 0; i < node->degree(); ++i) {
+            directed_edge e{ node, static_cast<std::size_t>(i) };
+
+            for (bool clockwise : { true, false }) {
+                std::vector<int> P, Q;
+                build_b_rails(G, e, clockwise, length_pre_bend, length_post_bend, P, Q);
+
+                if ((G.get_node(static_cast<unsigned>(Q[Q.size() - 1]))->degree() == 5) && patch_nodes_unique(P, Q))
+                    out.push_back({ e, clockwise, length_pre_bend, length_post_bend, std::move(P), std::move(Q) });
+            }
+        }
+    }
+
+    return out;
+}

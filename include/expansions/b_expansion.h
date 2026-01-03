@@ -23,7 +23,8 @@ void build_b_rails(const dual_fullerene& G,
     std::vector<int>& parallel_path);
 
 std::vector<b_expansion_candidate> find_b_candidates(const dual_fullerene& G,
-    int total_length);
+    int length_pre_bend,
+    int length_post_bend);
 
 class b_expansion : public base_expansion {
     b_expansion_candidate cand_;
