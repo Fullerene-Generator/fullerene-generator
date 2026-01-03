@@ -24,42 +24,23 @@ void build_l_rails(const dual_fullerene& G,
     }
 }
 
-static bool l_patch_vertices_unique(const std::vector<int>& path,
-    const std::vector<int>& para)
-{
-    std::unordered_set<int> seen;
-    seen.reserve(path.size() + para.size());
-
-    for (int v : path) {
-        if (!seen.insert(v).second) {
-            return false;
-        }
-    }
-    for (int v : para) {
-        if (!seen.insert(v).second) {
-            return false;
-        }
-    }
-    return true;
-}
-
-std::vector<l_expansion_candidate> find_l_candidates(const dual_fullerene& G, int x)
-{
+std::vector<l_expansion_candidate> find_l_candidates(const dual_fullerene& G, int length) {
     std::vector<l_expansion_candidate> out;
 
     for (const auto& node : G.get_nodes_5()) {
         for (int i = 0; i < node->degree(); ++i) {
             directed_edge e{ node, static_cast<std::size_t>(i) };
 
-            for (bool use_next : { true, false }) {
+            for (bool clockwise : { true, false }) {
                 std::vector<int> P, Q;
-                build_l_rails(G, e, use_next, x, P, Q);
+                build_l_rails(G, e, clockwise, length, P, Q);
 
-                if ((G.get_node((unsigned)Q[x+2])->degree() == 5) && l_patch_vertices_unique(P, Q))
-                    out.push_back({ e, use_next, x, std::move(P), std::move(Q) });
+                if ((G.get_node((unsigned)Q[length+2])->degree() == 5) && patch_nodes_unique(P, Q))
+                    out.push_back({ e, clockwise, length, std::move(P), std::move(Q) });
             }
         }
     }
+
     return out;
 }
 

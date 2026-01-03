@@ -2,6 +2,8 @@
 #define BASE_EXPANSION_H
 #include <fullerene/dual_fullerene.h>
 
+bool patch_nodes_unique(const std::vector<int>& path, const std::vector<int>& para);
+
 class base_expansion {
 protected:
     dual_fullerene& G_;
