@@ -9,6 +9,9 @@ class dual_fullerene {
     std::vector<std::shared_ptr<node_5>> nodes_5;
     std::vector<std::shared_ptr<node_6>> nodes_6;
 
+    std::string id;
+    std::vector<std::string> construction_path;
+
 public:
     explicit dual_fullerene(const std::vector<std::vector<unsigned int>>& adjacency);
 
@@ -17,6 +20,7 @@ public:
     [[nodiscard]] std::size_t total_nodes() const noexcept { return nodes_5.size() + nodes_6.size(); }
     [[nodiscard]] fullerene to_primal() const;
     [[nodiscard]] std::shared_ptr<base_node> get_node(unsigned int id) const;
+    [[nodiscard]] bool is_ipr() const;
     template<typename F>
     void for_each_node(F&& f) const {
         for (const auto& node : nodes_5) f(node);
@@ -31,6 +35,8 @@ public:
     void move_neighborhood(int from, int to);
     void add_node(const std::shared_ptr<node_6>& new_node);
     void pop_last_node6();
+    void register_id();
+    void reduce_id();
 };
 
 #endif //DUAL_FULLERENE_H

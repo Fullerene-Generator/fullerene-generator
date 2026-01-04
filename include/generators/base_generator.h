@@ -8,7 +8,8 @@ class base_generator {
 public:
     virtual ~base_generator() = default;
     virtual void generate(std::size_t up_to) = 0;
-    virtual void emit_(const dual_fullerene& G) {
+    virtual void register_and_emit(dual_fullerene& G) {
+        G.register_id();
         auto P = G.to_primal();
         std::cout << P << std::flush;
     }
