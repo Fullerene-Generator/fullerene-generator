@@ -214,9 +214,22 @@ TEST_CASE("C20 B(0, 0) candidate count is correct", "[b_expansion]") {
     dual_fullerene G = create_c20_fullerene();
 
     const auto candidates = find_b_candidates(G, 0, 0);
-    INFO("B(0,0) candidates = " << candidates.size());
+    INFO("B(0, 0) candidates = " << candidates.size());
 
     REQUIRE(candidates.size() == 120);
+}
+
+TEST_CASE("C20 B(0, 0) grouping matches signature classes", "[l_expansion]") {
+    dual_fullerene G = create_c20_fullerene();
+    std::size_t sig_classes = count_distinct_signatures(G, 0);
+
+    dual_fullerene G2 = create_c20_fullerene();
+    auto expansions = find_b_expansions(G2, 0, 0);
+
+    INFO("Signature classes = " << sig_classes);
+    INFO("Returned expansions = " << expansions.size());
+
+    REQUIRE(expansions.size() == sig_classes);
 }
 
 TEST_CASE("C30 B(i, i) expansions preserve dual fullerene validity", "[l_expansion]") {

@@ -1,12 +1,14 @@
-﻿#include <expansions/b_expansion.h>
+﻿#include <queue>
+#include <expansions/b_expansion.h>
+#include <expansions/signature_state.h>
 
 void build_b_rails(const dual_fullerene& G,
-    const directed_edge& start,
-    bool clockwise,
-    int length_pre_bend,
-    int length_post_bend,
-    std::vector<int>& path,
-    std::vector<int>& parallel_path)
+                   const directed_edge& start,
+                   bool clockwise,
+                   int length_pre_bend,
+                   int length_post_bend,
+                   std::vector<int>& path,
+                   std::vector<int>& parallel_path)
 {
     const int total_length = length_pre_bend + length_post_bend + 3;
     path.resize(total_length + 2);
@@ -271,5 +273,139 @@ std::vector<std::unique_ptr<base_expansion>> find_b_expansions(dual_fullerene& G
     int length_pre_bend,
     int length_post_bend)
 {
-    return std::vector<std::unique_ptr<base_expansion>>();
+    std::vector<std::unique_ptr<base_expansion>> out;
+
+    const auto candidates = find_b_candidates(G, length_pre_bend, length_post_bend);
+    std::size_t n = candidates.size();
+    if (n == 0) {
+        return out;
+    }
+
+    std::vector<signature_state> states;
+    states.reserve(n);
+    for (const auto& c : candidates) {
+        states.emplace_back(G, c);
+    }
+
+    struct Group {
+        std::vector<std::size_t> members;
+        std::size_t prefix_len;
+    };
+
+    std::queue<Group> groups;
+    Group initial;
+    initial.members.reserve(n);
+    for (std::size_t i = 0; i < n; ++i) {
+        initial.members.push_back(i);
+    }
+    initial.prefix_len = 0;
+    groups.push(initial);
+
+    std::vector<bool> is_representative(n, false);
+
+    while (!groups.empty()) {
+        Group g = groups.front();
+        groups.pop();
+
+        if (g.members.empty()) {
+            continue;
+        }
+
+        if (g.members.size() == 1) {
+            std::size_t idx = g.members.front();
+            if (!is_representative[idx]) {
+                is_representative[idx] = true;
+            }
+            continue;
+        }
+
+        for (std::size_t idx : g.members) {
+            states[idx].extend_step();
+        }
+
+        std::vector<std::vector<std::size_t>> subgroups;
+        std::vector<std::size_t> reps;
+
+        for (std::size_t idx : g.members) {
+            const auto& sig = states[idx].signature();
+
+            bool placed = false;
+            for (std::size_t k = 0; k < reps.size(); ++k) {
+                std::size_t rep_idx = reps[k];
+                const auto& rep_sig = states[rep_idx].signature();
+
+                if (sig.size() != rep_sig.size()) {
+                    continue;
+                }
+
+                bool equal = true;
+                std::size_t start = g.prefix_len;
+                std::size_t end = sig.size();
+                for (std::size_t p = start; p < end; ++p) {
+                    if (sig[p] != rep_sig[p]) {
+                        equal = false;
+                        break;
+                    }
+                }
+
+                if (equal) {
+                    subgroups[k].push_back(idx);
+                    placed = true;
+                    break;
+                }
+            }
+
+            if (!placed) {
+                reps.push_back(idx);
+                subgroups.push_back(std::vector<std::size_t>{idx});
+            }
+        }
+
+        for (std::size_t k = 0; k < subgroups.size(); ++k) {
+            auto& members = subgroups[k];
+            if (members.empty()) {
+                continue;
+            }
+
+            if (members.size() == 1) {
+                std::size_t idx = members.front();
+                if (!is_representative[idx]) {
+                    is_representative[idx] = true;
+                }
+                continue;
+            }
+
+            bool all_finished = true;
+            for (std::size_t idx : members) {
+                if (!states[idx].finished()) {
+                    all_finished = false;
+                    break;
+                }
+            }
+
+            if (all_finished) {
+                std::size_t idx = members.front();
+                if (!is_representative[idx]) {
+                    is_representative[idx] = true;
+                }
+            }
+            else {
+                Group ng;
+                ng.members = std::move(members);
+                ng.prefix_len = states[reps[k]].signature().size();
+                groups.push(std::move(ng));
+            }
+        }
+    }
+
+    for (std::size_t i = 0; i < n; ++i) {
+        if (is_representative[i]) {
+            auto e = std::make_unique<b_expansion>(G, candidates[i]);
+            if (e->validate()) {
+                out.push_back(std::move(e));
+            }
+        }
+    }
+
+    return out;
 }
