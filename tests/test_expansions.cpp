@@ -14,6 +14,8 @@
 #include <expansions/l_reduction.h>
 #include <expansions/l_signature_state.h>
 
+#include "expansions/b_expansion.h"
+
 
 constexpr int EXPANSION_LIMIT = 10;
 
@@ -123,7 +125,7 @@ static std::size_t count_distinct_signatures(const dual_fullerene& G, int i) {
     return uniq.size();
 }
 
-TEST_CASE("C20 L0 candidate count is correct", "[l_expansion]") {
+TEST_CASE("C20 L(0) candidate count is correct", "[l_expansion]") {
     dual_fullerene G = create_c20_fullerene();
 
     const auto candidates = find_l_candidates(G, 0);
@@ -132,7 +134,7 @@ TEST_CASE("C20 L0 candidate count is correct", "[l_expansion]") {
     REQUIRE(candidates.size() == 120);
 }
 
-TEST_CASE("C20 L0 grouping matches signature classes", "[l_expansion]") {
+TEST_CASE("C20 L(0) grouping matches signature classes", "[l_expansion]") {
     dual_fullerene G = create_c20_fullerene();
     std::size_t sig_classes = count_distinct_signatures(G, 0);
 
@@ -145,7 +147,7 @@ TEST_CASE("C20 L0 grouping matches signature classes", "[l_expansion]") {
     REQUIRE(expansions.size() == sig_classes);
 }
 
-TEST_CASE("C30 Li expansions preserve dual fullerene validity", "[l_expansion]") {
+TEST_CASE("C30 L(i) expansions preserve dual fullerene validity", "[l_expansion]") {
     constexpr int i = 1;
 
     dual_fullerene base = create_c30_fullerene();
@@ -204,5 +206,36 @@ TEST_CASE("L-expansion inverse reduction exists and is canonical", "[L_reduction
         }
 
         REQUIRE(match_found);
+    }
+}
+
+// test b_expansion
+TEST_CASE("C20 B(0, 0) candidate count is correct", "[b_expansion]") {
+    dual_fullerene G = create_c20_fullerene();
+
+    const auto candidates = find_b_candidates(G, 0, 0);
+    INFO("B(0,0) candidates = " << candidates.size());
+
+    REQUIRE(candidates.size() == 120);
+}
+
+TEST_CASE("C30 B(i, i) expansions preserve dual fullerene validity", "[l_expansion]") {
+    constexpr int i = 1;
+
+    dual_fullerene base = create_c30_fullerene();
+    auto candidates = find_b_candidates(base, i, i);
+
+    REQUIRE_FALSE(candidates.empty());
+
+    for (const auto& cand : candidates) {
+        dual_fullerene G = create_c30_fullerene();
+        b_expansion exp(G, cand);
+
+        if (!exp.validate()) {
+            continue;
+        }
+
+        exp.apply();
+        validate_dual_fullerene(G);
     }
 }

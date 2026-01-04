@@ -18,8 +18,7 @@ void build_b_rails(const dual_fullerene& G,
 
     for (int k = 1; k < length_pre_bend + 2; ++k) {
         path[k] = static_cast<int>(e.from->id());
-        auto e_inverse = e.inverse();
-        auto side = clockwise ? e_inverse.prev_around() : e_inverse.next_around();
+        auto side = clockwise ? e.next_around(2) : e.prev_around(2);
         parallel_path[k - 1] = static_cast<int>(side.to()->id());
         e = clockwise ? e.right_turn(3) : e.left_turn(3);
     }
@@ -28,8 +27,7 @@ void build_b_rails(const dual_fullerene& G,
 
     for (int k = length_pre_bend + 2; k < total_length + 1; ++k) {
         path[k] = static_cast<int>(e.from->id());
-        auto e_inverse = e.inverse();
-        auto side = clockwise ? e_inverse.prev_around() : e_inverse.next_around();
+        auto side = clockwise ? e.next_around() : e.prev_around();
         parallel_path[k - 1] = static_cast<int>(side.to()->id());
         e = clockwise ? e.right_turn(3) : e.left_turn(3);
     }
@@ -51,7 +49,7 @@ std::vector<b_expansion_candidate> find_b_candidates(const dual_fullerene& G,
                 std::vector<int> P, Q;
                 build_b_rails(G, e, clockwise, length_pre_bend, length_post_bend, P, Q);
 
-                if ((G.get_node(static_cast<unsigned>(Q[Q.size() - 1]))->degree() == 5) && patch_nodes_unique(P, Q))
+                if ((G.get_node(static_cast<unsigned>(P[P.size() - 1]))->degree() == 5) && patch_nodes_unique(P, Q))
                     out.push_back({ e, clockwise, length_pre_bend, length_post_bend, std::move(P), std::move(Q) });
             }
         }
@@ -61,7 +59,7 @@ std::vector<b_expansion_candidate> find_b_candidates(const dual_fullerene& G,
 }
 
 bool b_expansion::validate() const {
-    return G_.get_node(static_cast<unsigned>(cand_.parallel_path[cand_.parallel_path.size() - 1]))->degree() == 5;
+    return G_.get_node(static_cast<unsigned>(cand_.path[cand_.path.size() - 1]))->degree() == 5;
 }
 
 void b_expansion::apply() {
@@ -280,5 +278,5 @@ std::vector<std::unique_ptr<base_expansion>> find_b_expansions(dual_fullerene& G
     int length_pre_bend,
     int length_post_bend)
 {
-
+    return std::vector<std::unique_ptr<base_expansion>>();
 }
