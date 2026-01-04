@@ -31,6 +31,8 @@ std::vector<std::unique_ptr<base_expansion>> find_b_expansions(dual_fullerene& G
 
 class b_expansion : public base_expansion {
     b_expansion_candidate cand_;
+    directed_edge inv_first_;
+    directed_edge inv_second_;
 
 public:
     explicit b_expansion(dual_fullerene &G, b_expansion_candidate c)
