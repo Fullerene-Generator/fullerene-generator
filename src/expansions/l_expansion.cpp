@@ -178,11 +178,11 @@ void l_expansion::apply() {
 }
 
 std::vector<std::unique_ptr<base_expansion>>
-find_l_expansions(dual_fullerene& G, int i)
+find_l_expansions(dual_fullerene& G, int length)
 {
     std::vector<std::unique_ptr<base_expansion>> out;
 
-    const auto candidates = find_l_candidates(G,i);
+    const auto candidates = find_l_candidates(G,length);
     std::size_t n = candidates.size();
     if (n == 0) {
         return out;

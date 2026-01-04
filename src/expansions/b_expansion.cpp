@@ -66,7 +66,8 @@ bool b_expansion::validate() const {
 
 void b_expansion::apply() {
     const auto& c = cand_;
-    int i = cand_.length_pre_bend;
+    int i1 = cand_.length_pre_bend;
+    int i2 = cand_.length_post_bend;
     const int u0 = c.path[0];
     const int u1 = c.path[1];
     const int w0 = c.parallel_path[0];
@@ -103,15 +104,15 @@ void b_expansion::apply() {
     G_.replace_neighbor(w0, u1, u0);
     G_.replace_neighbor(w1, u1, u0);
 
-    // corridor of hexagons
+    // corridor of hexagons (pre-bend)
     int corridor_v = u0;
 
-    for (int j = 0; j < i; j++) {
+    for (int j = 1; j <= i1; j++) {
         int h = G_.add_vertex(node_type::NODE_6);
-        int u_first = c.path[j + 1];
-        int u_second = c.path[j + 2];
-        int w_first = c.parallel_path[j + 1];
-        int w_second = c.parallel_path[j + 2];
+        int u_first = c.path[j];
+        int u_second = c.path[j + 1];
+        int w_first = c.parallel_path[j];
+        int w_second = c.parallel_path[j + 1];
         auto u_first_node = G_.get_node(u_first);
         auto u_second_node = G_.get_node(u_second);
         auto w_first_node = G_.get_node(w_first);
@@ -119,7 +120,6 @@ void b_expansion::apply() {
         auto corridor_node = G_.get_node(corridor_v);
         auto h_node = G_.get_node(h);
         h_node->clear_neighbors();
-
 
         if (c.clockwise) {
             G_.add_neighbor_after(corridor_v, u_first, h);
@@ -147,8 +147,44 @@ void b_expansion::apply() {
         G_.replace_neighbor(u_second, w_first, h);
         G_.replace_neighbor(w_second, u_second, h);
         corridor_v = h;
-
     }
+
+    // bend hexagon
+    int h = G_.add_vertex(node_type::NODE_6);
+    int u_first = c.path[i1 + 1];
+    int u_second = c.path[i1 + 2];
+    int u_third = c.path[i1 + 3];
+    int w_first = c.parallel_path[i1 + 1];
+    auto u_first_node = G_.get_node(u_first);
+    auto u_second_node = G_.get_node(u_second);
+    auto u_third_node = G_.get_node(u_third);
+    auto w_first_node = G_.get_node(w_first);
+    auto corridor_node = G_.get_node(corridor_v);
+    auto h_node = G_.get_node(h);
+    h_node->clear_neighbors();
+
+    if (c.clockwise) {
+        G_.add_neighbor_after(corridor_v, u_first, h);
+        h_node->add_neighbor(w_first_node);
+        h_node->add_neighbor(corridor_node);
+        h_node->add_neighbor(u_first_node);
+        h_node->add_neighbor(u_second_node);
+        h_node->add_neighbor(u_third_node);
+    }
+    else {
+        G_.add_neighbor_before(corridor_v, u_first, h);
+        h_node->add_neighbor(u_third_node);
+        h_node->add_neighbor(u_second_node);
+        h_node->add_neighbor(u_first_node);
+        h_node->add_neighbor(corridor_node);
+        h_node->add_neighbor(w_first_node);
+    }
+
+    G_.replace_neighbor(u_first, w_first, h);
+    G_.replace_neighbor(w_first, u_second, h);
+    G_.replace_neighbor(u_second, w_first, h);
+    G_.replace_neighbor(u_third, w_first, h);
+    corridor_v = h;
 
     // second external hexagon
     const int h2 = G_.add_vertex(node_type::NODE_6);
@@ -191,4 +227,11 @@ void b_expansion::apply() {
     G_.replace_neighbor(u_first, w_first, w_second);
     G_.replace_neighbor(u_second, w_first, w_second);
     G_.replace_neighbor(w_first, u_second, w_second);
+}
+
+std::vector<std::unique_ptr<base_expansion>> find_b_expansions(dual_fullerene& G,
+    int length_pre_bend,
+    int length_post_bend)
+{
+
 }

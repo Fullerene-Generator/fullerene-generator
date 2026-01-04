@@ -25,6 +25,10 @@ std::vector<b_expansion_candidate> find_b_candidates(const dual_fullerene& G,
     int length_pre_bend,
     int length_post_bend);
 
+std::vector<std::unique_ptr<base_expansion>> find_b_expansions(dual_fullerene& G,
+    int length_pre_bend,
+    int length_post_bend);
+
 class b_expansion : public base_expansion {
     b_expansion_candidate cand_;
 

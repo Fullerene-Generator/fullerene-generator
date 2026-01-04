@@ -24,7 +24,7 @@ void build_l_rails(const dual_fullerene& G,
 
 std::vector<l_expansion_candidate> find_l_candidates(const dual_fullerene& G, int length);
 
-std::vector<std::unique_ptr<base_expansion>> find_l_expansions(dual_fullerene& G, int i);
+std::vector<std::unique_ptr<base_expansion>> find_l_expansions(dual_fullerene& G, int length);
 
 class l_expansion final : public base_expansion {
     l_expansion_candidate cand_;
