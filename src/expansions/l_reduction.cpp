@@ -1,5 +1,5 @@
 #include <expansions/l_reduction.h>
-#include <expansions/l_signature_state.h>
+#include <expansions/signature_state.h>
 #include <iostream>
 #include <cstdint>
 #include <vector>
@@ -270,10 +270,10 @@ bool l_reduction::is_canonical(const dual_fullerene& G, int min_size) const
     ref_cand.clockwise = use_next;
     ref_cand.length = ref_size;
 
-    l_signature_state ref_state(G, ref_cand);
+    signature_state ref_state(G, ref_cand);
 
     std::vector<l_expansion_candidate> cand_data(stage.size());
-    std::vector<l_signature_state> states;
+    std::vector<signature_state> states;
     states.reserve(stage.size());
     for (std::size_t i = 0; i < stage.size(); ++i) {
         cand_data[i].start = stage[i].first_edge;

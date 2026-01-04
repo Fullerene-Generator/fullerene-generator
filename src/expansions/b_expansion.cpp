@@ -50,7 +50,7 @@ std::vector<b_expansion_candidate> find_b_candidates(const dual_fullerene& G,
                 build_b_rails(G, e, clockwise, length_pre_bend, length_post_bend, P, Q);
 
                 if ((G.get_node(static_cast<unsigned>(P[P.size() - 1]))->degree() == 5) && patch_nodes_unique(P, Q))
-                    out.push_back({ e, clockwise, length_pre_bend, length_post_bend, std::move(P), std::move(Q) });
+                    out.push_back({ e, clockwise, std::move(P), std::move(Q), length_pre_bend, length_post_bend });
             }
         }
     }

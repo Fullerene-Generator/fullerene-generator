@@ -1,5 +1,5 @@
 #include "expansions/l_expansion.h"
-#include <expansions/l_signature_state.h>
+#include <expansions/signature_state.h>
 #include <queue>
 #include <iostream>
 #include <unordered_set>
@@ -36,7 +36,7 @@ std::vector<l_expansion_candidate> find_l_candidates(const dual_fullerene& G, in
                 build_l_rails(G, e, clockwise, length, P, Q);
 
                 if ((G.get_node(static_cast<unsigned>(Q[Q.size() - 1]))->degree() == 5) && patch_nodes_unique(P, Q))
-                    out.push_back({ e, clockwise, length, std::move(P), std::move(Q) });
+                    out.push_back({ e, clockwise, std::move(P), std::move(Q), length });
             }
         }
     }
@@ -188,7 +188,7 @@ find_l_expansions(dual_fullerene& G, int length)
         return out;
     }
 
-    std::vector<l_signature_state> states;
+    std::vector<signature_state> states;
     states.reserve(n);
     for (const auto& c : candidates) {
         states.emplace_back(G, c);

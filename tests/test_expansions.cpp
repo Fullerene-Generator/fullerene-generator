@@ -12,7 +12,7 @@
 #include <fullerene/construct.h>
 #include <expansions/l_expansion.h>
 #include <expansions/l_reduction.h>
-#include <expansions/l_signature_state.h>
+#include <expansions/signature_state.h>
 
 #include "expansions/b_expansion.h"
 
@@ -101,7 +101,7 @@ struct SignatureLess {
 static std::size_t count_distinct_signatures(const dual_fullerene& G, int i) {
     auto candidates = find_l_candidates(const_cast<dual_fullerene&>(G), i);
 
-    std::vector<l_signature_state> states;
+    std::vector<signature_state> states;
     states.reserve(candidates.size());
     for (const auto& c : candidates) {
         states.emplace_back(G, c);

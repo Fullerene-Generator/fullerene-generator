@@ -4,13 +4,9 @@
 #include <fullerene/directed_edge.h>
 #include <utility>
 
-struct b_expansion_candidate {
-    directed_edge start;
-    bool clockwise;
+struct b_expansion_candidate: expansion_candidate {
     int length_pre_bend;
     int length_post_bend;
-    std::vector<int> path;
-    std::vector<int> parallel_path;
 };
 
 void build_b_rails(const dual_fullerene& G,

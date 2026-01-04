@@ -2,7 +2,7 @@ add_library(fullerene_expansions
         b_expansion.cpp
         l_expansion.cpp
         l_reduction.cpp
-        l_signature_state.cpp
+        signature_state.cpp
         f_expansion.cpp
         base_expansion.cpp
 )

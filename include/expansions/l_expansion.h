@@ -7,12 +7,8 @@
 #include <utility>
 #include <vector>
 
-struct l_expansion_candidate {
-    directed_edge start;
-    bool clockwise;
+struct l_expansion_candidate: expansion_candidate {
     int length;
-    std::vector<int> path;
-    std::vector<int> parallel_path;
 };
 
 void build_l_rails(const dual_fullerene& G,
