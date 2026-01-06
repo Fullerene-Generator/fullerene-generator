@@ -45,8 +45,8 @@ static void write_embedding_3d(const std::vector<std::array<double,3>>& coords) 
 
 int main(int argc, char** argv) {
     try {
-        if (argc != 2) {
-            std::cerr << "Usage: " << argv[0] << " <2|3>\n";
+        if (argc != 3) {
+            std::cerr << "Usage: " << argv[0] << " <2|3> <0|1>\n";
             return 1;
         }
 
@@ -56,13 +56,27 @@ int main(int argc, char** argv) {
             return 1;
         }
 
+        int force = std::stoi(argv[2]);
+        if (force != 0 && force != 1) {
+            std::cerr << "Force must be 0 or 1\n";
+            return 1;
+        }
+
         graph g = read_graph_from_stdin();
 
         if (mode == 2) {
             const auto coords = embedder::compute_tutte(g);
             write_embedding_2d(coords);
         } else {
-            const auto coords = embedder::compute_3d_force_embedding(g);
+            std::vector<std::array<double, 3>> coords;
+
+            if (force == 0) {
+                coords = embedder::compute_tutte_sphere_mapping(g);
+            }
+            else {
+                coords = embedder::compute_3d_force_embedding(g);
+            }
+
             write_embedding_3d(coords);
         }
     } catch (const std::exception& ex) {
