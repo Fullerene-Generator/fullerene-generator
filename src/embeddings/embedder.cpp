@@ -1,5 +1,6 @@
 #include <queue>
 #include <embeddings/embedder.h>
+#include <embeddings/forces.h>
 
 std::vector<unsigned int> embedder::compute_bfs_depth(const graph &f) {
     auto depth = std::vector<unsigned int>(f.adjacency.size());
@@ -156,6 +157,15 @@ std::vector<std::array<double, 3>> embedder::compute_tutte_sphere_mapping(const 
         embedding[v][1] = std::sin(phi) * std::sin(theta);
         embedding[v][2] = std::cos(phi);
     }
+
+    return embedding;
+}
+
+std::vector<std::array<double, 3>> embedder::compute_3d_force_embedding(const graph &f) {
+    auto embedding = compute_tutte_sphere_mapping(f);
+
+    constexpr force_params params;
+    relax_bond_springs(f, embedding, params);
 
     return embedding;
 }

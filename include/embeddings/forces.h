@@ -3,11 +3,6 @@
 #include <embeddings/embedder.h>
 #include <vector>
 
-enum class force_model {
-    none,
-    bond_springs
-};
-
 struct force_params {
     int iterations = 1000;
     double step = 0.01;
