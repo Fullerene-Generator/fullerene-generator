@@ -1,5 +1,5 @@
 #include <expansions/l_reduction.h>
-#include <expansions/l_signature_state.h>
+#include <expansions/signature_state.h>
 #include <iostream>
 #include <cstdint>
 #include <vector>
@@ -18,7 +18,7 @@ find_l_reductions(const dual_fullerene& G,
     int path_len = size + 1;
 
     for (const auto& pent : G.get_nodes_5()) {
-        auto start_node = pent;
+        const auto& start_node = pent;
         int deg = static_cast<int>(start_node->degree());
 
         for (int i = 0; i < deg; ++i) {
@@ -198,11 +198,6 @@ bool l_reduction::is_canonical(const dual_fullerene& G, int min_size) const
         }
     }
 
-    int path_len = ref_size + 1;
-    int ref_first_pent = static_cast<int>(first_edge.from->id());
-    int ref_last_pent = static_cast<int>(second_edge.from->id());
-
-
     auto candidates = find_l_reductions(G, ref_size, -1, -1);
     if (candidates.empty()) {
         return true;
@@ -250,7 +245,6 @@ bool l_reduction::is_canonical(const dual_fullerene& G, int min_size) const
         return true;
     }
 
-
     std::uint32_t ref_x4 = path_neighborhood_code(*this, 7);
     {
         std::vector<l_reduction> next;
@@ -271,20 +265,20 @@ bool l_reduction::is_canonical(const dual_fullerene& G, int min_size) const
         return true;
     }
 
-    l_candidate ref_cand;
+    l_expansion_candidate ref_cand;
     ref_cand.start = first_edge;
-    ref_cand.use_next = use_next;
-    ref_cand.i = ref_size;
+    ref_cand.clockwise = use_next;
+    ref_cand.length = ref_size;
 
-    l_signature_state ref_state(G, ref_cand);
+    signature_state ref_state(G, ref_cand);
 
-    std::vector<l_candidate> cand_data(stage.size());
-    std::vector<l_signature_state> states;
+    std::vector<l_expansion_candidate> cand_data(stage.size());
+    std::vector<signature_state> states;
     states.reserve(stage.size());
     for (std::size_t i = 0; i < stage.size(); ++i) {
         cand_data[i].start = stage[i].first_edge;
-        cand_data[i].use_next = stage[i].use_next;
-        cand_data[i].i = stage[i].size;
+        cand_data[i].clockwise = stage[i].use_next;
+        cand_data[i].length = stage[i].size;
         states.emplace_back(G, cand_data[i]);
     }
 
@@ -350,41 +344,41 @@ bool l_reduction::is_canonical(const dual_fullerene& G, int min_size) const
     return true;
 }
 
-void l_reduction::apply(dual_fullerene& G, const l_candidate& c) const
+void l_reduction::apply(dual_fullerene& G, const l_expansion_candidate& c) const
 {
-    const int i = c.i;
+    const int i = c.length;
 
     const int created = i + 2;
     const int h1 = static_cast<int>(G.total_nodes()) - created;
     const int h2 = static_cast<int>(G.total_nodes()) - 1;
 
+
     auto h2_node = G.get_node(static_cast<unsigned int>(h2));
 
     int u_first = c.path[i + 1];
     int u_second = c.path[i + 2];
-    int w_first = c.para[i + 1];
-    int w_second = c.para[i + 2];
+    int w_first = c.parallel_path[i + 1];
+    int w_second = c.parallel_path[i + 2];
     auto u_first_node = G.get_node(u_first);
     auto u_second_node = G.get_node(u_second);
     auto w_first_node = G.get_node(w_first);
     auto w_second_node = G.get_node(w_second);
 
-    G.replace_neighbour(w_first, w_second, u_second);
-    G.replace_neighbour(u_second, w_second, w_first);
-    G.replace_neighbour(u_first, w_second, w_first);
+    G.replace_neighbor(w_first, w_second, u_second);
+    G.replace_neighbor(u_second, w_second, w_first);
+    G.replace_neighbor(u_first, w_second, w_first);
 
     h2_node->remove_neighbor(w_second_node);
-    G.move_neighbourhood(h2, w_second);
+    G.move_neighborhood(h2, w_second);
     int h = h2 - 1;
     G.pop_last_node6();
 
-    int corridor_node = w_second;
     for (int j = i; j > 0; j--) {
         auto h_node = G.get_node(h);
         u_first = c.path[j];
         u_second = c.path[j+1];
-        w_first = c.para[j];
-        w_second = c.para[j+1];
+        w_first = c.parallel_path[j];
+        w_second = c.parallel_path[j+1];
         u_first_node = G.get_node(u_first);
         u_second_node = G.get_node(u_second);
         w_first_node = G.get_node(w_first);
@@ -397,14 +391,13 @@ void l_reduction::apply(dual_fullerene& G, const l_candidate& c) const
 
         G.pop_last_node6();
         h--;
-        
     }
 
     auto h1_node = G.get_node(h1);
     u_first = c.path[0];
     u_second = c.path[1];
-    w_first = c.para[0];
-    w_second = c.para[1];
+    w_first = c.parallel_path[0];
+    w_second = c.parallel_path[1];
     u_first_node = G.get_node(u_first);
     u_second_node = G.get_node(u_second);
     w_first_node = G.get_node(w_first);
@@ -415,7 +408,7 @@ void l_reduction::apply(dual_fullerene& G, const l_candidate& c) const
     u_second_node->replace_neighbor(u_first_node, w_first_node);
     h1_node->remove_neighbor(u_first_node);
 
-    G.move_neighbourhood(h1, u_first);
+    G.move_neighborhood(h1, u_first);
 
     G.pop_last_node6();
 }

@@ -140,33 +140,33 @@ void dual_fullerene::clear_all_edge_data() const {
 }
 
 int dual_fullerene::add_vertex(node_type type) {
-    const unsigned int id = static_cast<unsigned int>(total_nodes());
+    const auto id = static_cast<unsigned int>(total_nodes());
 
     switch (type) {
-    case node_type::NODE_5: {
-        auto p = node_5::create(id);
-        nodes_5.push_back(p);
-        break;
-    }
-    case node_type::NODE_6: {
-        auto p = node_6::create(id);
-        nodes_6.push_back(p);
-        break;
-    }
+        case node_type::NODE_5: {
+            auto p = node_5::create(id);
+            nodes_5.push_back(p);
+            break;
+        }
+        case node_type::NODE_6: {
+            auto p = node_6::create(id);
+            nodes_6.push_back(p);
+            break;
+        }
     }
 
     return static_cast<int>(id);
 }
 
 
-void dual_fullerene::add_neighbour_after(int v, int after, int v2) {
+void dual_fullerene::add_neighbor_after(int v, int after, int v2) {
     auto v_node = get_node(static_cast<unsigned int>(v));
     auto after_node = get_node(static_cast<unsigned int>(after));
     auto v2_node = get_node(static_cast<unsigned int>(v2));
     v_node->add_neighbour_after(after_node, v2_node);
 }
 
-void dual_fullerene::add_neighbour_before(int v, int before, int v2) {
+void dual_fullerene::add_neighbor_before(int v, int before, int v2) {
     auto v_node = get_node(static_cast<unsigned int>(v));
     auto before_node = get_node(static_cast<unsigned int>(before));
     auto v2_node = get_node(static_cast<unsigned int>(v2));
@@ -180,14 +180,14 @@ void dual_fullerene::remove_edge(int v1, int v2) {
     n2->remove_neighbor(n1);
 }
 
-void dual_fullerene::replace_neighbour(int v, int old_n, int new_n) {
+void dual_fullerene::replace_neighbor(int v, int old_n, int new_n) {
     auto v_node = get_node(static_cast<unsigned int>(v));
     auto old_node = get_node(static_cast<unsigned int>(old_n));
     auto new_node = get_node(static_cast<unsigned int>(new_n));
     v_node->replace_neighbor(old_node, new_node);
 }
 
-void dual_fullerene::move_neighbourhood(int from, int to) {
+void dual_fullerene::move_neighborhood(int from, int to) {
     auto from_node = get_node(static_cast<unsigned int>(from));
     auto to_node = get_node(static_cast<unsigned int>(to));
 

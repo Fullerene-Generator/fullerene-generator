@@ -1,4 +1,6 @@
 #include <generators/l_expansion_generator.h>
+#include <expansions/l_reduction.h>
+#include <fullerene/construct.h>
 
 namespace {
 
@@ -7,8 +9,8 @@ namespace {
         l_reduction r;
         r.first_edge = e.inverse_first_edge();
         r.second_edge = e.inverse_second_edge();
-        r.use_next = e.candidate().use_next;
-        r.size = e.candidate().i + 1;
+        r.use_next = e.candidate().clockwise;
+        r.size = e.candidate().length + 1;
         return r;
     }
 
@@ -40,8 +42,6 @@ void l_expansion_generator::generate(std::size_t up_to)
         int max_i = std::min(max_expansion_size, 4);
         dfs_(G, up_to, max_i, 1);
     }
-    
-
 }
 
 

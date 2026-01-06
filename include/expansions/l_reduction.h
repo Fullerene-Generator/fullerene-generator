@@ -13,8 +13,8 @@ struct l_reduction {
     bool use_next;
     int size;
 
-    bool is_canonical(const dual_fullerene& G, int min_size) const;
-    void apply(dual_fullerene& G, const l_candidate& c) const;
+    [[nodiscard]] bool is_canonical(const dual_fullerene& G, int min_size) const;
+    void apply(dual_fullerene& G, const l_expansion_candidate& c) const;
 };
 
 std::vector<l_reduction>

@@ -1,6 +1,6 @@
-#include <expansions/l_signature_state.h>
+#include <expansions/signature_state.h>
 
-l_signature_state::l_signature_state(const dual_fullerene& G, const l_candidate& c)
+signature_state::signature_state(const dual_fullerene& G, const expansion_candidate& c)
     : graph_(&G),
     candidate_(&c),
     bfs_front_(0),
@@ -18,7 +18,6 @@ l_signature_state::l_signature_state(const dual_fullerene& G, const l_candidate&
     bfs_order_.reserve(n);
     base_edges_.reserve(3*n);
 
-
     unsigned int from_id = c.start.from->id();
     unsigned int to_id = c.start.to()->id();
 
@@ -34,7 +33,7 @@ l_signature_state::l_signature_state(const dual_fullerene& G, const l_candidate&
     signature_.push_back(1);
 }
 
-void l_signature_state::extend_step() {
+void signature_state::extend_step() {
     if (finished_) {
         return;
     }
@@ -69,7 +68,7 @@ void l_signature_state::extend_step() {
             signature_.push_back(idx);
         }
 
-        e = candidate_->use_next ? e.next_around() : e.prev_around();
+        e = candidate_->clockwise ? e.next_around() : e.prev_around();
     }
 
     if (bfs_front_ >= bfs_order_.size()) {
@@ -77,10 +76,10 @@ void l_signature_state::extend_step() {
     }
 }
 
-bool l_signature_state::finished() const {
+bool signature_state::finished() const {
     return finished_;
 }
 
-const std::vector<int>& l_signature_state::signature() const {
+const std::vector<int>& signature_state::signature() const {
     return signature_;
 }
