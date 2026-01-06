@@ -8,10 +8,24 @@ struct force_params {
     double step = 0.01;
     double bond_k = 0.5;
     double angle_k = 0.1;
+    double radial_k = 0.01;
     double target_bond_length = 1.0;
     double target_angle_hex = 2.0 * M_PI / 3.0;
     double target_angle_pent = 3.0 * M_PI / 5.0;
 };
+
+template <size_t D>
+std::array<double, D> barycenter(const std::vector<std::array<double, D>>& pos) {
+    std::array<double, D> c{};
+    for (const auto& p : pos)
+        for (size_t k = 0; k < D; ++k)
+            c[k] += p[k];
+
+    for (size_t k = 0; k < D; ++k)
+        c[k] /= pos.size();
+
+    return c;
+}
 
 template <size_t D>
 double mean_edge_length(const graph& g, const std::vector<std::array<double, D>>& pos) {
@@ -113,6 +127,31 @@ void apply_bond_forces(const graph &g, std::vector<std::array<double, D>> &pos, 
                 force[j][k] -= f;
             }
         }
+    }
+}
+
+template <size_t D>
+void apply_radial_repulsion (std::vector<std::array<double, D>> &pos, std::vector<std::array<double, D>>& force, const force_params &params) {
+    auto center = barycenter(pos);
+
+    for (size_t i = 0; i < pos.size(); ++i) {
+        std::array<double, D> d{};
+        double r2 = 0;
+
+        for (size_t k = 0; k < D; ++k) {
+            d[k] = pos[i][k] - center[k];
+            r2 += d[k] * d[k];
+        }
+
+        const double r = std::sqrt(r2);
+
+        if (r == 0.0)
+            continue;
+
+        double mag = params.radial_k / (r * r);
+
+        for (size_t k = 0; k < D; ++k)
+            force[i][k] += mag * d[k];
     }
 }
 
