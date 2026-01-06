@@ -13,6 +13,10 @@ struct graph {
 
 class embedder {
     static std::vector<unsigned> compute_bfs_depth(const graph& f);
+    static void find_pentagons_starting_at(std::vector<std::array<unsigned, 5>>& pentagons,
+        std::array<unsigned, 5>& current_pentagon,const std::vector<std::array<unsigned,3>>& adjacency,
+        unsigned starting_node, unsigned current_node, unsigned depth, std::vector<bool>& visited);
+    static std::vector<std::array<unsigned, 5>> find_pentagons(const graph& f);
 
 public:
     static std::vector<std::array<double, 2>> compute_tutte(const graph& f);

@@ -30,6 +30,52 @@ std::vector<unsigned int> embedder::compute_bfs_depth(const graph &f) {
     return depth;
 }
 
+void embedder::find_pentagons_starting_at(std::vector<std::array<unsigned, 5>> &pentagons,
+    std::array<unsigned, 5> &current_pentagon, const std::vector<std::array<unsigned, 3>> &adjacency,
+    const unsigned starting_node, const unsigned current_node, const unsigned depth, std::vector<bool> &visited) {
+
+    current_pentagon.at(depth) = current_node;
+
+    if (depth == 4) {
+        for (const auto n : adjacency[current_node]) {
+            if (n == starting_node && current_pentagon.at(1) < current_pentagon.at(4)) {
+                pentagons.push_back(current_pentagon);
+            }
+        }
+
+        return;
+    }
+
+    visited.at(current_node) = true;
+
+    for (const auto n : adjacency[current_node]) {
+        if (n < starting_node || visited.at(n)) {
+            continue;
+        }
+
+        find_pentagons_starting_at(pentagons, current_pentagon, adjacency, starting_node, n, depth + 1, visited);
+    }
+
+    visited.at(current_node) = false;
+}
+
+std::vector<std::array<unsigned, 5>> embedder::find_pentagons(const graph &f) {
+    auto& adjacency = f.adjacency;
+    const auto n = adjacency.size();
+
+    auto pentagons = std::vector<std::array<unsigned, 5>>();
+    auto pentagon = std::array<unsigned, 5>();
+    auto visited = std::vector(n, false);
+
+    pentagons.reserve(12);
+
+    for (int i = 0; i < n; i++) {
+        find_pentagons_starting_at(pentagons, pentagon, adjacency, i, i, 0, visited);
+    }
+
+    return pentagons;
+}
+
 std::vector<std::array<double, 2>> embedder::compute_tutte(const graph& f) {
     auto& adjacency = f.adjacency;
     auto& outer = f.outer;
