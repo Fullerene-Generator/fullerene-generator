@@ -4,11 +4,11 @@
 #include <vector>
 
 struct force_params {
-    int iterations = 1000;
-    double step = 0.01;
+    int iterations = 10000;
+    double step = 0.1;
     double bond_k = 0.5;
     double angle_k = 0.1;
-    double radial_k = 0.01;
+    double radial_k = 0.03;
     double target_bond_length = 1.0;
     double target_angle_hex = 2.0 * M_PI / 3.0;
     double target_angle_pent = 3.0 * M_PI / 5.0;
