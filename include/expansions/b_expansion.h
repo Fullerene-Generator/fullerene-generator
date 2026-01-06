@@ -36,6 +36,9 @@ public:
 
     [[nodiscard]] bool validate() const override;
     void apply() override;
+    [[nodiscard]] directed_edge inverse_first_edge() const { return inv_first_; }
+    [[nodiscard]] directed_edge inverse_second_edge() const { return inv_second_; }
+    [[nodiscard]] const b_expansion_candidate& candidate() const { return cand_; }
 };
 
 #endif //FULLERENE_GENERATOR_B_EXPANSION_H
