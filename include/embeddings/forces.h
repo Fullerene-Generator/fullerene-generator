@@ -5,8 +5,8 @@
 
 struct force_params {
     int iterations = 1000;
-    double step = 0.01;
-    double stiffness = 1.0;
+    double step = 1.0;
+    double stiffness = 0.5;
 };
 
 template <size_t D>
@@ -51,8 +51,8 @@ void relax_bond_springs(const graph &g, std::vector<std::array<double, D>> &pos,
                 std::array<double, D> d;
 
                 for (std::size_t k = 0; k < D; ++k) {
-                    const auto diff = pos[i][k] - pos[j][k];
-                    len += diff * diff;
+                    d[k] = pos[j][k] - pos[i][k];
+                    len += d[k] * d[k];
                 }
 
                 len = std::sqrt(len);
