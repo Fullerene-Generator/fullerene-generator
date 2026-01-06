@@ -9,7 +9,8 @@ struct force_params {
     double bond_k = 0.5;
     double angle_k = 0.1;
     double target_bond_length = 1.0;
-    double target_angle = 2.0 * M_PI / 3.0;
+    double target_angle_hex = 2.0 * M_PI / 3.0;
+    double target_angle_pent = 3.0 * M_PI / 5.0;
 };
 
 template <size_t D>
@@ -34,7 +35,7 @@ double mean_edge_length(const graph& g, const std::vector<std::array<double, D>>
 }
 
 template <size_t D>
-void apply_angular_forces(const graph &g, std::vector<std::array<double, D>> &pos, std::vector<std::array<double, D>>& force, const force_params &params) {
+void apply_angular_forces(const graph &g, std::vector<std::array<double, D>> &pos, std::vector<std::array<double, D>>& force, std::set<angle_key>& pentagon_angles, const force_params &params) {
     for (size_t i = 0; i < g.adjacency.size(); ++i) {
         const auto neighbors = g.adjacency[i];
 
@@ -66,7 +67,9 @@ void apply_angular_forces(const graph &g, std::vector<std::array<double, D>> &po
                 cos_theta = std::clamp(cos_theta, -1.0, 1.0);
 
                 const double theta = std::acos(cos_theta);
-                const double delta = theta - params.target_angle;
+                const double delta = theta - (pentagon_angles.contains(embedder::make_angle_key(i, j, k)) ?
+                    params.target_angle_pent :
+                    params.target_angle_hex);
 
                 double mag = params.angle_k * delta;
 
@@ -114,7 +117,7 @@ void apply_bond_forces(const graph &g, std::vector<std::array<double, D>> &pos, 
 }
 
 template <size_t D>
-void relax_bond_springs(const graph &g, std::vector<std::array<double, D>> &pos, force_params &params) {
+void relax_bond_springs(const graph &g, std::vector<std::array<double, D>> &pos, std::set<angle_key>& pentagon_angles, force_params &params) {
     const auto n = pos.size();
 
     auto force = std::vector<std::array<double, D>>(n);
@@ -124,7 +127,7 @@ void relax_bond_springs(const graph &g, std::vector<std::array<double, D>> &pos,
         for (auto& f : force) f.fill(0.0);
 
         apply_bond_forces(g, pos, force, params);
-        apply_angular_forces(g, pos, force, params);
+        apply_angular_forces(g, pos, force, pentagon_angles, params);
 
         for (size_t i = 0; i < pos.size(); ++i)
             for (size_t d = 0; d < D; ++d)

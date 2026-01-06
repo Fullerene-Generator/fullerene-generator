@@ -76,6 +76,29 @@ std::vector<std::array<unsigned, 5>> embedder::find_pentagons(const graph &f) {
     return pentagons;
 }
 
+std::set<angle_key> embedder::find_pentagon_angles(const graph &f) {
+    const auto pentagons = find_pentagons(f);
+    std::set<angle_key> pentagon_angles;
+
+    for (const auto& p : pentagons) {
+        for (int t = 0; t < 5; ++t) {
+            const unsigned i = p[t];
+            const unsigned j = p[(t + 1) % 5];
+            const unsigned k = p[(t + 4) % 5];
+
+            pentagon_angles.insert(make_angle_key(i, j, k));
+        }
+    }
+
+    return pentagon_angles;
+}
+
+angle_key embedder::make_angle_key(double i, double j, double k) {
+    if (j > k)
+        std::swap(j, k);
+    return {i ,j ,k};
+}
+
 std::vector<std::array<double, 2>> embedder::compute_tutte(const graph& f) {
     auto& adjacency = f.adjacency;
     auto& outer = f.outer;
@@ -211,7 +234,9 @@ std::vector<std::array<double, 3>> embedder::compute_3d_force_embedding(const gr
     auto embedding = compute_tutte_sphere_mapping(f);
 
     force_params params;
-    relax_bond_springs(f, embedding, params);
+
+    auto pentagon_angles = find_pentagon_angles(f);
+    relax_bond_springs(f, embedding, pentagon_angles, params);
 
     return embedding;
 }
