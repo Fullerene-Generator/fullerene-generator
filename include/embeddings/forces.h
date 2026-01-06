@@ -167,6 +167,7 @@ void relax_bond_springs(const graph &g, std::vector<std::array<double, D>> &pos,
 
         apply_bond_forces(g, pos, force, params);
         apply_angular_forces(g, pos, force, pentagon_angles, params);
+        apply_radial_repulsion(pos, force, params);
 
         for (size_t i = 0; i < pos.size(); ++i)
             for (size_t d = 0; d < D; ++d)
