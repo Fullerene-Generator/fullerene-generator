@@ -210,7 +210,7 @@ std::vector<std::array<double, 3>> embedder::compute_tutte_sphere_mapping(const 
 std::vector<std::array<double, 3>> embedder::compute_3d_force_embedding(const graph &f) {
     auto embedding = compute_tutte_sphere_mapping(f);
 
-    constexpr force_params params;
+    force_params params;
     relax_bond_springs(f, embedding, params);
 
     return embedding;

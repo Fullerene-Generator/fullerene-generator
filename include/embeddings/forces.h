@@ -8,6 +8,7 @@ struct force_params {
     double step = 0.01;
     double bond_k = 0.5;
     double angle_k = 0.1;
+    double target_bond_length = 1.0;
     double target_angle = 2.0 * M_PI / 3.0;
 };
 
@@ -84,8 +85,6 @@ void apply_angular_forces(const graph &g, std::vector<std::array<double, D>> &po
 
 template <size_t D>
 void apply_bond_forces(const graph &g, std::vector<std::array<double, D>> &pos, std::vector<std::array<double, D>>& force, const force_params &params) {
-    const double L = mean_edge_length(g, pos);
-
     for (std::size_t i = 0; i < g.adjacency.size(); ++i) {
         for (unsigned j: g.adjacency[i]) {
             if (j <= i)
@@ -103,7 +102,7 @@ void apply_bond_forces(const graph &g, std::vector<std::array<double, D>> &pos, 
             if (len == 0)
                 continue;
 
-            auto mag = params.bond_k * (len - L) / len;
+            auto mag = params.bond_k * (len - params.target_bond_length) / len;
 
             for (std::size_t k = 0; k < D; ++k) {
                 double f = mag * d[k];
@@ -115,10 +114,11 @@ void apply_bond_forces(const graph &g, std::vector<std::array<double, D>> &pos, 
 }
 
 template <size_t D>
-void relax_bond_springs(const graph &g, std::vector<std::array<double, D>> &pos, const force_params &params) {
+void relax_bond_springs(const graph &g, std::vector<std::array<double, D>> &pos, force_params &params) {
     const auto n = pos.size();
 
     auto force = std::vector<std::array<double, D>>(n);
+    params.target_bond_length = mean_edge_length(g, pos);
 
     for (int it = 0; it < params.iterations; ++it) {
         for (auto& f : force) f.fill(0.0);
