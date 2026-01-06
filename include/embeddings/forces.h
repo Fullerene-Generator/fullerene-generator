@@ -38,7 +38,7 @@ void relax_bond_springs(const graph &g, std::vector<std::array<double, D>> &pos,
     auto force = std::vector<std::array<double, D>>(n);
 
     for (int it = 0; it < params.iterations; ++it) {
-        for (auto f: force) {
+        for (auto& f: force) {
             f.fill(0);
         }
 
