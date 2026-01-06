@@ -5,7 +5,7 @@
 #include <fullerene/dual_fullerene.h>
 #include "generators/id_registry.h"
 
-constexpr std::string BASE_FULLERENE_STRING = "BASE";
+const std::string BASE_FULLERENE_STRING = "BASE";
 
 dual_fullerene::dual_fullerene(const std::vector<std::vector<unsigned int>>& adjacency) {
     const std::size_t n = adjacency.size();

@@ -25,7 +25,10 @@ void l_expansion_generator::generate(std::size_t up_to)
     {
         auto G = create_c20_fullerene();
         register_and_emit(G);
-        dfs_(G, up_to, 3, 1);
+        int max_expansion_size = bound_by_vertex_count_(G, up_to);
+        int max_i = std::min(max_expansion_size, 3);
+        dfs_(G, up_to, max_i, 1);
+        
     }
     
     if (up_to < 28) {
@@ -35,7 +38,9 @@ void l_expansion_generator::generate(std::size_t up_to)
     {
         auto G = create_c28_fullerene();
         register_and_emit(G);
-        dfs_(G, up_to, 4, 1);
+        int max_expansion_size = bound_by_vertex_count_(G, up_to);
+        int max_i = std::min(max_expansion_size, 4);
+        dfs_(G, up_to, max_i, 1);
     }
 }
 
