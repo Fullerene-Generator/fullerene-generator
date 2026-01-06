@@ -1,6 +1,7 @@
 #include <generators/l_expansion_generator.h>
 #include <expansions/l_reduction.h>
 #include <fullerene/construct.h>
+#include <expansions/l_expansion.h>
 
 namespace {
 
