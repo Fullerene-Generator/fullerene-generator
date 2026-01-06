@@ -4,14 +4,18 @@
 #include <vector>
 
 struct force_params {
-    int iterations = 10000;
+    int max_iterations = 5000;
     double step = 0.1;
+
     double bond_k = 0.5;
     double angle_k = 0.1;
     double radial_k = 0.03;
+
     double target_bond_length = 1.0;
     double target_angle_hex = 2.0 * M_PI / 3.0;
     double target_angle_pent = 3.0 * M_PI / 5.0;
+
+    double convergence_eps = 1e-6;
 };
 
 template <size_t D>
@@ -162,16 +166,30 @@ void relax_bond_springs(const graph &g, std::vector<std::array<double, D>> &pos,
     auto force = std::vector<std::array<double, D>>(n);
     params.target_bond_length = mean_edge_length(g, pos);
 
-    for (int it = 0; it < params.iterations; ++it) {
+    for (int it = 0; it < params.max_iterations; ++it) {
         for (auto& f : force) f.fill(0.0);
 
         apply_bond_forces(g, pos, force, params);
         apply_angular_forces(g, pos, force, pentagon_angles, params);
         apply_radial_repulsion(pos, force, params);
 
-        for (size_t i = 0; i < pos.size(); ++i)
-            for (size_t d = 0; d < D; ++d)
-                pos[i][d] += params.step * force[i][d];
+        auto max_delta = 0.0;
+
+        for (size_t i = 0; i < pos.size(); ++i) {
+            auto delta = 0.0;
+
+            for (size_t d = 0; d < D; ++d) {
+                auto delta_dim = params.step * force[i][d];
+                pos[i][d] += delta_dim;
+                delta += delta_dim * delta_dim;
+            }
+
+            delta = std::sqrt(delta);
+            max_delta = std::max(max_delta, delta);
+        }
+
+        if (max_delta <= params.convergence_eps)
+            return;
     }
 }
 
