@@ -5,22 +5,26 @@
 #include <cstdint>
 #include <memory>
 #include <vector>
+#include <iostream>
 
 static std::uint32_t edge_neighborhood_code(const directed_edge& e, bool use_next)
 {
+    //std::cout << "computing edge neighbourhood code\n";
     auto e0 = e;
     std::uint32_t code = 0;
+   // std::cout << "now pack\n";
 
     auto pack = [&](int deg) {
         code <<= 1;
         if (deg == 6) code |= 1u;
         };
-
+    //std::cout << "now loop\n";
     for (int k = 0; k < 5; k++) {
+      //  std::cout << "k: " << k << " to degree: " << e0.to()->degree() << '\n';
         pack(static_cast<int>(e0.to()->degree()));
         e0 = use_next ? e0.next_around() : e0.prev_around();
     }
-
+   // std::cout << "ready\n";
     return code;
 }
 
@@ -82,6 +86,8 @@ void base_reduction::fill_signature_candidate(expansion_candidate& out) const
 
 bool base_reduction::is_canonical(const dual_fullerene& G, int min_x0) const
 {
+   // std::cout << "in is canonical\n";
+    //std::cout << "reduction first edge from: " << first_edge.from->id() << " to: " << first_edge.to()->id() << '\n';
     const int ref_x0 = x0();
     if (ref_x0 <= 0) return true;
 
@@ -91,6 +97,7 @@ bool base_reduction::is_canonical(const dual_fullerene& G, int min_x0) const
     }
 
     auto candidates = find_all_reductions(G, ref_x0);
+   // std::cout << "found " << candidates.size() << " reduction candidates of size " << ref_x0 << '\n';
     if (candidates.empty()) return true;
 
     const int ref_x1 = x1();
@@ -104,9 +111,11 @@ bool base_reduction::is_canonical(const dual_fullerene& G, int min_x0) const
         }
         candidates.swap(next);
     }
+    //std::cout << "after x1 stage candidates size: " << candidates.size() << '\n';
     if (candidates.empty()) return true;
-
+    //std::cout << "now will compute x2\n";
     const std::uint32_t ref_x2 = x2_code();
+    //std::cout << "x2 code: " << ref_x2 << '\n';
     {
         std::vector<std::unique_ptr<base_reduction>> next;
         next.reserve(candidates.size());
@@ -117,7 +126,9 @@ bool base_reduction::is_canonical(const dual_fullerene& G, int min_x0) const
         }
         candidates.swap(next);
     }
+    //std::cout << "after x2 stage candidates size: " << candidates.size() << '\n';
     if (candidates.empty()) return true;
+    
 
     const std::uint32_t ref_x3 = x3_code();
     {
@@ -130,6 +141,7 @@ bool base_reduction::is_canonical(const dual_fullerene& G, int min_x0) const
         }
         candidates.swap(next);
     }
+    //std::cout << "after x3 stage candidates size: " << candidates.size() << '\n';
     if (candidates.empty()) return true;
 
     const std::uint32_t ref_x4 = x4_code();
@@ -143,6 +155,7 @@ bool base_reduction::is_canonical(const dual_fullerene& G, int min_x0) const
         }
         candidates.swap(next);
     }
+    //std::cout << "after x4 stage candidates size: " << candidates.size() << '\n';
     if (candidates.empty()) return true;
 
     expansion_candidate ref_cand;

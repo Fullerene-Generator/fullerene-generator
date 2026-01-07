@@ -1,7 +1,7 @@
 #include "generators/f_expansion_generator.h"
 #include <iostream>
 #include <string>
-#include "generators//l_expansion_generator.h"
+#include "generators/main_generator.h"
 
 
 int main(int argc, char** argv) {
@@ -15,6 +15,6 @@ int main(int argc, char** argv) {
     auto generator = f_expansion_generator();
     generator.generate(max_size);
 
-    auto generator_l = l_expansion_generator();
-    generator_l.generate(max_size);
+    auto generator_main = main_generator();
+    generator_main.generate(max_size);
 }
