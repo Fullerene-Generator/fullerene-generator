@@ -1,5 +1,6 @@
 #include <queue>
 #include <embeddings/embedder.h>
+#include <embeddings/forces.h>
 
 std::vector<unsigned int> embedder::compute_bfs_depth(const graph &f) {
     auto depth = std::vector<unsigned int>(f.adjacency.size());
@@ -27,6 +28,75 @@ std::vector<unsigned int> embedder::compute_bfs_depth(const graph &f) {
     }
 
     return depth;
+}
+
+void embedder::find_pentagons_starting_at(std::vector<std::array<unsigned, 5>> &pentagons,
+    std::array<unsigned, 5> &current_pentagon, const std::vector<std::array<unsigned, 3>> &adjacency,
+    const unsigned starting_node, const unsigned current_node, const unsigned depth, std::vector<bool> &visited) {
+
+    current_pentagon.at(depth) = current_node;
+
+    if (depth == 4) {
+        for (const auto n : adjacency[current_node]) {
+            if (n == starting_node && current_pentagon.at(1) < current_pentagon.at(4)) {
+                pentagons.push_back(current_pentagon);
+            }
+        }
+
+        return;
+    }
+
+    visited.at(current_node) = true;
+
+    for (const auto n : adjacency[current_node]) {
+        if (n < starting_node || visited.at(n)) {
+            continue;
+        }
+
+        find_pentagons_starting_at(pentagons, current_pentagon, adjacency, starting_node, n, depth + 1, visited);
+    }
+
+    visited.at(current_node) = false;
+}
+
+std::vector<std::array<unsigned, 5>> embedder::find_pentagons(const graph &f) {
+    auto& adjacency = f.adjacency;
+    const auto n = adjacency.size();
+
+    auto pentagons = std::vector<std::array<unsigned, 5>>();
+    auto pentagon = std::array<unsigned, 5>();
+    auto visited = std::vector(n, false);
+
+    pentagons.reserve(12);
+
+    for (int i = 0; i < n; i++) {
+        find_pentagons_starting_at(pentagons, pentagon, adjacency, i, i, 0, visited);
+    }
+
+    return pentagons;
+}
+
+std::set<angle_key> embedder::find_pentagon_angles(const graph &f) {
+    const auto pentagons = find_pentagons(f);
+    std::set<angle_key> pentagon_angles;
+
+    for (const auto& p : pentagons) {
+        for (int t = 0; t < 5; ++t) {
+            const unsigned i = p[t];
+            const unsigned j = p[(t + 1) % 5];
+            const unsigned k = p[(t + 4) % 5];
+
+            pentagon_angles.insert(make_angle_key(i, j, k));
+        }
+    }
+
+    return pentagon_angles;
+}
+
+angle_key embedder::make_angle_key(double i, double j, double k) {
+    if (j > k)
+        std::swap(j, k);
+    return {i ,j ,k};
 }
 
 std::vector<std::array<double, 2>> embedder::compute_tutte(const graph& f) {
@@ -156,6 +226,17 @@ std::vector<std::array<double, 3>> embedder::compute_tutte_sphere_mapping(const 
         embedding[v][1] = std::sin(phi) * std::sin(theta);
         embedding[v][2] = std::cos(phi);
     }
+
+    return embedding;
+}
+
+std::vector<std::array<double, 3>> embedder::compute_3d_force_embedding(const graph &f) {
+    auto embedding = compute_tutte_sphere_mapping(f);
+
+    force_params params;
+
+    auto pentagon_angles = find_pentagon_angles(f);
+    relax_bond_springs(f, embedding, pentagon_angles, params);
 
     return embedding;
 }
