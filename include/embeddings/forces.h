@@ -167,78 +167,35 @@ void apply_radial_repulsion (std::vector<std::array<double, D>> &pos, std::vecto
 }
 
 template <size_t D>
-void relax_decrowding(const graph &g, std::vector<std::array<double, D>> &pos, force_params &params) {
+void relax_decrowding(const graph &g, std::vector<std::array<double, D>> &pos, std::set<angle_key>& pentagon_angles, force_params &params) {
     const auto n = pos.size();
+
     auto fixed = make_fixed_mask(g);
 
-    double sum = 0.0;
-    size_t count = 0;
-
-    for (size_t i = 0; i < n; ++i) {
-        for (unsigned j : g.adjacency[i]) {
-            if (j <= i) continue;
-            if (fixed[i] && fixed[j]) continue;
-
-            double d2 = 0.0;
-            for (size_t k = 0; k < D; ++k) {
-                double diff = pos[i][k] - pos[j][k];
-                d2 += diff * diff;
-            }
-
-            sum += std::sqrt(d2);
-            ++count;
-        }
-    }
-
-    if (count > 0)
-        params.target_bond_length = sum / count;
-
-    std::vector<std::array<double, D>> force(n);
+    auto force = std::vector<std::array<double, D>>(n);
+    params.target_bond_length = mean_edge_length(g, pos);
 
     for (int it = 0; it < params.max_iterations; ++it) {
-        for (auto& f : force)
-            f.fill(0.0);
+        for (auto& f : force) f.fill(0.0);
 
-        for (size_t i = 0; i < n; ++i) {
-            for (unsigned j : g.adjacency[i]) {
-                if (j <= i) continue;
-                if (fixed[i] && fixed[j]) continue;
+        apply_bond_forces(g, pos, force, params);
 
-                std::array<double, D> d{};
-                double len2 = 0.0;
+        params.angle_k = 0.01;
+        apply_angular_forces(g, pos, force, pentagon_angles, params);
 
-                for (size_t k = 0; k < D; ++k) {
-                    d[k] = pos[j][k] - pos[i][k];
-                    len2 += d[k] * d[k];
-                }
+        auto max_delta = 0.0;
 
-                const double len = std::sqrt(len2);
-                if (len == 0.0) continue;
+        for (size_t i = 0; i < pos.size(); ++i) {
+            auto delta = 0.0;
 
-                const double mag =
-                    params.bond_k * (len - params.target_bond_length) / len;
-
-                for (size_t k = 0; k < D; ++k) {
-                    const double f = mag * d[k];
-                    if (!fixed[i]) force[i][k] += f;
-                    if (!fixed[j]) force[j][k] -= f;
-                }
-            }
-        }
-
-        double max_delta = 0.0;
-
-        for (size_t i = 0; i < n; ++i) {
-            if (fixed[i]) continue;
-
-            double delta = 0.0;
-            for (size_t k = 0; k < D; ++k) {
-                const double step = params.step * force[i][k];
-                pos[i][k] += step;
-                delta += step * step;
+            for (size_t d = 0; d < D; ++d) {
+                auto delta_dim = fixed[i] ? 0.0 : params.step * force[i][d];
+                pos[i][d] += delta_dim;
+                delta += delta_dim * delta_dim;
             }
 
-            max_delta = std::max(max_delta, std::sqrt(delta));
+            delta = std::sqrt(delta);
+            max_delta = std::max(max_delta, delta);
         }
 
         if (max_delta <= params.convergence_eps)
