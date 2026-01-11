@@ -155,7 +155,8 @@ std::vector<std::array<double, 2>> embedder::compute_2d_force_embedding(const gr
 
     force_params params;
 
-    relax_decrowding(f, embedding, params);
+    auto pentagon_angles = find_pentagon_angles(f);
+    relax_decrowding(f, embedding, pentagon_angles, params);
 
     return embedding;
 }
