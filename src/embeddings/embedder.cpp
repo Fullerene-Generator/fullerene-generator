@@ -153,7 +153,7 @@ std::vector<std::array<double, 2>> embedder::compute_tutte(const graph& f) {
 std::vector<std::array<double, 2>> embedder::compute_2d_force_embedding(const graph &f) {
     auto embedding = compute_tutte(f);
 
-    force_params_3d params;
+    force_params_2d params;
 
     auto depth = compute_bfs_depth(f);
     eppg_relaxation(f, embedding, depth, params);

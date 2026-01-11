@@ -28,6 +28,19 @@ struct force_params_3d {
 };
 
 template <size_t D>
+std::array<double, D> barycenter(const std::vector<std::array<double, D>>& pos) {
+    std::array<double, D> c{};
+    for (const auto& p : pos)
+        for (size_t k = 0; k < D; ++k)
+            c[k] += p[k];
+
+    for (size_t k = 0; k < D; ++k)
+        c[k] /= pos.size();
+
+    return c;
+}
+
+template <size_t D>
 void normalize_radius(std::vector<std::array<double, D>>& pos, double target_radius = 1.0) {
     auto c = barycenter(pos);
 
@@ -49,19 +62,6 @@ void normalize_radius(std::vector<std::array<double, D>>& pos, double target_rad
     for (auto& p : pos)
         for (size_t k = 0; k < D; ++k)
             p[k] = c[k] + s * (p[k] - c[k]);
-}
-
-template <size_t D>
-std::array<double, D> barycenter(const std::vector<std::array<double, D>>& pos) {
-    std::array<double, D> c{};
-    for (const auto& p : pos)
-        for (size_t k = 0; k < D; ++k)
-            c[k] += p[k];
-
-    for (size_t k = 0; k < D; ++k)
-        c[k] /= pos.size();
-
-    return c;
 }
 
 template <size_t D>
