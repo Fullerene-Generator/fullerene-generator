@@ -193,7 +193,7 @@ void apply_radial_repulsion (std::vector<std::array<double, D>> &pos, std::vecto
 }
 
 template <size_t D>
-void eppg_relaxation(const graph &g, std::vector<std::array<double, D>> &pos, std::vector<unsigned>& depth, force_params_2d &params) {
+void ppga_relaxation(const graph &g, std::vector<std::array<double, D>> &pos, std::vector<unsigned>& depth, force_params_2d &params) {
     const size_t n = pos.size();
 
     unsigned d_max = 0;

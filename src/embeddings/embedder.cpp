@@ -156,7 +156,7 @@ std::vector<std::array<double, 2>> embedder::compute_2d_force_embedding(const gr
     force_params_2d params;
 
     auto depth = compute_bfs_depth(f);
-    eppg_relaxation(f, embedding, depth, params);
+    ppga_relaxation(f, embedding, depth, params);
 
     return embedding;
 }
