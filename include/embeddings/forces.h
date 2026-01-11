@@ -262,8 +262,6 @@ void ppga_relaxation(const graph &g, std::vector<std::array<double, D>> &pos, st
             max_delta = std::max(max_delta, std::sqrt(delta));
         }
 
-        normalize_radius(pos);
-
         if (max_delta < params.convergence_eps)
             break;
     }
