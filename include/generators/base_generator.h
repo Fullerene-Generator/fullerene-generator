@@ -11,7 +11,6 @@ public:
     virtual void register_and_emit(dual_fullerene& G) {
         G.register_id();
         auto P = G.to_primal();
-        if (G.total_nodes() != 60) return;
         std::cout << P << std::flush;
     }
 };
