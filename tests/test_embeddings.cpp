@@ -105,9 +105,9 @@ TEST_CASE("Tutte spherical embedding test for base fullerenes", "[embedder]") {
         f3.get_outer_face_nodes()
     };
 
-    auto e1 = embedder::compute_tutte_sphere_mapping(g1);
-    auto e2 = embedder::compute_tutte_sphere_mapping(g2);
-    auto e3 = embedder::compute_tutte_sphere_mapping(g3);
+    auto e1 = embedder::compute_2d_sphere_mapping(g1);
+    auto e2 = embedder::compute_2d_sphere_mapping(g2);
+    auto e3 = embedder::compute_2d_sphere_mapping(g3);
 
     REQUIRE(e1.size() == g1.adjacency.size());
     REQUIRE(e2.size() == g2.adjacency.size());
@@ -132,8 +132,8 @@ TEST_CASE("Tutte sphere embedding is deterministic", "[embedder]") {
     const auto f = d.to_primal();
     const graph g{ f.get_adjacency(), f.get_outer_face_nodes() };
 
-    auto e1 = embedder::compute_tutte_sphere_mapping(g);
-    auto e2 = embedder::compute_tutte_sphere_mapping(g);
+    auto e1 = embedder::compute_2d_sphere_mapping(g);
+    auto e2 = embedder::compute_2d_sphere_mapping(g);
 
     for (std::size_t i = 0; i < e1.size(); ++i) {
         REQUIRE(e1[i][0] == e2[i][0]);

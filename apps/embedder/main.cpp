@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
             std::vector<std::array<double, 3>> coords;
 
             if (force == 0) {
-                coords = embedder::compute_tutte_sphere_mapping(g);
+                coords = embedder::compute_2d_sphere_mapping(g);
             }
             else {
                 coords = embedder::compute_3d_force_embedding(g);

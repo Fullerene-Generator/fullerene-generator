@@ -27,7 +27,7 @@ public:
     static std::vector<std::array<double, 2>> compute_tutte(const graph& f);
     static std::vector<std::array<double, 2>> compute_2d_force_embedding(const graph& f);
     static std::vector<std::array<double, 3>> compute_spectral_realization(const graph& f);
-    static std::vector<std::array<double, 3>> compute_tutte_sphere_mapping(const graph& f);
+    static std::vector<std::array<double, 3>> compute_2d_sphere_mapping(const graph& f);
     static std::vector<std::array<double, 3>> compute_3d_force_embedding(const graph& f);
 };
 

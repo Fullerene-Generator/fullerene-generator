@@ -209,18 +209,18 @@ std::vector<std::array<double,3>> embedder::compute_spectral_realization(const g
     return embedding;
 }
 
-std::vector<std::array<double, 3>> embedder::compute_tutte_sphere_mapping(const graph &f) {
+std::vector<std::array<double, 3>> embedder::compute_2d_sphere_mapping(const graph &f) {
     const auto n = static_cast<long long>(f.adjacency.size());
 
     auto depth = compute_bfs_depth(f);
     const auto max_depth = *std::ranges::max_element(depth);
 
-    const auto tutte_embedding = compute_tutte(f);
+    const auto embedding_2d = compute_2d_force_embedding(f);
     std::array<double, 2> barycenter = {0, 0};
 
     for (unsigned int v = 0; v < n; v++) {
-        barycenter[0] += tutte_embedding[v][0];
-        barycenter[1] += tutte_embedding[v][1];
+        barycenter[0] += embedding_2d[v][0];
+        barycenter[1] += embedding_2d[v][1];
     }
 
     barycenter[0] /= static_cast<double>(n);
@@ -230,7 +230,7 @@ std::vector<std::array<double, 3>> embedder::compute_tutte_sphere_mapping(const 
 
     for (int v = 0; v < n; v++) {
         const auto phi = (depth[v] + 0.5) * M_PI / (max_depth + 1);
-        const auto theta = atan2(tutte_embedding[v][1] - barycenter[1], tutte_embedding[v][0] - barycenter[0]);
+        const auto theta = atan2(embedding_2d[v][1] - barycenter[1], embedding_2d[v][0] - barycenter[0]);
 
         embedding[v][0] = std::sin(phi) * std::cos(theta);
         embedding[v][1] = std::sin(phi) * std::sin(theta);
@@ -241,7 +241,7 @@ std::vector<std::array<double, 3>> embedder::compute_tutte_sphere_mapping(const 
 }
 
 std::vector<std::array<double, 3>> embedder::compute_3d_force_embedding(const graph &f) {
-    auto embedding = compute_tutte_sphere_mapping(f);
+    auto embedding = compute_2d_sphere_mapping(f);
 
     force_params params;
 
