@@ -42,6 +42,13 @@ void l_expansion_generator::generate(std::size_t up_to)
         int max_i = std::min(max_expansion_size, 4);
         dfs_(G, up_to, max_i, 1);
     }
+
+
+    for (const auto& pair : counts) {
+        std::cout << "Vertices: " << pair.first
+            << ", Graphs: " << pair.second << '\n';
+    }
+    
 }
 
 
@@ -74,8 +81,10 @@ void l_expansion_generator::dfs_(dual_fullerene& G,
             expansions.push_back(std::move(up));
         }
     }
-
+    int l_count = 0;
+    int l_can_count = 0;
     for (auto& up : expansions) {
+        l_count++;
         auto* le = static_cast<l_expansion*>(up.get());
         if (!le->validate()) {
             continue;
@@ -88,6 +97,8 @@ void l_expansion_generator::dfs_(dual_fullerene& G,
         const auto red = matching_reduction_from_expansion(*le);
 
         if (red.is_canonical(G, min_reduction_size)) {
+            l_can_count++;
+            std::cout << "Graph size: " << G.get_nodes_6().size() * 2 + 20 << "before: " << G.get_nodes_6().size() * 2 + 20 - 2 * (red.size + 1) << " canonical expansion/reduction size: " << red.size << '\n';
             register_and_emit(G);
             int max_expansion_size = bound_by_vertex_count_(G, up_to);
             int max_i = std::min(max_expansion_size, 8);
@@ -97,4 +108,7 @@ void l_expansion_generator::dfs_(dual_fullerene& G,
 
         red.apply(G, cand);
     }
+    std::cout << "Graph size: " << G.get_nodes_6().size() * 2 + 20 << " l expansions: " << l_count << " canonical: " << l_can_count << '\n';
+
+    
 }
