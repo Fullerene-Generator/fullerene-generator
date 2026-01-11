@@ -3,7 +3,16 @@
 #include <embeddings/embedder.h>
 #include <vector>
 
-struct force_params {
+struct force_params_2d {
+    int max_iterations = 5000;
+    double step = 0.1;
+
+    double alpha = 1.0;
+
+    double convergence_eps = 1e-6;
+};
+
+struct force_params_3d {
     int max_iterations = 5000;
     double step = 0.1;
 
@@ -18,11 +27,28 @@ struct force_params {
     double convergence_eps = 1e-6;
 };
 
-inline std::vector<bool> make_fixed_mask(const graph& g) {
-    std::vector<bool> fixed(g.adjacency.size(), false);
-    for (const auto v : g.outer)
-        fixed[v] = true;
-    return fixed;
+template <size_t D>
+void normalize_radius(std::vector<std::array<double, D>>& pos, double target_radius = 1.0) {
+    auto c = barycenter(pos);
+
+    double r2 = 0.0;
+    for (const auto& p : pos) {
+        double d2 = 0.0;
+        for (size_t k = 0; k < D; ++k) {
+            const double x = p[k] - c[k];
+            d2 += x * x;
+        }
+        r2 += d2;
+    }
+
+    const double r = std::sqrt(r2 / pos.size());
+    if (r == 0.0) return;
+
+    const double s = target_radius / r;
+
+    for (auto& p : pos)
+        for (size_t k = 0; k < D; ++k)
+            p[k] = c[k] + s * (p[k] - c[k]);
 }
 
 template <size_t D>
@@ -60,7 +86,7 @@ double mean_edge_length(const graph& g, const std::vector<std::array<double, D>>
 }
 
 template <size_t D>
-void apply_angular_forces(const graph &g, std::vector<std::array<double, D>> &pos, std::vector<std::array<double, D>>& force, std::set<angle_key>& pentagon_angles, const force_params &params) {
+void apply_angular_forces(const graph &g, std::vector<std::array<double, D>> &pos, std::vector<std::array<double, D>>& force, std::set<angle_key>& pentagon_angles, const force_params_3d &params) {
     for (size_t i = 0; i < g.adjacency.size(); ++i) {
         const auto neighbors = g.adjacency[i];
 
@@ -112,7 +138,7 @@ void apply_angular_forces(const graph &g, std::vector<std::array<double, D>> &po
 }
 
 template <size_t D>
-void apply_bond_forces(const graph &g, std::vector<std::array<double, D>> &pos, std::vector<std::array<double, D>>& force, const force_params &params) {
+void apply_bond_forces(const graph &g, std::vector<std::array<double, D>> &pos, std::vector<std::array<double, D>>& force, const force_params_3d &params) {
     for (std::size_t i = 0; i < g.adjacency.size(); ++i) {
         for (unsigned j: g.adjacency[i]) {
             if (j <= i)
@@ -142,7 +168,7 @@ void apply_bond_forces(const graph &g, std::vector<std::array<double, D>> &pos, 
 }
 
 template <size_t D>
-void apply_radial_repulsion (std::vector<std::array<double, D>> &pos, std::vector<std::array<double, D>>& force, const force_params &params) {
+void apply_radial_repulsion (std::vector<std::array<double, D>> &pos, std::vector<std::array<double, D>>& force, const force_params_3d &params) {
     auto center = barycenter(pos);
 
     for (size_t i = 0; i < pos.size(); ++i) {
@@ -167,44 +193,73 @@ void apply_radial_repulsion (std::vector<std::array<double, D>> &pos, std::vecto
 }
 
 template <size_t D>
-void relax_decrowding(const graph &g, std::vector<std::array<double, D>> &pos, std::set<angle_key>& pentagon_angles, force_params &params) {
-    const auto n = pos.size();
+void eppg_relaxation(const graph &g, std::vector<std::array<double, D>> &pos, std::vector<unsigned>& depth, force_params_2d &params) {
+    const size_t n = pos.size();
 
-    auto fixed = make_fixed_mask(g);
+    unsigned d_max = 0;
+    for (unsigned d : depth)
+        d_max = std::max(d_max, d);
+    if (d_max == 0) d_max = 1;
 
-    auto force = std::vector<std::array<double, D>>(n);
-    params.target_bond_length = mean_edge_length(g, pos);
+    struct edge {
+        unsigned i, j;
+        double w;
+    };
+
+    std::vector<edge> edges;
+    edges.reserve(g.adjacency.size() * 3 / 2);
+
+    for (size_t i = 0; i < g.adjacency.size(); ++i) {
+        for (unsigned j : g.adjacency[i]) {
+            if (j <= i) continue;
+
+            const double w = std::exp(
+                params.alpha * (2.0 * d_max - depth[i] - depth[j]) / d_max
+            );
+
+            edges.push_back({static_cast<unsigned>(i), j, w});
+        }
+    }
+
+    std::vector<std::array<double, D>> force(n);
 
     for (int it = 0; it < params.max_iterations; ++it) {
-        for (auto& f : force) f.fill(0.0);
+        for (auto &f : force)
+            f.fill(0.0);
 
-        apply_bond_forces(g, pos, force, params);
+        for (const auto &e : edges) {
+            std::array<double, D> d{};
+            for (size_t k = 0; k < D; ++k)
+                d[k] = pos[e.i][k] - pos[e.j][k];
 
-        params.angle_k = 0.01;
-        apply_angular_forces(g, pos, force, pentagon_angles, params);
-
-        auto max_delta = 0.0;
-
-        for (size_t i = 0; i < pos.size(); ++i) {
-            auto delta = 0.0;
-
-            for (size_t d = 0; d < D; ++d) {
-                auto delta_dim = fixed[i] ? 0.0 : params.step * force[i][d];
-                pos[i][d] += delta_dim;
-                delta += delta_dim * delta_dim;
+            for (size_t k = 0; k < D; ++k) {
+                const double f = -e.w * d[k];
+                force[e.i][k] += f;
+                force[e.j][k] -= f;
             }
-
-            delta = std::sqrt(delta);
-            max_delta = std::max(max_delta, delta);
         }
 
-        if (max_delta <= params.convergence_eps)
-            return;
+        double max_delta = 0.0;
+
+        for (size_t i = 0; i < n; ++i) {
+            double delta = 0.0;
+            for (size_t k = 0; k < D; ++k) {
+                const double step = params.step * force[i][k];
+                pos[i][k] += step;
+                delta += step * step;
+            }
+            max_delta = std::max(max_delta, std::sqrt(delta));
+        }
+
+        normalize_radius(pos);
+
+        if (max_delta < params.convergence_eps)
+            break;
     }
 }
 
 template <size_t D>
-void relax_bond_springs(const graph &g, std::vector<std::array<double, D>> &pos, std::set<angle_key>& pentagon_angles, force_params &params) {
+void bond_spring_relaxation(const graph &g, std::vector<std::array<double, D>> &pos, std::set<angle_key>& pentagon_angles, force_params_3d &params) {
     const auto n = pos.size();
 
     auto force = std::vector<std::array<double, D>>(n);

@@ -153,10 +153,10 @@ std::vector<std::array<double, 2>> embedder::compute_tutte(const graph& f) {
 std::vector<std::array<double, 2>> embedder::compute_2d_force_embedding(const graph &f) {
     auto embedding = compute_tutte(f);
 
-    force_params params;
+    force_params_3d params;
 
-    auto pentagon_angles = find_pentagon_angles(f);
-    relax_decrowding(f, embedding, pentagon_angles, params);
+    auto depth = compute_bfs_depth(f);
+    eppg_relaxation(f, embedding, depth, params);
 
     return embedding;
 }
@@ -244,10 +244,10 @@ std::vector<std::array<double, 3>> embedder::compute_2d_sphere_mapping(const gra
 std::vector<std::array<double, 3>> embedder::compute_3d_force_embedding(const graph &f) {
     auto embedding = compute_2d_sphere_mapping(f);
 
-    force_params params;
+    force_params_3d params;
 
     auto pentagon_angles = find_pentagon_angles(f);
-    relax_bond_springs(f, embedding, pentagon_angles, params);
+    bond_spring_relaxation(f, embedding, pentagon_angles, params);
 
     return embedding;
 }
