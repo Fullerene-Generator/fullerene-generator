@@ -233,38 +233,48 @@ void ppga_relaxation(const graph &g, std::vector<std::array<double, D>> &pos, st
     std::vector<std::array<double, D>> force(n);
 
     for (int it = 0; it < params.max_iterations; ++it) {
-        for (auto &f : force)
-            f.fill(0.0);
 
-        for (const auto &e : edges) {
-            std::array<double, D> d{};
-            for (size_t k = 0; k < D; ++k)
-                d[k] = pos[e.i][k] - pos[e.j][k];
+    std::vector<std::array<double, D>> next_pos = pos;
+    double max_delta = 0.0;
 
-            for (size_t k = 0; k < D; ++k) {
-                const double f = -e.w * d[k];
-                force[e.i][k] += f;
-                force[e.j][k] -= f;
+    for (size_t i = 0; i < n; ++i) {
+        if (fixed[i]) continue;
+
+        std::array<double, D> sum_weighted_neighbors{};
+        double sum_weights = 0.0;
+
+        for (auto e: edges) {
+            if (e.i == i) {
+                double w = e.w;
+
+                for (size_t k = 0; k < D; ++k) {
+                    sum_weighted_neighbors[k] += w * pos[e.j][k];
+                }
+                sum_weights += w;
+            }
+            else if (e.j == i) {
+                double w = e.w;
+
+                for (size_t k = 0; k < D; ++k) {
+                    sum_weighted_neighbors[k] += w * pos[e.i][k];
+                }
+                sum_weights += w;
             }
         }
 
-        double max_delta = 0.0;
-
-        for (size_t i = 0; i < n; ++i) {
-            if (fixed[i]) continue;
-
-            double delta = 0.0;
+        if (sum_weights > 0) {
             for (size_t k = 0; k < D; ++k) {
-                const double step = params.step * force[i][k];
-                pos[i][k] += step;
-                delta += step * step;
+                double new_coord = sum_weighted_neighbors[k] / sum_weights;
+                double diff = new_coord - pos[i][k];
+                max_delta = std::max(max_delta, std::abs(diff));
+                next_pos[i][k] = new_coord;
             }
-            max_delta = std::max(max_delta, std::sqrt(delta));
         }
-
-        if (max_delta < params.convergence_eps)
-            break;
     }
+    pos = next_pos;
+
+    if (max_delta < params.convergence_eps) break;
+}
 }
 
 template <size_t D>
