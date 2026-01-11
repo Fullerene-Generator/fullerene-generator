@@ -25,6 +25,7 @@ class embedder {
 public:
     inline static angle_key make_angle_key (double i, double j, double k);
     static std::vector<std::array<double, 2>> compute_tutte(const graph& f);
+    static std::vector<std::array<double, 2>> compute_2d_force_embedding(const graph& f);
     static std::vector<std::array<double, 3>> compute_spectral_realization(const graph& f);
     static std::vector<std::array<double, 3>> compute_tutte_sphere_mapping(const graph& f);
     static std::vector<std::array<double, 3>> compute_3d_force_embedding(const graph& f);

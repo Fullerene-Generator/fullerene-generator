@@ -65,7 +65,15 @@ int main(int argc, char** argv) {
         graph g = read_graph_from_stdin();
 
         if (mode == 2) {
-            const auto coords = embedder::compute_tutte(g);
+            std::vector<std::array<double, 2>> coords;
+
+            if (force == 0) {
+                coords = embedder::compute_tutte(g);
+            }
+            else {
+                coords = embedder::compute_2d_force_embedding(g);
+            }
+
             write_embedding_2d(coords);
         } else {
             std::vector<std::array<double, 3>> coords;

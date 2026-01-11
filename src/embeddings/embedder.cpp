@@ -150,6 +150,16 @@ std::vector<std::array<double, 2>> embedder::compute_tutte(const graph& f) {
     return embedding;
 }
 
+std::vector<std::array<double, 2>> embedder::compute_2d_force_embedding(const graph &f) {
+    auto embedding = compute_tutte(f);
+
+    force_params params;
+
+    relax_decrowding(f, embedding, params);
+
+    return embedding;
+}
+
 std::vector<std::array<double,3>> embedder::compute_spectral_realization(const graph& g) {
     const auto n = static_cast<long long>(g.adjacency.size());
 

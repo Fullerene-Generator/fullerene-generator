@@ -18,6 +18,13 @@ struct force_params {
     double convergence_eps = 1e-6;
 };
 
+inline std::vector<bool> make_fixed_mask(const graph& g) {
+    std::vector<bool> fixed(g.adjacency.size(), false);
+    for (const auto v : g.outer)
+        fixed[v] = true;
+    return fixed;
+}
+
 template <size_t D>
 std::array<double, D> barycenter(const std::vector<std::array<double, D>>& pos) {
     std::array<double, D> c{};
@@ -156,6 +163,86 @@ void apply_radial_repulsion (std::vector<std::array<double, D>> &pos, std::vecto
 
         for (size_t k = 0; k < D; ++k)
             force[i][k] += mag * d[k];
+    }
+}
+
+template <size_t D>
+void relax_decrowding(const graph &g, std::vector<std::array<double, D>> &pos, force_params &params) {
+    const auto n = pos.size();
+    auto fixed = make_fixed_mask(g);
+
+    double sum = 0.0;
+    size_t count = 0;
+
+    for (size_t i = 0; i < n; ++i) {
+        for (unsigned j : g.adjacency[i]) {
+            if (j <= i) continue;
+            if (fixed[i] && fixed[j]) continue;
+
+            double d2 = 0.0;
+            for (size_t k = 0; k < D; ++k) {
+                double diff = pos[i][k] - pos[j][k];
+                d2 += diff * diff;
+            }
+
+            sum += std::sqrt(d2);
+            ++count;
+        }
+    }
+
+    if (count > 0)
+        params.target_bond_length = sum / count;
+
+    std::vector<std::array<double, D>> force(n);
+
+    for (int it = 0; it < params.max_iterations; ++it) {
+        for (auto& f : force)
+            f.fill(0.0);
+
+        for (size_t i = 0; i < n; ++i) {
+            for (unsigned j : g.adjacency[i]) {
+                if (j <= i) continue;
+                if (fixed[i] && fixed[j]) continue;
+
+                std::array<double, D> d{};
+                double len2 = 0.0;
+
+                for (size_t k = 0; k < D; ++k) {
+                    d[k] = pos[j][k] - pos[i][k];
+                    len2 += d[k] * d[k];
+                }
+
+                const double len = std::sqrt(len2);
+                if (len == 0.0) continue;
+
+                const double mag =
+                    params.bond_k * (len - params.target_bond_length) / len;
+
+                for (size_t k = 0; k < D; ++k) {
+                    const double f = mag * d[k];
+                    if (!fixed[i]) force[i][k] += f;
+                    if (!fixed[j]) force[j][k] -= f;
+                }
+            }
+        }
+
+        double max_delta = 0.0;
+
+        for (size_t i = 0; i < n; ++i) {
+            if (fixed[i]) continue;
+
+            double delta = 0.0;
+            for (size_t k = 0; k < D; ++k) {
+                const double step = params.step * force[i][k];
+                pos[i][k] += step;
+                delta += step * step;
+            }
+
+            max_delta = std::max(max_delta, std::sqrt(delta));
+        }
+
+        if (max_delta <= params.convergence_eps)
+            return;
     }
 }
 
