@@ -7,31 +7,69 @@ std::vector<b_reduction>
 find_b_reductions(const dual_fullerene& G, int length_pre_bend, int length_post_bend)
 {
     std::vector<b_reduction> out;
-
+    const int total_length = length_pre_bend + length_post_bend + 3;
     for (const auto& node : G.get_nodes_5()) {
         for (int i = 0; i < node->degree(); ++i) {
-            directed_edge e{ node, static_cast<std::size_t>(i) };
+            directed_edge e0{ node, static_cast<std::size_t>(i) };
 
             for (bool clockwise : { true, false }) {
-                std::vector<int> P, Q;
-                build_b_rails(G, e, clockwise, length_pre_bend, length_post_bend, P, Q);
+                int outside_hex1 = clockwise
+                    ? static_cast<int>(e0.prev_around(2).to()->degree())
+                    : static_cast<int>(e0.next_around(2).to()->degree());
+                if (outside_hex1 != 6) continue;
+                auto e = e0;
+                std::vector<int> path;
+                path.reserve(total_length);
 
-                if (P.empty()) continue;
+                bool ok = true;
+                for (int step = 0; step <= length_pre_bend; ++step) {
+                    auto v = e.from;
 
-                if (G.get_node(static_cast<unsigned>(P.back()))->degree() != 5) continue;
-                if (!patch_nodes_unique(P, Q)) continue;
+                    if (step == 0) {
+                        if (v->type() != node_type::NODE_5) { ok = false; break; }
+                    }
+                    else {
+                        if (v->type() != node_type::NODE_6) { ok = false; break; }
+                    }
 
-                auto last_node = G.get_node(static_cast<unsigned>(P.back()));
-                auto prev_node = G.get_node(static_cast<unsigned>(P[P.size() - 2]));
-                directed_edge second_edge = last_node->get_edge(prev_node);
+                    path.push_back(static_cast<int>(v->id()));
 
+                    if (step < length_pre_bend) {
+                        e = clockwise ? e.right_turn(3) : e.left_turn(3);
+                    }
+                }
+                if (!ok) continue;
+                e = clockwise ? e.right_turn(2) : e.left_turn(2);
+                
+
+                for (int step = 0; step <= length_post_bend; ++step) {
+                    auto v = e.from;
+
+                    if (step == length_post_bend) {
+                        if (v->type() != node_type::NODE_5) { ok = false; break; }
+                    }
+                    else {
+                        if (v->type() != node_type::NODE_6) { ok = false; break; }
+                    }
+
+                    path.push_back(static_cast<int>(v->id()));
+
+                    
+                    e = clockwise ? e.right_turn(3) : e.left_turn(3);
+                }
+                if (!ok) continue;
+                auto second_pent = e.from;
+                if (second_pent->type() != node_type::NODE_5) {
+                    continue;
+                }
+                auto prev_node = G.get_node(path.back());
+                directed_edge second_edge = second_pent->get_edge(prev_node);
                 b_reduction r;
-                r.first_edge = e;
+                r.first_edge = e0;
                 r.second_edge = second_edge;
-                r.use_next = clockwise;
                 r.length_pre_bend = length_pre_bend;
                 r.length_post_bend = length_post_bend;
-
+                r.use_next = clockwise;
                 out.push_back(r);
             }
         }
@@ -72,18 +110,16 @@ void b_reduction::apply(dual_fullerene& G, const expansion_candidate& c_base) co
         const int u_second = c.path[i_total + 4];
         const int w_first = c.parallel_path[i_total + 1];
         const int w_second = c.parallel_path[i_total + 2];
-
         auto h2_node = G.get_node(static_cast<unsigned>(h2));
         auto u_second_node = G.get_node(static_cast<unsigned>(u_second));
-
+        G.replace_neighbor(w_second, u_second, u_first);
+        G.replace_neighbor(w_first, u_second, u_first);
+        G.replace_neighbor(u_first, u_second, w_second);
         h2_node->remove_neighbor(u_second_node);
         G.move_neighborhood(h2, u_second);
         G.pop_last_node6();
         --h;
 
-        G.replace_neighbor(u_first, u_second, w_second);
-        G.replace_neighbor(w_first, u_second, u_first);
-        G.replace_neighbor(w_second, u_second, u_first);
     }
 
     // undo corridor post-bend
@@ -143,13 +179,13 @@ void b_reduction::apply(dual_fullerene& G, const expansion_candidate& c_base) co
 
         auto h1_node = G.get_node(static_cast<unsigned>(h1));
         auto u0_node = G.get_node(static_cast<unsigned>(u0));
+        G.replace_neighbor(w1, u0, u1);
+        G.replace_neighbor(w0, u0, u1);
+        G.replace_neighbor(u1, u0, w0);
 
         h1_node->remove_neighbor(u0_node);
         G.move_neighborhood(h1, u0);
         G.pop_last_node6();
 
-        G.replace_neighbor(u1, u0, w0);
-        G.replace_neighbor(w0, u0, u1);
-        G.replace_neighbor(w1, u0, u1);
     }
 }

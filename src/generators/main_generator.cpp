@@ -44,9 +44,7 @@ void main_generator::generate(std::size_t up_to)
     {
         auto G = create_c20_fullerene();
         register_and_emit(G);
-        int max_param_sum = bound_by_vertex_count_(G, up_to);
-        int max0 = std::min(max_param_sum, 3);
-        dfs_(G, up_to, max0, 1);
+        dfs_(G, up_to, 4, 4, 1);
     }
 
     if (up_to < 28) {
@@ -56,13 +54,15 @@ void main_generator::generate(std::size_t up_to)
     {
         auto G = create_c28_fullerene();
         register_and_emit(G);
-        int max_param_sum = bound_by_vertex_count_(G, up_to);
-        int max0 = std::min(max_param_sum, 4);
-        dfs_(G, up_to, max0, 1);
+        dfs_(G, up_to, 4, 4, 1);
+    }
+
+    for (const auto& [v, c] : counts_) {
+        std::cout << v << " vertices: " << c << "\n";
     }
 }
 
-int main_generator::bound_by_vertex_count_(const dual_fullerene& G, std::size_t up_to)
+int main_generator::bound_by_vertex_count_l(const dual_fullerene& G, std::size_t up_to)
 {
     // primal vertices = 20 + 2 * (#hexagons in dual)
     int primal_v = 20 + 2 * static_cast<int>(G.get_nodes_6().size());
@@ -72,22 +72,34 @@ int main_generator::bound_by_vertex_count_(const dual_fullerene& G, std::size_t 
     return dif / 2 - 2;
 }
 
+int main_generator::bound_by_vertex_count_b(const dual_fullerene& G, std::size_t up_to)
+{
+    // primal vertices = 20 + 2 * (#hexagons in dual)
+    int primal_v = 20 + 2 * static_cast<int>(G.get_nodes_6().size());
+    int dif = static_cast<int>(up_to) - primal_v;
+
+    // L_i adds 2*(i+2) primal vertices, B_{p,q} adds 2*(p+q+2)
+    return dif / 2 - 3;
+}
+
 void main_generator::dfs_(dual_fullerene& G,
     std::size_t up_to,
-    int max_param_sum,
+    int max_size_l,
+    int max_param_sum_b,
     int min_reduction_size)
 {
-    if (max_param_sum < 0) {
+    if (max_size_l < 0) {
+        return;
+    }
+
+    if (G.total_nodes() >= up_to) {
         return;
     }
 
     std::vector<std::unique_ptr<base_expansion>> expansions;
     expansions.reserve(512);
 
-    // For a fixed size s:
-    //   - all L expansions with length = s
-    //   - all B expansions with pre+post = s
-    for (int s = 0; s <= max_param_sum; s++) {
+    for (int s = 0; s <= max_size_l; s++) {
         {
             auto v = find_l_expansions(G, s);
             expansions.reserve(expansions.size() + v.size());
@@ -95,21 +107,25 @@ void main_generator::dfs_(dual_fullerene& G,
                 expansions.push_back(std::move(up));
             }
         }
-        if (s == 0) continue;
-
-        {
-            for (int pre = 0; pre <= s-1; pre++) {
-                int post = s - 1 - pre;
+    }
+    for (int s=0;s<=max_param_sum_b;s++)
+    {
+            for (int pre = 0; pre <= s; pre++) {
+                int post = s - pre;
                 auto v = find_b_expansions(G, pre, post);
                 expansions.reserve(expansions.size() + v.size());
                 for (auto& up : v) {
                     expansions.push_back(std::move(up));
                 }
             }
-        }
     }
 
     //std::cout << "found " << expansions.size() << " expansions\n";
+
+    int l_count = 0;
+    int l_can_count = 0;
+    int b_count = 0;
+    int b_can_count = 0;
 
     for (auto& up : expansions) {
         if (!up->validate()) {
@@ -124,6 +140,7 @@ void main_generator::dfs_(dual_fullerene& G,
             //    << " to: " << le->candidate().start.to()->id() << '\n';
 
             // 1) copy candidate BEFORE apply (safe even if apply mutates internal state)
+            l_count++;
             const auto cand = le->candidate();
 
             // 2) apply expansion (this is what initializes inverse_*_edge)
@@ -143,10 +160,13 @@ void main_generator::dfs_(dual_fullerene& G,
             //std::cout << "min reduction size: " << min_reduction_size << '\n';
             if (red->is_canonical(G, min_reduction_size)) {
               //  std::cout << "red is canonical\n";
+                l_can_count++;
                 register_and_emit(G);
-                int next_max = bound_by_vertex_count_(G, up_to);
-                int next_max0 = std::min(next_max, 8);
-                dfs_(G, up_to, next_max0, min_reduction_size);
+                int next_max_l_bound = bound_by_vertex_count_l(G, up_to);
+                int next_max_b_bound = bound_by_vertex_count_b(G, up_to);
+                int next_max_l = std::min(next_max_l_bound, 8);
+                int next_max_b = std::min(next_max_l_bound, 8);
+                dfs_(G, up_to, next_max_l, next_max_b, min_reduction_size);
                 G.reduce_id();
             }
 
@@ -159,10 +179,11 @@ void main_generator::dfs_(dual_fullerene& G,
 
         // ---- B expansion ----
         if (auto* be = dynamic_cast<b_expansion*>(up.get())) {
-            std::cout << "b expansion size: " << be->candidate().length_pre_bend
-                << ' ' << be->candidate().length_post_bend << '\n';
+           // std::cout << "b expansion size: " << be->candidate().length_pre_bend
+             //   << ' ' << be->candidate().length_post_bend << '\n';
 
             // 1) copy candidate BEFORE apply
+            b_count++;
             const auto cand = be->candidate();
 
             // 2) apply expansion (initializes inverse edges for B too)
@@ -175,10 +196,13 @@ void main_generator::dfs_(dual_fullerene& G,
             //std::cout << "min reduction size: " << min_reduction_size << '\n';
             if (red->is_canonical(G, min_reduction_size)) {
               //  std::cout << "red is canonical\n";
+                b_can_count++;
                 register_and_emit(G);
-                int next_max = bound_by_vertex_count_(G, up_to);
-                int next_max0 = std::min(next_max, 8);
-                dfs_(G, up_to, next_max0, min_reduction_size);
+                int next_max_l_bound = bound_by_vertex_count_l(G, up_to);
+                int next_max_b_bound = bound_by_vertex_count_b(G, up_to);
+                int next_max_l = std::min(next_max_l_bound, 4);
+                int next_max_b = std::min(next_max_l_bound, 8);
+                dfs_(G, up_to, next_max_l, next_max_b, min_reduction_size);
                 G.reduce_id();
             }
             
@@ -189,4 +213,8 @@ void main_generator::dfs_(dual_fullerene& G,
             continue;
         }
     }
+    if (true || b_can_count > 0 || (G.get_nodes_6().size()*2 >= 6 && G.get_nodes_6().size() <= 6)) {
+        std::cout << "graph size: " << G.get_nodes_6().size() * 2 + 20 << " l count: " << l_count << " l can count: " << l_can_count << " b count: " << b_count << " b can count: " << b_can_count << '\n';
+    }
+    
 }

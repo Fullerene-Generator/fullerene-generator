@@ -1,6 +1,7 @@
 #include <expansions/base_reduction.h>
 #include <expansions/signature_state.h>
 #include <expansions/l_reduction.h>
+#include <expansions/b_reduction.h>
 
 #include <cstdint>
 #include <memory>
@@ -230,6 +231,14 @@ find_all_reductions(const dual_fullerene& G, int x0)
         out.reserve(ls.size());
         for (auto& r : ls) {
             out.push_back(std::make_unique<l_reduction>(std::move(r)));
+        }
+    }
+    const int b_sum = x0 - 2;
+    for (int b = 0; b <= b_sum; b++) {
+        auto bs = find_b_reductions(G, b, b_sum - b);
+        out.reserve(out.size() + bs.size());
+        for (auto& r : bs) {
+            out.push_back(std::make_unique<b_reduction>(std::move(r)));
         }
     }
 
