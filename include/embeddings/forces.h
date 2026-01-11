@@ -27,6 +27,13 @@ struct force_params_3d {
     double convergence_eps = 1e-6;
 };
 
+inline std::vector<bool> make_fixed_mask(const graph& g) {
+    std::vector<bool> fixed(g.adjacency.size(), false);
+    for (const auto v : g.outer)
+        fixed[v] = true;
+    return fixed;
+}
+
 template <size_t D>
 std::array<double, D> barycenter(const std::vector<std::array<double, D>>& pos) {
     std::array<double, D> c{};
@@ -196,6 +203,8 @@ template <size_t D>
 void ppga_relaxation(const graph &g, std::vector<std::array<double, D>> &pos, std::vector<unsigned>& depth, force_params_2d &params) {
     const size_t n = pos.size();
 
+    auto fixed = make_fixed_mask(g);
+
     unsigned d_max = 0;
     for (unsigned d : depth)
         d_max = std::max(d_max, d);
@@ -242,6 +251,8 @@ void ppga_relaxation(const graph &g, std::vector<std::array<double, D>> &pos, st
         double max_delta = 0.0;
 
         for (size_t i = 0; i < n; ++i) {
+            if (fixed[i]) continue;
+
             double delta = 0.0;
             for (size_t k = 0; k < D; ++k) {
                 const double step = params.step * force[i][k];
