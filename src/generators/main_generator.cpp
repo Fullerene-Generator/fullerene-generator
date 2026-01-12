@@ -55,10 +55,6 @@ void main_generator::generate(std::size_t up_to)
         auto G = create_c28_fullerene();
         register_and_emit(G);
     }
-
-    for (const auto& [v, c] : counts_) {
-        std::cout << v << " vertices: " << c << "\n";
-    }
 }
 
 int main_generator::bound_by_vertex_count_l(const dual_fullerene& G, std::size_t up_to)
