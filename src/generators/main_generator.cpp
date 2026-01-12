@@ -33,7 +33,7 @@ namespace {
         return r;
     }
 
-} // namespace
+} 
 
 void main_generator::generate(std::size_t up_to)
 {
@@ -54,7 +54,6 @@ void main_generator::generate(std::size_t up_to)
     {
         auto G = create_c28_fullerene();
         register_and_emit(G);
-        dfs_(G, up_to, 4, 4, 1);
     }
 
     for (const auto& [v, c] : counts_) {
@@ -64,21 +63,15 @@ void main_generator::generate(std::size_t up_to)
 
 int main_generator::bound_by_vertex_count_l(const dual_fullerene& G, std::size_t up_to)
 {
-    // primal vertices = 20 + 2 * (#hexagons in dual)
     int primal_v = 20 + 2 * static_cast<int>(G.get_nodes_6().size());
     int dif = static_cast<int>(up_to) - primal_v;
-
-    // L_i adds 2*(i+2) primal vertices, B_{p,q} adds 2*(p+q+2)
     return dif / 2 - 2;
 }
 
 int main_generator::bound_by_vertex_count_b(const dual_fullerene& G, std::size_t up_to)
 {
-    // primal vertices = 20 + 2 * (#hexagons in dual)
     int primal_v = 20 + 2 * static_cast<int>(G.get_nodes_6().size());
     int dif = static_cast<int>(up_to) - primal_v;
-
-    // L_i adds 2*(i+2) primal vertices, B_{p,q} adds 2*(p+q+2)
     return dif / 2 - 3;
 }
 
@@ -120,51 +113,22 @@ void main_generator::dfs_(dual_fullerene& G,
             }
     }
 
-    //std::cout << "found " << expansions.size() << " expansions\n";
 
-    int l_count = 0;
-    int l_can_count = 0;
-    int b_count = 0;
-    int b_can_count = 0;
 
     for (auto& up : expansions) {
         if (!up->validate()) {
             continue;
         }
-        //std::cout << "validated\n";
-        bool if_d = false;
-        
-        // ---- L expansion ----
+
+
         if (auto* le = dynamic_cast<l_expansion*>(up.get())) {
-           // std::cout << "l expansion size: " << le->candidate().length << '\n';
-          //  std::cout << "expansion first edge, from: " << le->candidate().start.from->id()
-            //    << " to: " << le->candidate().start.to()->id() << '\n';
-            if (G.get_nodes_6().size() == 2 && le->candidate().length == 2) {
-                std::cout << "c24, l3 expansion\n";
-               // if_d = true;
-            }
-            // 1) copy candidate BEFORE apply (safe even if apply mutates internal state)
-            l_count++;
+
+
             const auto cand = le->candidate();
-
-            // 2) apply expansion (this is what initializes inverse_*_edge)
-            up->apply();
-            //std::cout << "expansion applied\n";
-
-            // 3) now it is safe to read inverse edges + construct reduction
-            auto inv1 = le->inverse_first_edge();
-            auto inv2 = le->inverse_second_edge();
-            //std::cout << "expansion inverse first edge from: " << inv1.from->id()
-              //  << " to: " << inv1.to()->id()
-                //<< " second edge " << inv2.from->id()
-                //<< " to " << inv2.to()->id() << '\n';
-
+            up->apply();;
             auto red = std::make_unique<l_reduction>(matching_reduction_from_expansion(*le));
 
-            //std::cout << "min reduction size: " << min_reduction_size << '\n';
-            if (red->is_canonical(G, min_reduction_size, if_d)) {
-              //  std::cout << "red is canonical\n";
-                l_can_count++;
+            if (red->is_canonical(G, min_reduction_size)) {
                 register_and_emit(G);
                 int next_max_l_bound = bound_by_vertex_count_l(G, up_to);
                 int next_max_b_bound = bound_by_vertex_count_b(G, up_to);
@@ -175,43 +139,16 @@ void main_generator::dfs_(dual_fullerene& G,
             }
 
 
-           // std::cout << "tries to apply\n";
             red->apply(G, cand);
-            //std::cout << "reduction applied\n";
             continue;
         }
 
-        // ---- B expansion ----
         if (auto* be = dynamic_cast<b_expansion*>(up.get())) {
-           // std::cout << "b expansion size: " << be->candidate().length_pre_bend
-             //   << ' ' << be->candidate().length_post_bend << '\n';
-            if (G.get_nodes_6().size() == 3 && be->candidate().length_pre_bend == 0 && be->candidate().length_post_bend == 0) {
-                std::cout << "c26, B00 expansion\n";
-               // if_d = true;
-            }
-            // 1) copy candidate BEFORE apply
-            b_count++;
             const auto cand = be->candidate();
-
-            // 2) apply expansion (initializes inverse edges for B too)
             up->apply();
-            if (if_d) {
-                std::cout << "expansion applied\n";
-            }
-            
-
-            // 3) construct reduction AFTER apply
+     
             auto red = std::make_unique<b_reduction>(matching_reduction_from_expansion(*be));
-            if (if_d) {
-                std::cout << "reduction constructed\n";
-            }
-            //std::cout << "min reduction size: " << min_reduction_size << '\n';
-            if (red->is_canonical(G, min_reduction_size, if_d)) {
-                if (if_d) {
-                    std::cout << "c26, CANONICAL B00 EXPANSION NIGGA\n";
-                }
-              //  std::cout << "red is canonical\n";
-                b_can_count++;
+            if (red->is_canonical(G, min_reduction_size)) {
                 register_and_emit(G);
                 int next_max_l_bound = bound_by_vertex_count_l(G, up_to);
                 int next_max_b_bound = bound_by_vertex_count_b(G, up_to);
@@ -221,16 +158,9 @@ void main_generator::dfs_(dual_fullerene& G,
                 G.reduce_id();
             }
             
-
-           // std::cout << "tries to apply\n";
             red->apply(G, cand);
-            //std::cout << "reduction applied\n";
             continue;
         }
     }
-    //if (true || b_can_count > 0 || (G.get_nodes_6().size()*2 >= 6 && G.get_nodes_6().size() <= 6)) {
-        //auto kutas = G.to_primal();
-       // std::cout << "graph size: " << G.get_nodes_6().size() * 2 + 20 << "parent id: " << kutas.get_parent_id() << ' ' << " l count: " << l_count << " l can count: " << l_can_count << " b count: " << b_count << " b can count: " << b_can_count << '\n';
-   // }
     
 }

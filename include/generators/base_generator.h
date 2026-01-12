@@ -13,7 +13,7 @@ public:
     virtual void register_and_emit(dual_fullerene& G) {
         G.register_id();
         auto P = G.to_primal();
-        //std::cout << P << std::flush;
+        std::cout << P << std::flush;
         counts_[P.get_size()]++;
     }
 };

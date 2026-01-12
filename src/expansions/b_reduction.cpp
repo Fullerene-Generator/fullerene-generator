@@ -15,13 +15,7 @@ find_b_reductions(const dual_fullerene& G, int length_pre_bend, int length_post_
 			   if (e0.to()->type() != node_type::NODE_6) {
 			       continue;
 			   }
-			//bool if_d = false;
-			//if (G.get_nodes_6().size() == 6) {
-			//	if (e0.from->id() == 0 && e0.to()->id() == 16) {
-			//		std::cout << "maybe we are here\n";
-			//		if_d = true;
-				//}
-			//}
+			
 			for (bool clockwise : { true, false }) {
 				int outside_hex1 = clockwise
 					? static_cast<int>(e0.prev_around(2).to()->degree())
@@ -30,9 +24,6 @@ find_b_reductions(const dual_fullerene& G, int length_pre_bend, int length_post_
 				auto e = e0;
 				std::vector<int> path;
 				path.reserve(total_length);
-				//if (if_d) {
-			//		std::cout << "clockwise: " << clockwise << " starting path: ";
-			//	}
 				bool ok = true;
 				for (int step = 0; step <= length_pre_bend; ++step) {
 					auto v = e.from;
@@ -40,22 +31,15 @@ find_b_reductions(const dual_fullerene& G, int length_pre_bend, int length_post_
 					if (step == 0) {
 						if (v->type() != node_type::NODE_5) {
 							ok = false;
-							//if (if_d) {
-							//	std::cout << "wrong node type1: node id " << v->id() << '\n';
-						//	}
 							break;
 						}
 					}
 					else {
 						if (v->type() != node_type::NODE_6) {
 							ok = false;
-						//	if (if_d) {
-						//		std::cout << "wrong node type2: node id " << v->id() << '\n';
-						//	}
 							break;
 						}
 					}
-					//if (if_d) std::cout << v->id() << ' ';
 					path.push_back(static_cast<int>(v->id()));
 
 					if (step < length_pre_bend) {
@@ -68,35 +52,16 @@ find_b_reductions(const dual_fullerene& G, int length_pre_bend, int length_post_
 
 				for (int step = 0; step <= length_post_bend; ++step) {
 					auto v = e.from;
-					/*
-					if (step == length_post_bend) {
-						if (v->type() != node_type::NODE_5) {
-							ok = false;
-							if (if_d) {
-								std::cout << "wrong node type3: node id " << v->id() << '\n';
-							}
-							break;
-						}
-					}
-					*/
 
 					if (v->type() != node_type::NODE_6) {
 						ok = false;
-						//if (if_d) {
-						//	std::cout << "wrong node type4: node id " << v->id() << '\n';
-					//	}
 						break;
 					}
 
-				//	if (if_d) std::cout << v->id() << ' ';
 					path.push_back(static_cast<int>(v->id()));
-
-
 					e = clockwise ? e.right_turn(3) : e.left_turn(3);
 				}
-			//	if (if_d) {
-				//	std::cout << '\n';
-			//	}
+
 				if (!ok) continue;
 				auto second_pent = e.from;
 				if (second_pent->type() != node_type::NODE_5) {
