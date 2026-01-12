@@ -216,7 +216,7 @@ std::vector<std::array<double, 3>> embedder::compute_2d_sphere_mapping(const gra
     auto depth = compute_bfs_depth(f);
     const auto max_depth = *std::ranges::max_element(depth);
 
-    const auto embedding_2d = compute_2d_force_embedding(f);
+    const auto embedding_2d = compute_tutte(f);
     std::array<double, 2> barycenter = {0, 0};
 
     for (unsigned int v = 0; v < n; v++) {
