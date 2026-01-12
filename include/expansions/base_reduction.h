@@ -20,7 +20,7 @@ public:
     [[nodiscard]] virtual int x0() const = 0;
     [[nodiscard]] virtual int x1() const { return -x0(); }
 
-    [[nodiscard]] bool is_canonical(const dual_fullerene& G, int min_x0) const;
+    [[nodiscard]] bool is_canonical(const dual_fullerene& G, int min_x0, bool if_deb = false) const;
 
     virtual void apply(dual_fullerene& G, const expansion_candidate& c) const = 0;
 

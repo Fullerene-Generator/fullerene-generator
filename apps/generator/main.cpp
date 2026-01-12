@@ -11,7 +11,7 @@ int main(int argc, char** argv) {
     }
 
     //size_t max_size = std::stoul(argv[1]);
-    size_t max_size = 40;
+    size_t max_size = 70;
     auto generator = f_expansion_generator();
     generator.generate(max_size);
 

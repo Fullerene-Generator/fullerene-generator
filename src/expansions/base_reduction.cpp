@@ -7,6 +7,43 @@
 #include <memory>
 #include <vector>
 #include <iostream>
+#include <typeinfo>
+
+
+static void dump_reduction_debug(const char* tag, const base_reduction& r)
+{
+    std::cout << "\n[" << tag << "] ";
+
+    // Identify runtime type (L/B/unknown)
+    if (auto* lr = dynamic_cast<const l_reduction*>(&r)) {
+        std::cout << "type=L"
+            << " size=" << lr->size;
+    }
+    else if (auto* br = dynamic_cast<const b_reduction*>(&r)) {
+        std::cout << "type=B"
+            << " pre=" << br->length_pre_bend
+            << " post=" << br->length_post_bend;
+    }
+    else {
+        std::cout << "type=? (" << typeid(r).name() << ")";
+    }
+
+    // Common fields
+    std::cout << " x0=" << r.x0()
+        << " x1=" << r.x1()
+        << " use_next=" << r.use_next;
+
+    // Edges (guarded as much as possible)
+    std::cout << " first=("
+        << (r.first_edge.from ? int(r.first_edge.from->id()) : -1)
+        << "->" << (r.first_edge.to() ? int(r.first_edge.to()->id()) : -1)
+        << ") second=("
+        << (r.second_edge.from ? int(r.second_edge.from->id()) : -1)
+        << "->" << (r.second_edge.to() ? int(r.second_edge.to()->id()) : -1)
+        << ")\n";
+
+}
+
 
 static std::uint32_t edge_neighborhood_code(const directed_edge& e, bool use_next)
 {
@@ -85,7 +122,7 @@ void base_reduction::fill_signature_candidate(expansion_candidate& out) const
     out.parallel_path.clear();
 }
 
-bool base_reduction::is_canonical(const dual_fullerene& G, int min_x0) const
+bool base_reduction::is_canonical(const dual_fullerene& G, int min_x0, bool if_deb) const
 {
    // std::cout << "in is canonical\n";
     //std::cout << "reduction first edge from: " << first_edge.from->id() << " to: " << first_edge.to()->id() << '\n';
@@ -94,27 +131,48 @@ bool base_reduction::is_canonical(const dual_fullerene& G, int min_x0) const
 
     for (int s = min_x0; s < ref_x0; ++s) {
         auto smaller = find_all_reductions(G, s);
-        if (!smaller.empty()) return false;
+        if (!smaller.empty()) {
+            if (if_deb) {
+                std::cout << "\nNON-CANONICAL: found smaller x0 candidate/s (s=" << s << ")"<<" smaller found: "<<smaller.size()<<'\n';
+                dump_reduction_debug("reference", *this);
+                for (auto& chuj : smaller) {
+                    dump_reduction_debug("better(x0)", *chuj);
+                }
+                
+            }
+            
+            return false;
+        }
     }
+    
 
     auto candidates = find_all_reductions(G, ref_x0);
    // std::cout << "found " << candidates.size() << " reduction candidates of size " << ref_x0 << '\n';
     if (candidates.empty()) return true;
-
+    
     const int ref_x1 = x1();
     {
         std::vector<std::unique_ptr<base_reduction>> next;
         next.reserve(candidates.size());
         for (auto& r : candidates) {
             int v = r->x1();
-            if (v < ref_x1) return false;
+            if (v < ref_x1) {
+                if (if_deb) {
+                    std::cout << "\nNON-CANONICAL: better by x1 (" << v << " < " << ref_x1 << ")\n";
+                    dump_reduction_debug("reference", *this);
+                    dump_reduction_debug("better(x1)", *r);
+                }
+                return false;
+            }
             if (v == ref_x1) next.push_back(std::move(r));
         }
         candidates.swap(next);
     }
+    
     //std::cout << "after x1 stage candidates size: " << candidates.size() << '\n';
     if (candidates.empty()) return true;
     //std::cout << "now will compute x2\n";
+    
     const std::uint32_t ref_x2 = x2_code();
     //std::cout << "x2 code: " << ref_x2 << '\n';
     {
@@ -122,7 +180,14 @@ bool base_reduction::is_canonical(const dual_fullerene& G, int min_x0) const
         next.reserve(candidates.size());
         for (auto& r : candidates) {
             std::uint32_t v = r->x2_code();
-            if (v < ref_x2) return false;
+            if (v < ref_x2) {
+                if (if_deb) {
+                    std::cout << "\nNON-CANONICAL: better by x2 (" << v << " < " << ref_x2 << ")\n";
+                    dump_reduction_debug("reference", *this);
+                    dump_reduction_debug("better(x2)", *r);
+                }
+                return false;
+            }
             if (v == ref_x2) next.push_back(std::move(r));
         }
         candidates.swap(next);
