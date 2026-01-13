@@ -4,12 +4,12 @@
 #include <vector>
 
 struct force_params_2d {
-    int max_iterations = 5000;
-    double step = 0.1;
+    int max_iterations = 2000;
 
-    double alpha = 1.0;
-
-    double convergence_eps = 1e-6;
+    double area = M_PI;
+    double C = 1.0;
+    double initial_temp = 0.1;
+    double cooling = 0.95;
 };
 
 struct force_params_3d {
@@ -45,30 +45,6 @@ std::array<double, D> barycenter(const std::vector<std::array<double, D>>& pos) 
         c[k] /= pos.size();
 
     return c;
-}
-
-template <size_t D>
-void normalize_radius(std::vector<std::array<double, D>>& pos, double target_radius = 1.0) {
-    auto c = barycenter(pos);
-
-    double r2 = 0.0;
-    for (const auto& p : pos) {
-        double d2 = 0.0;
-        for (size_t k = 0; k < D; ++k) {
-            const double x = p[k] - c[k];
-            d2 += x * x;
-        }
-        r2 += d2;
-    }
-
-    const double r = std::sqrt(r2 / pos.size());
-    if (r == 0.0) return;
-
-    const double s = target_radius / r;
-
-    for (auto& p : pos)
-        for (size_t k = 0; k < D; ++k)
-            p[k] = c[k] + s * (p[k] - c[k]);
 }
 
 template <size_t D>
@@ -200,81 +176,106 @@ void apply_radial_repulsion (std::vector<std::array<double, D>> &pos, std::vecto
 }
 
 template <size_t D>
-void ppga_relaxation(const graph &g, std::vector<std::array<double, D>> &pos, std::vector<unsigned>& depth, force_params_2d &params) {
+void apply_fr_repulsion(
+    const std::vector<std::array<double, D>>& pos,
+    std::vector<std::array<double, D>>& force,
+    double k
+) {
     const size_t n = pos.size();
 
-    auto fixed = make_fixed_mask(g);
+    for (size_t i = 0; i < n; ++i) {
+        for (size_t j = i + 1; j < n; ++j) {
+            std::array<double, D> d{};
+            double dist2 = 0.0;
 
-    unsigned d_max = 0;
-    for (unsigned d : depth)
-        d_max = std::max(d_max, d);
-    if (d_max == 0) d_max = 1;
+            for (size_t k2 = 0; k2 < D; ++k2) {
+                d[k2] = pos[i][k2] - pos[j][k2];
+                dist2 += d[k2] * d[k2];
+            }
 
-    struct edge {
-        unsigned i, j;
-        double w;
-    };
+            double dist = std::sqrt(dist2) + 1e-9;
+            double mag = (k * k) / dist;
 
-    std::vector<edge> edges;
-    edges.reserve(g.adjacency.size() * 3 / 2);
-
-    for (size_t i = 0; i < g.adjacency.size(); ++i) {
-        for (unsigned j : g.adjacency[i]) {
-            if (j <= i) continue;
-
-            const double w = std::exp(
-                params.alpha * (2.0 * d_max - depth[i] - depth[j]) / d_max
-            );
-
-            edges.push_back({static_cast<unsigned>(i), j, w});
+            for (size_t k2 = 0; k2 < D; ++k2) {
+                double f = mag * d[k2] / dist;
+                force[i][k2] += f;
+                force[j][k2] -= f;
+            }
         }
     }
+}
+
+template <size_t D>
+void apply_fr_attraction(
+    const graph& g,
+    const std::vector<std::array<double, D>>& pos,
+    std::vector<std::array<double, D>>& force,
+    double k
+) {
+    for (size_t i = 0; i < g.adjacency.size(); ++i) {
+        for (auto j : g.adjacency[i]) {
+            if (j <= i) continue;
+
+            std::array<double, D> d{};
+            double dist2 = 0.0;
+
+            for (size_t k2 = 0; k2 < D; ++k2) {
+                d[k2] = pos[j][k2] - pos[i][k2];
+                dist2 += d[k2] * d[k2];
+            }
+
+            double dist = std::sqrt(dist2) + 1e-9;
+            double mag = (dist * dist) / k;
+
+            for (size_t k2 = 0; k2 < D; ++k2) {
+                double f = mag * d[k2] / dist;
+                force[i][k2] += f;
+                force[j][k2] -= f;
+            }
+        }
+    }
+}
+
+template <size_t D>
+void fr_relaxation_2d(
+    const graph& g,
+    std::vector<std::array<double, D>>& pos,
+    const force_params_2d& params
+) {
+    const size_t n = pos.size();
+    auto fixed = make_fixed_mask(g);
+
+    const double k =
+        params.C * std::sqrt(params.area / static_cast<double>(n));
+
+    double temperature = params.initial_temp;
 
     std::vector<std::array<double, D>> force(n);
 
     for (int it = 0; it < params.max_iterations; ++it) {
+        for (auto& f : force) f.fill(0.0);
 
-    std::vector<std::array<double, D>> next_pos = pos;
-    double max_delta = 0.0;
+        apply_fr_repulsion(pos, force, k);
+        apply_fr_attraction(g, pos, force, k);
 
-    for (size_t i = 0; i < n; ++i) {
-        if (fixed[i]) continue;
+        for (size_t i = 0; i < n; ++i) {
+            if (fixed[i]) continue;
 
-        std::array<double, D> sum_weighted_neighbors{};
-        double sum_weights = 0.0;
+            double norm = 0.0;
+            for (size_t d = 0; d < D; ++d)
+                norm += force[i][d] * force[i][d];
 
-        for (auto e: edges) {
-            if (e.i == i) {
-                double w = e.w;
+            norm = std::sqrt(norm);
+            if (norm == 0.0) continue;
 
-                for (size_t k = 0; k < D; ++k) {
-                    sum_weighted_neighbors[k] += w * pos[e.j][k];
-                }
-                sum_weights += w;
-            }
-            else if (e.j == i) {
-                double w = e.w;
+            double step = std::min(norm, temperature);
 
-                for (size_t k = 0; k < D; ++k) {
-                    sum_weighted_neighbors[k] += w * pos[e.i][k];
-                }
-                sum_weights += w;
-            }
+            for (size_t d = 0; d < D; ++d)
+                pos[i][d] += step * force[i][d] / norm;
         }
 
-        if (sum_weights > 0) {
-            for (size_t k = 0; k < D; ++k) {
-                double new_coord = sum_weighted_neighbors[k] / sum_weights;
-                double diff = new_coord - pos[i][k];
-                max_delta = std::max(max_delta, std::abs(diff));
-                next_pos[i][k] = new_coord;
-            }
-        }
+        temperature *= params.cooling;
     }
-    pos = next_pos;
-
-    if (max_delta < params.convergence_eps) break;
-}
 }
 
 template <size_t D>
