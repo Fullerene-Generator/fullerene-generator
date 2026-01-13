@@ -1,6 +1,6 @@
 add_library(fullerene_generators
         f_expansion_generator.cpp
-        l_expansion_generator.cpp
+        main_generator.cpp
 )
 
 target_link_libraries(fullerene_generators PUBLIC fullerene_expansions)

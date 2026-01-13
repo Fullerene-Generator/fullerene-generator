@@ -264,7 +264,7 @@ void b_expansion::apply() {
         G_.replace_neighbor(w_first, u_first, u_second);
         G_.replace_neighbor(w_second, u_first, u_second);
 
-        inv_first_ = c.clockwise ? u0_node->get_edge(u1_node).next_around().inverse() : u0_node->get_edge(u1_node).prev_around().inverse();
+        inv_first_ = c.clockwise ? u0_node->get_edge(u1_node).next_around() : u0_node->get_edge(u1_node).prev_around();
         inv_second_ = u_second_node->get_edge(corridor_node);
     }
 }

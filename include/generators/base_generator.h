@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <fullerene/dual_fullerene.h>
 #include <iostream>
+#include <map>
 
 class base_generator {
 public:

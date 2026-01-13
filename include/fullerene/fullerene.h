@@ -28,6 +28,7 @@ public:
     [[nodiscard]] size_t get_size() const { return adjacency_.size(); }
     [[nodiscard]] std::array<unsigned int, 5> get_outer_face_nodes() const { return outer_face_nodes_; }
     [[nodiscard]] std::string write_all() const noexcept;
+    std::string get_parent_id() const { return parent_id_; }
     friend std::ostream &operator<<(std::ostream &os, const fullerene &f);
 };
 

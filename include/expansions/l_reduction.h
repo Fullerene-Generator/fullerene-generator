@@ -5,22 +5,18 @@
 
 #include <fullerene/dual_fullerene.h>
 #include <fullerene/directed_edge.h>
-#include <expansions/l_expansion.h>
+#include <expansions/base_reduction.h>
 
-struct l_reduction {
-    directed_edge first_edge;
-    directed_edge second_edge;
-    bool use_next;
+struct l_reduction final : base_reduction {
     int size;
 
-    [[nodiscard]] bool is_canonical(const dual_fullerene& G, int min_size) const;
-    void apply(dual_fullerene& G, const l_expansion_candidate& c) const;
+    [[nodiscard]] int x0() const override { return size; }
+    [[nodiscard]] int x1() const override { return -x0(); }
+
+    void apply(dual_fullerene& G, const expansion_candidate& c) const override;
 };
 
 std::vector<l_reduction>
-find_l_reductions(const dual_fullerene& G,
-    int size,
-    int skip_pent_1 = -1,
-    int skip_pent_2 = -1);
+find_l_reductions(const dual_fullerene& G, int size);
 
 #endif
