@@ -134,7 +134,12 @@ void main_generator::dfs_(dual_fullerene& G,
                 int next_max_b_bound = bound_by_vertex_count_b(G, up_to);
                 int bound_by_size = red->x0() + 1;
                 if (red->x0() == 1) {
-                    bound_by_size = 1;
+                    if (has_L0_pair_pent_distance_gt4(G)) {
+                        bound_by_size = 0;
+                    }
+                    else {
+                        bound_by_size = 1;
+                    }
                 }
                 int four_bound_for_smaller = G.get_nodes_6().size() <= 80 ? 3 : up_to;
                 int next_max_l = std::min({ next_max_l_bound, bound_by_size, four_bound_for_smaller });
