@@ -132,8 +132,13 @@ void main_generator::dfs_(dual_fullerene& G,
                 register_and_emit(G);
                 int next_max_l_bound = bound_by_vertex_count_l(G, up_to);
                 int next_max_b_bound = bound_by_vertex_count_b(G, up_to);
-                int next_max_l = std::min(next_max_l_bound, 4);
-                int next_max_b = std::min(next_max_b_bound, 4);
+                int bound_by_size = red->x0() + 1;
+                if (red->x0() == 1) {
+                    bound_by_size = 1;
+                }
+                int four_bound_for_smaller = G.get_nodes_6().size() <= 80 ? 3 : up_to;
+                int next_max_l = std::min({ next_max_l_bound, bound_by_size, four_bound_for_smaller });
+                int next_max_b = std::min({ next_max_b_bound, bound_by_size, four_bound_for_smaller });
                 dfs_(G, up_to, next_max_l, next_max_b, min_reduction_size);
                 G.reduce_id();
             }
@@ -152,8 +157,10 @@ void main_generator::dfs_(dual_fullerene& G,
                 register_and_emit(G);
                 int next_max_l_bound = bound_by_vertex_count_l(G, up_to);
                 int next_max_b_bound = bound_by_vertex_count_b(G, up_to);
-                int next_max_l = std::min(next_max_l_bound, 4);
-                int next_max_b = std::min(next_max_b_bound, 4);
+                int bound_by_size = red->x0() + 1;
+                int four_bound_for_smaller = G.get_nodes_6().size() <= 80 ? 3 : up_to;
+                int next_max_l = std::min({ next_max_l_bound, bound_by_size, four_bound_for_smaller });
+                int next_max_b = std::min({ next_max_b_bound, bound_by_size, four_bound_for_smaller });
                 dfs_(G, up_to, next_max_l, next_max_b, min_reduction_size);
                 G.reduce_id();
             }
