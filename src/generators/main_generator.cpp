@@ -1,5 +1,5 @@
 #include <generators/main_generator.h>
-
+#include <expansions/base_reduction.h>
 #include <expansions/b_expansion.h>
 #include <expansions/b_reduction.h>
 #include <expansions/l_expansion.h>
@@ -44,7 +44,7 @@ void main_generator::generate(std::size_t up_to)
     {
         auto G = create_c20_fullerene();
         register_and_emit(G);
-        dfs_(G, up_to, 4, 4, 1);
+        dfs_(G, up_to, 1, -1, 1);
     }
 
     if (up_to < 28) {
@@ -139,6 +139,11 @@ void main_generator::dfs_(dual_fullerene& G,
                 int four_bound_for_smaller = G.get_nodes_6().size() <= 80 ? 3 : up_to;
                 int next_max_l = std::min({ next_max_l_bound, bound_by_size, four_bound_for_smaller });
                 int next_max_b = std::min({ next_max_b_bound, bound_by_size, four_bound_for_smaller });
+                if (next_max_l >= 2 || next_max_b >= 2) {
+                    int temp = limit_by_reduction_distances(G, next_max_b);
+                    next_max_l = std::min(next_max_l, temp);
+                    next_max_b = std::min(next_max_b, temp);
+                }
                 dfs_(G, up_to, next_max_l, next_max_b, min_reduction_size);
                 G.reduce_id();
             }
@@ -161,6 +166,11 @@ void main_generator::dfs_(dual_fullerene& G,
                 int four_bound_for_smaller = G.get_nodes_6().size() <= 80 ? 3 : up_to;
                 int next_max_l = std::min({ next_max_l_bound, bound_by_size, four_bound_for_smaller });
                 int next_max_b = std::min({ next_max_b_bound, bound_by_size, four_bound_for_smaller });
+                if (next_max_l >= 2 || next_max_b >= 2) {
+                    int temp = limit_by_reduction_distances(G, next_max_b);
+                    next_max_l = std::min(next_max_l, temp);
+                    next_max_b = std::min(next_max_b, temp);
+                }
                 dfs_(G, up_to, next_max_l, next_max_b, min_reduction_size);
                 G.reduce_id();
             }
