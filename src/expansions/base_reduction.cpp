@@ -88,7 +88,10 @@ void base_reduction::fill_signature_candidate(expansion_candidate& out) const
 bool base_reduction::is_canonical(const dual_fullerene& G, int min_x0) const
 {
     const int ref_x0 = x0();
-    if (ref_x0 <= 0) return true;
+
+    if (ref_x0 > 2 && !G.is_ipr()) {
+        return false;
+    }
 
     for (int s = min_x0; s < ref_x0; ++s) {
         auto smaller = find_all_reductions(G, s);

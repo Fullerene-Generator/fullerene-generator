@@ -55,6 +55,10 @@ void main_generator::generate(std::size_t up_to)
         auto G = create_c28_fullerene();
         register_and_emit(G);
     }
+
+    for (auto chuj : counts) {
+        std::cout << "vertices: " << chuj.first << " graphs: " << chuj.second << '\n';
+    }
 }
 
 int main_generator::bound_by_vertex_count_l(const dual_fullerene& G, std::size_t up_to)
