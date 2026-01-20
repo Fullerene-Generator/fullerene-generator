@@ -35,4 +35,7 @@ protected:
 std::vector<std::unique_ptr<base_reduction>>
 find_all_reductions(const dual_fullerene& G, int x0);
 
+int limit_by_reduction_distances(const dual_fullerene& G, int cur_best);
+
+
 #endif

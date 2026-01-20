@@ -88,7 +88,10 @@ void base_reduction::fill_signature_candidate(expansion_candidate& out) const
 bool base_reduction::is_canonical(const dual_fullerene& G, int min_x0) const
 {
     const int ref_x0 = x0();
-    if (ref_x0 <= 0) return true;
+
+    if (ref_x0 > 2 && !G.is_ipr()) {
+        return false;
+    }
 
     for (int s = min_x0; s < ref_x0; ++s) {
         auto smaller = find_all_reductions(G, s);
@@ -243,4 +246,52 @@ find_all_reductions(const dual_fullerene& G, int x0)
     }
 
     return out;
+}
+
+
+int limit_by_reduction_distances(const dual_fullerene& G, int cur_best) {
+    constexpr int N = 12;
+    constexpr uint16_t FULL = (1u << N) - 1u; 
+    std::array<uint8_t, 1u << N> seenPents{};
+    std::array<uint8_t, 1u << N> seenPairUnion{};
+
+    std::vector<uint16_t> pents;     pents.reserve(66);  
+    std::vector<uint16_t> pairList;  pairList.reserve(495); // distinct 4-bit masks
+
+    int distinctEdges = 0;
+
+    auto reds = find_all_reductions(G, 2);
+
+    for (const auto& r : reds) {
+        int a = r->first_edge.from->id(), b = r->second_edge.from->id();
+        uint16_t e = (uint16_t)((1u << a) | (1u << b));
+
+        if (seenPents[e]) continue;
+        seenPents[e] = 1;
+        distinctEdges++;
+
+        //check if it forms new disjoint triple
+
+        for (uint16_t u : pairList) {
+            if ((u & e) == 0) {
+                return 1;
+            }
+        }
+
+        // Update disjoint-pair unions
+        for (uint16_t prev : pents) {
+            if ((prev & e) == 0) {
+                uint16_t u = (uint16_t)(prev | e); // 4-bit union
+                if (!seenPairUnion[u]) {
+                    seenPairUnion[u] = 1;
+                    pairList.push_back(u);
+                }
+            }
+        }
+
+        pents.push_back(e);
+    }
+
+    if (distinctEdges >= 2) return 2;
+    return cur_best;
 }
