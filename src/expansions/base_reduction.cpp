@@ -85,20 +85,20 @@ void base_reduction::fill_signature_candidate(expansion_candidate& out) const
     out.parallel_path.clear();
 }
 
-bool base_reduction::is_canonical(const dual_fullerene& G, int min_x0) const
+bool base_reduction::is_canonical(const dual_fullerene& G, int min_x0, int l1, int l2) const
 {
     const int ref_x0 = x0();
     if (ref_x0 <= 0) return true;
 
     for (int s = min_x0; s < ref_x0; ++s) {
-        auto smaller = find_all_reductions(G, s);
+        auto smaller = find_all_reductions(G, s, -1, -1, true, -1, -1);
         if (!smaller.empty()) {
             return false;
         }
     }
     
 
-    auto candidates = find_all_reductions(G, ref_x0);
+    auto candidates = find_all_reductions(G, ref_x0, first_edge.from->id(), first_edge.index, use_next, l1, l2);
     if (candidates.empty()) return true;
     
     const int ref_x1 = x1();
@@ -158,7 +158,7 @@ bool base_reduction::is_canonical(const dual_fullerene& G, int min_x0) const
         candidates.swap(next);
     }
     if (candidates.empty()) return true;
-
+    
     expansion_candidate ref_cand;
     fill_signature_candidate(ref_cand);
     signature_state ref_state(G, ref_cand);
@@ -221,13 +221,20 @@ bool base_reduction::is_canonical(const dual_fullerene& G, int min_x0) const
 }
 
 std::vector<std::unique_ptr<base_reduction>>
-find_all_reductions(const dual_fullerene& G, int x0)
+find_all_reductions(const dual_fullerene& G, int x0, int skip_pent, int skip_index, bool skip_clockwise, int skip_l1, int skip_l2)
 {
     std::vector<std::unique_ptr<base_reduction>> out;
 
     const int l_param = x0;
     if (l_param >= 1) {
-        auto ls = find_l_reductions(G, l_param);
+        std::vector<l_reduction> ls;
+        if (skip_l1 == -1) {
+            ls = find_l_reductions(G, l_param, -1, -1, skip_clockwise);
+        }
+        else {
+            ls = find_l_reductions(G, l_param, skip_pent, skip_index, skip_clockwise);
+        }
+        
         out.reserve(ls.size());
         for (auto& r : ls) {
             out.push_back(std::make_unique<l_reduction>(std::move(r)));
@@ -235,7 +242,14 @@ find_all_reductions(const dual_fullerene& G, int x0)
     }
     const int b_sum = x0 - 2;
     for (int b = 0; b <= b_sum; b++) {
-        auto bs = find_b_reductions(G, b, b_sum - b);
+        std::vector<b_reduction> bs;
+        if (b == skip_l1) {
+            bs = find_b_reductions(G, b, b_sum - b, skip_pent, skip_index, skip_clockwise);
+        }
+        else {
+            bs = find_b_reductions(G, b, b_sum - b, -1, -1, true);
+        }
+        
         out.reserve(out.size() + bs.size());
         for (auto& r : bs) {
             out.push_back(std::make_unique<b_reduction>(std::move(r)));

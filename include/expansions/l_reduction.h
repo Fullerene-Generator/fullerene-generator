@@ -17,6 +17,6 @@ struct l_reduction final : base_reduction {
 };
 
 std::vector<l_reduction>
-find_l_reductions(const dual_fullerene& G, int size);
+find_l_reductions(const dual_fullerene& G, int size, int skip_pent, int skip_index, bool skip_clockwise);
 
 #endif

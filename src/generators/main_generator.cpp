@@ -55,6 +55,8 @@ void main_generator::generate(std::size_t up_to)
         auto G = create_c28_fullerene();
         register_and_emit(G);
     }
+
+
 }
 
 int main_generator::bound_by_vertex_count_l(const dual_fullerene& G, std::size_t up_to)
@@ -116,7 +118,6 @@ void main_generator::dfs_(dual_fullerene& G,
             continue;
         }
 
-
         if (auto* le = dynamic_cast<l_expansion*>(up.get())) {
 
 
@@ -124,7 +125,7 @@ void main_generator::dfs_(dual_fullerene& G,
             up->apply();;
             auto red = std::make_unique<l_reduction>(matching_reduction_from_expansion(*le));
 
-            if (red->is_canonical(G, min_reduction_size)) {
+            if (red->is_canonical(G, min_reduction_size, -1, -1)) {
                 register_and_emit(G);
                 int next_max_l_bound = bound_by_vertex_count_l(G, up_to);
                 int next_max_b_bound = bound_by_vertex_count_b(G, up_to);
@@ -144,7 +145,7 @@ void main_generator::dfs_(dual_fullerene& G,
             up->apply();
      
             auto red = std::make_unique<b_reduction>(matching_reduction_from_expansion(*be));
-            if (red->is_canonical(G, min_reduction_size)) {
+            if (red->is_canonical(G, min_reduction_size, red->length_pre_bend, red->length_post_bend)) {
                 register_and_emit(G);
                 int next_max_l_bound = bound_by_vertex_count_l(G, up_to);
                 int next_max_b_bound = bound_by_vertex_count_b(G, up_to);

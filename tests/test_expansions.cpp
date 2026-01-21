@@ -190,7 +190,7 @@ TEST_CASE("L-expansion inverse reduction exists and is canonical", "[L_reduction
         validate_dual_fullerene(G);
 
         int red_size = i + 1;
-        auto reductions = find_l_reductions(G, red_size);
+        auto reductions = find_l_reductions(G, red_size, -1, -1, true);
 
         bool match_found = false;
 
@@ -201,7 +201,7 @@ TEST_CASE("L-expansion inverse reduction exists and is canonical", "[L_reduction
             if (r.second_edge.from->id() != static_cast<unsigned>(cand.parallel_path[red_size + 1])) continue;
 
             match_found = true;
-            REQUIRE(r.is_canonical(G, red_size));
+            REQUIRE(r.is_canonical(G, red_size, -1, -1));
             break;
         }
 
@@ -252,3 +252,4 @@ TEST_CASE("C30 B(i, i) expansions preserve dual fullerene validity", "[l_expansi
         validate_dual_fullerene(G);
     }
 }
+

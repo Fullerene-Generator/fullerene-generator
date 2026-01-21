@@ -17,6 +17,6 @@ struct b_reduction final : base_reduction {
 };
 
 std::vector<b_reduction>
-find_b_reductions(const dual_fullerene& G, int length_pre_bend, int length_post_bend);
+find_b_reductions(const dual_fullerene& G, int length_pre_bend, int length_post_bend, int skip_pent, int skip_index, bool skip_clockwise);
 
 #endif

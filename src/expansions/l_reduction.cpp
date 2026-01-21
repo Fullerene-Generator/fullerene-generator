@@ -4,7 +4,7 @@
 #include <vector>
 
 std::vector<l_reduction>
-find_l_reductions(const dual_fullerene& G, int size)
+find_l_reductions(const dual_fullerene& G, int size, int skip_pent, int skip_index, bool skip_clockwise)
 {
     std::vector<l_reduction> out;
     if (size < 1) return out;
@@ -19,6 +19,9 @@ find_l_reductions(const dual_fullerene& G, int size)
             directed_edge e0{ start_node, static_cast<std::size_t>(i) };
 
             for (bool use_next : { true, false }) {
+                if (start_node->id() == skip_pent && i == skip_index && use_next == skip_clockwise) {
+                    continue;
+                }
                 int outside_hex1 = use_next
                     ? static_cast<int>(e0.prev_around(2).to()->degree())
                     : static_cast<int>(e0.next_around(2).to()->degree());

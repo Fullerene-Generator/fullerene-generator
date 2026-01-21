@@ -5,7 +5,7 @@
 #include <iostream>
 
 std::vector<b_reduction>
-find_b_reductions(const dual_fullerene& G, int length_pre_bend, int length_post_bend)
+find_b_reductions(const dual_fullerene& G, int length_pre_bend, int length_post_bend, int skip_pent, int skip_index, bool skip_clockwise)
 {
 	std::vector<b_reduction> out;
 	const int total_length = length_pre_bend + length_post_bend + 3;
@@ -17,6 +17,9 @@ find_b_reductions(const dual_fullerene& G, int length_pre_bend, int length_post_
 			   }
 			
 			for (bool clockwise : { true, false }) {
+				if (node->id() == skip_pent && i == skip_index && clockwise == skip_clockwise) {
+					continue;
+				}
 				int outside_hex1 = clockwise
 					? static_cast<int>(e0.prev_around(2).to()->degree())
 					: static_cast<int>(e0.next_around(2).to()->degree());
