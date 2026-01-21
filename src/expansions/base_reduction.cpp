@@ -274,7 +274,7 @@ int limit_by_reduction_distances(const dual_fullerene& G, int cur_best) {
 
     int distinctEdges = 0;
 
-    auto reds = find_all_reductions(G, 2);
+    auto reds = find_all_reductions(G, 2, -1, -1, true, -1, -1);
 
     for (const auto& r : reds) {
         int a = r->first_edge.from->id(), b = r->second_edge.from->id();

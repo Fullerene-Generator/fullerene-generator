@@ -55,7 +55,7 @@ namespace {
 
 bool has_L0_pair_pent_distance_gt4(const dual_fullerene& G)
 {
-	const auto l0s = find_l_reductions(G, 1);
+	const auto l0s = find_l_reductions(G, 1, -1, -1, true);
 	if (l0s.size() < 2) return false;
 
 	const auto& pent_nodes = G.get_nodes_5();
