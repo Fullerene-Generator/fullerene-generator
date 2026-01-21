@@ -19,4 +19,8 @@ struct l_reduction final : base_reduction {
 std::vector<l_reduction>
 find_l_reductions(const dual_fullerene& G, int size, int skip_pent, int skip_index, bool skip_clockwise);
 
+
+bool has_L0_pair_pent_distance_gt4(const dual_fullerene& G);
+
+
 #endif
