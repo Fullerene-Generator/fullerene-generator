@@ -20,7 +20,7 @@ public:
     [[nodiscard]] virtual int x0() const = 0;
     [[nodiscard]] virtual int x1() const { return -x0(); }
 
-    [[nodiscard]] bool is_canonical(const dual_fullerene& G, int min_x0) const;
+    [[nodiscard]] bool is_canonical(const dual_fullerene& G, int min_x0, int l1, int l2) const;
 
     virtual void apply(dual_fullerene& G, const expansion_candidate& c) const = 0;
 
@@ -33,7 +33,7 @@ protected:
 };
 
 std::vector<std::unique_ptr<base_reduction>>
-find_all_reductions(const dual_fullerene& G, int x0);
+find_all_reductions(const dual_fullerene& G, int x0, int skip_pent, int skip_index, bool skip_clockwise, int skip_l1, int skip_l2);
 
 int limit_by_reduction_distances(const dual_fullerene& G, int cur_best);
 
