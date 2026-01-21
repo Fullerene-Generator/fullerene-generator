@@ -228,7 +228,7 @@ find_all_reductions(const dual_fullerene& G, int x0, int skip_pent, int skip_ind
     const int l_param = x0;
     if (l_param >= 1) {
         std::vector<l_reduction> ls;
-        if (skip_l1 == -1) {
+        if (skip_l1 >= 0) {
             ls = find_l_reductions(G, l_param, -1, -1, skip_clockwise);
         }
         else {
